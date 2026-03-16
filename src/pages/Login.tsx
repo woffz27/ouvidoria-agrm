@@ -33,7 +33,7 @@ export default function Login() {
     <div className="flex min-h-screen">
       {/* Left side - background image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/72814cda-944b-4aa0-9a51-927d6408ecd9.png" />
       </div>
 
       {/* Right side - form */}
@@ -62,8 +62,8 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
-                  required
-                />
+                  required />
+                
               </div>
             </div>
 
@@ -77,13 +77,13 @@ export default function Login() {
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                   className="pl-10 pr-10"
-                  required
-                />
+                  required />
+                
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -115,6 +115,6 @@ export default function Login() {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
