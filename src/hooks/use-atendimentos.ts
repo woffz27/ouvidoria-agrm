@@ -81,6 +81,7 @@ export function useCriarAtendimento() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["atendimentos"] });
+      queryClient.invalidateQueries({ queryKey: ["estatisticas"] });
     },
   });
 }
