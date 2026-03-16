@@ -176,6 +176,27 @@ export default function DetalhesAtendimento() {
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
             </p>
           </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="gap-1.5 shrink-0">
+                <Trash2 className="h-4 w-4" /> Excluir
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação é irreversível. O atendimento <strong>{atendimento.protocolo}</strong> e todo o seu histórico serão excluídos permanentemente.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleExcluirAtendimento} disabled={excluirAtendimento.isPending}>
+                  {excluirAtendimento.isPending ? "Excluindo..." : "Excluir"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
