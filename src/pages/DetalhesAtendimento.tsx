@@ -113,7 +113,7 @@ export default function DetalhesAtendimento() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
           {/* Info Card */}
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
