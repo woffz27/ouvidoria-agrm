@@ -30,7 +30,7 @@ export default function RecuperarSenha() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/db5a323a-6d1d-49ec-b04e-8ed2dabb41aa.jpg" />
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
@@ -46,8 +46,8 @@ export default function RecuperarSenha() {
             </p>
           </div>
 
-          {!sent && (
-            <form onSubmit={handleSubmit} className="space-y-5">
+          {!sent &&
+          <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground">E-mail</label>
                 <div className="relative">
@@ -61,7 +61,7 @@ export default function RecuperarSenha() {
                 Enviar Link de Recuperação
               </Button>
             </form>
-          )}
+          }
 
           <div className="text-center">
             <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
@@ -71,6 +71,6 @@ export default function RecuperarSenha() {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
