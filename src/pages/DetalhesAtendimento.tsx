@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels, type StatusType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, uploadArquivos } from "@/hooks/use-atendimentos";
+import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { AnexosList } from "@/components/atendimento/AnexosList";
 
 const statusColors: Record<string, string> = {
