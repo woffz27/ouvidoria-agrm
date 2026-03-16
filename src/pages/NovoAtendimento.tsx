@@ -136,9 +136,23 @@ export default function NovoAtendimento() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="assunto">Assunto *</Label>
-                  <Input id="assunto" required placeholder="Resumo do atendimento" />
+                  <Label htmlFor="tipo_problema">Tipo de Problema *</Label>
+                  <Select required>
+                    <SelectTrigger id="tipo_problema">
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(tipoProblemaLabels) as TipoProblemaType[]).map((t) => (
+                        <SelectItem key={t} value={t}>{tipoProblemaLabels[t]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="assunto">Assunto *</Label>
+                <Input id="assunto" required placeholder="Resumo do atendimento" />
               </div>
 
               <div className="space-y-2">

@@ -188,6 +188,35 @@ export default function Dashboard() {
               ))}
             </CardContent>
           </Card>
+          {/* By tipo problema */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <AlertCircle className="h-4 w-4 text-primary" />
+                Por Tipo de Problema
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {(["extravasamento_esgoto", "vazamento_agua", "pavimentacao", "outros"] as const).map((tipo) => (
+                <div key={tipo} className="flex items-center justify-between">
+                  <span className="text-sm">{tipoProblemaLabels[tipo]}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-accent transition-all duration-500"
+                        style={{
+                          width: `${(stats.porTipoProblema[tipo] / stats.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold w-6 text-right">
+                      {stats.porTipoProblema[tipo]}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Recent */}
