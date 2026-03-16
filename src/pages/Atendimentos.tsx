@@ -223,6 +223,11 @@ export default function Atendimentos() {
                           {categoriaLabels[a.categoria]}
                         </Badge>
                       </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <Badge variant="outline" className="text-[10px]">
+                          {tipoProblemaLabels[a.tipo_problema]}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
                         {canalLabels[a.canal]}
                       </TableCell>
