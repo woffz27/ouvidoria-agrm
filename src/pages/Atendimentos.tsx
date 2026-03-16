@@ -133,7 +133,7 @@ export default function Atendimentos() {
                 handleFilterChange();
               }}
             >
-              <SelectTrigger className="w-full sm:w-[160px] h-9 bg-muted/50 border-transparent">
+              <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -151,7 +151,7 @@ export default function Atendimentos() {
                 handleFilterChange();
               }}
             >
-              <SelectTrigger className="w-full sm:w-[160px] h-9 bg-muted/50 border-transparent">
+              <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
@@ -169,7 +169,7 @@ export default function Atendimentos() {
                 handleFilterChange();
               }}
             >
-              <SelectTrigger className="w-full sm:w-[170px] h-9 bg-muted/50 border-transparent">
+              <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Tipo de Problema" />
               </SelectTrigger>
@@ -192,8 +192,8 @@ export default function Atendimentos() {
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Categoria</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Tipo</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
@@ -218,12 +218,12 @@ export default function Atendimentos() {
                       <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
                         {a.assunto}
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      <TableCell className="hidden xl:table-cell">
                         <Badge variant="outline" className="text-[10px]">
                           {categoriaLabels[a.categoria]}
                         </Badge>
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      <TableCell className="hidden xl:table-cell">
                         <Badge variant="outline" className="text-[10px]">
                           {tipoProblemaLabels[a.tipo_problema]}
                         </Badge>

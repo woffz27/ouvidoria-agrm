@@ -97,9 +97,9 @@ export default function DetalhesAtendimento() {
             </Button>
           </Link>
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold tracking-tight">{atendimento.assunto}</h1>
-              <Badge className={`gap-1 ${statusColors[atendimento.status]}`}>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-xl font-bold tracking-tight break-words min-w-0">{atendimento.assunto}</h1>
+              <Badge className={`gap-1 shrink-0 ${statusColors[atendimento.status]}`}>
                 {statusIcons[atendimento.status]}
                 {statusLabels[atendimento.status]}
               </Badge>
@@ -113,9 +113,9 @@ export default function DetalhesAtendimento() {
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
           {/* Info Card */}
-          <Card className="lg:col-span-1">
+          <Card className="xl:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">Informações</CardTitle>
             </CardHeader>
@@ -137,7 +137,7 @@ export default function DetalhesAtendimento() {
           </Card>
 
           {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             {/* Description */}
             <Card>
               <CardHeader className="pb-3">
