@@ -162,6 +162,24 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
+            <Select
+              value={tipoProblemaFilter}
+              onValueChange={(v) => {
+                setTipoProblemaFilter(v);
+                handleFilterChange();
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-[170px] h-9 bg-muted/50 border-transparent">
+                <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                <SelectValue placeholder="Tipo de Problema" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os tipos</SelectItem>
+                {(Object.keys(tipoProblemaLabels) as TipoProblemaType[]).map((t) => (
+                  <SelectItem key={t} value={t}>{tipoProblemaLabels[t]}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 
