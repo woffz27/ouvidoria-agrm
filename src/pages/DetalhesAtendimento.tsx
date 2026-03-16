@@ -34,6 +34,7 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export default function DetalhesAtendimento() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
