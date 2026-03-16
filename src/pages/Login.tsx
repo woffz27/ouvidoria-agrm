@@ -33,7 +33,7 @@ export default function Login() {
     <div className="flex min-h-screen">
       {/* Left side - background image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/72814cda-944b-4aa0-9a51-927d6408ecd9.png" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/0207c3d0-a0f0-41a8-86b4-a971115f6aa0.png" />
       </div>
 
       {/* Right side - form */}
