@@ -31,13 +31,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase.from("profiles").select("*").eq("id", userId).single();
-    if (data) setProfile(data as Profile);
+    const { data } = await supabase.from("profiles" as any).select("*").eq("id", userId).single();
+    if (data) {
+      const d = data as any;
+      setProfile({ id: d.id, nome_completo: d.nome_completo, cargo: d.cargo, avatar_url: d.avatar_url });
+    }
   };
 
   const fetchRole = async (userId: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-    setIsAdmin(data?.some((r) => r.role === "admin") ?? false);
+    const { data } = await supabase.from("user_roles" as any).select("role").eq("user_id", userId);
+    const roles = data as any[] | null;
+    setIsAdmin(roles?.some((r) => r.role === "admin") ?? false);
   };
 
   useEffect(() => {

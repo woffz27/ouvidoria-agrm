@@ -1,13 +1,15 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
   const [protocolo, setProtocolo] = useState("");
   const navigate = useNavigate();
+  const { profile, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +18,10 @@ export function Header() {
       setProtocolo("");
     }
   };
+
+  const initials = profile?.nome_completo
+    ? profile.nome_completo.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
+    : "U";
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md">
@@ -45,12 +51,20 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full gradient-primary text-xs font-bold text-primary-foreground">
-            A
+            {initials}
           </div>
           <Badge variant="outline" className="hidden text-[10px] font-mono sm:inline-flex">
             v1.0
           </Badge>
         </div>
+
+        <button
+          onClick={signOut}
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          title="Sair"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
     </header>
   );
