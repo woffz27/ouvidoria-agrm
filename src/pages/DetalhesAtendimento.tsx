@@ -115,7 +115,7 @@ export default function DetalhesAtendimento() {
 
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
           {/* Info Card */}
-          <Card className="lg:col-span-1">
+          <Card className="xl:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">Informações</CardTitle>
             </CardHeader>
