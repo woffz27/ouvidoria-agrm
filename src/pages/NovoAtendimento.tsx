@@ -23,8 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { gerarProtocolo, categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
+import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
+import { useCriarAtendimento } from "@/hooks/use-atendimentos";
 
 const canalIcons: Record<CanalType, React.ReactNode> = {
   site: <Globe className="h-4 w-4" />,
@@ -32,10 +33,20 @@ const canalIcons: Record<CanalType, React.ReactNode> = {
   telefone: <Phone className="h-4 w-4" />,
 };
 
+function gerarProtocolo(): string {
+  const ano = new Date().getFullYear();
+  const num = Math.floor(Math.random() * 999999) + 1;
+  return `${ano}-${String(num).padStart(6, "0")}`;
+}
+
 export default function NovoAtendimento() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [arquivos, setArquivos] = useState<File[]>([]);
+  const [canal, setCanal] = useState<CanalType | "">("");
+  const [categoria, setCategoria] = useState<CategoriaType | "">("");
+  const [tipoProblema, setTipoProblema] = useState<TipoProblemaType | "">("");
+  const criarAtendimento = useCriarAtendimento();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -53,14 +64,36 @@ export default function NovoAtendimento() {
     return <FileText className="h-4 w-4 text-primary" />;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const protocolo = gerarProtocolo();
-    toast({
-      title: "Atendimento criado!",
-      description: `Protocolo: ${protocolo}`,
-    });
-    navigate("/atendimentos");
+
+    try {
+      await criarAtendimento.mutateAsync({
+        protocolo,
+        solicitante: formData.get("solicitante") as string,
+        email: (formData.get("email") as string) || null,
+        telefone: (formData.get("telefone") as string) || null,
+        assunto: formData.get("assunto") as string,
+        descricao: formData.get("descricao") as string,
+        categoria: categoria as CategoriaType,
+        canal: canal as CanalType,
+        tipo_problema: tipoProblema as TipoProblemaType,
+      });
+
+      toast({
+        title: "Atendimento criado!",
+        description: `Protocolo: ${protocolo}`,
+      });
+      navigate("/atendimentos");
+    } catch (error) {
+      toast({
+        title: "Erro ao criar atendimento",
+        description: "Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -82,21 +115,21 @@ export default function NovoAtendimento() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="solicitante">Nome completo *</Label>
-                  <Input id="solicitante" required placeholder="Nome do solicitante" />
+                  <Input id="solicitante" name="solicitante" required placeholder="Nome do solicitante" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" type="email" placeholder="email@exemplo.com" />
+                  <Input id="email" name="email" type="email" placeholder="email@exemplo.com" />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="telefone">Telefone</Label>
-                  <Input id="telefone" placeholder="(84) 99999-0000" />
+                  <Input id="telefone" name="telefone" placeholder="(84) 99999-0000" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="canal">Canal de Atendimento *</Label>
-                  <Select required>
+                  <Select required value={canal} onValueChange={(v) => setCanal(v as CanalType)}>
                     <SelectTrigger id="canal">
                       <SelectValue placeholder="Selecione o canal" />
                     </SelectTrigger>
@@ -124,7 +157,7 @@ export default function NovoAtendimento() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="categoria">Categoria *</Label>
-                  <Select required>
+                  <Select required value={categoria} onValueChange={(v) => setCategoria(v as CategoriaType)}>
                     <SelectTrigger id="categoria">
                       <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
@@ -137,7 +170,7 @@ export default function NovoAtendimento() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tipo_problema">Tipo de Problema *</Label>
-                  <Select required>
+                  <Select required value={tipoProblema} onValueChange={(v) => setTipoProblema(v as TipoProblemaType)}>
                     <SelectTrigger id="tipo_problema">
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
@@ -152,13 +185,14 @@ export default function NovoAtendimento() {
 
               <div className="space-y-2">
                 <Label htmlFor="assunto">Assunto *</Label>
-                <Input id="assunto" required placeholder="Resumo do atendimento" />
+                <Input id="assunto" name="assunto" required placeholder="Resumo do atendimento" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="descricao">Descrição *</Label>
                 <Textarea
                   id="descricao"
+                  name="descricao"
                   required
                   placeholder="Descreva detalhadamente a situação..."
                   className="min-h-[120px]"
@@ -219,7 +253,9 @@ export default function NovoAtendimento() {
             <Button type="button" variant="outline" onClick={() => navigate(-1)}>
               Cancelar
             </Button>
-            <Button type="submit">Registrar Atendimento</Button>
+            <Button type="submit" disabled={criarAtendimento.isPending}>
+              {criarAtendimento.isPending ? "Registrando..." : "Registrar Atendimento"}
+            </Button>
           </div>
         </form>
       </div>

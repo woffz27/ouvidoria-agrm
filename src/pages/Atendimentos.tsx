@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,6 @@ import {
 } from "@/components/ui/table";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
-  mockAtendimentos,
   statusLabels,
   categoriaLabels,
   canalLabels,
@@ -42,6 +42,7 @@ import {
   type TipoProblemaType,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
+import { useAtendimentos } from "@/hooks/use-atendimentos";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -66,8 +67,10 @@ export default function Atendimentos() {
   const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
   const [page, setPage] = useState(1);
 
+  const { data: atendimentos = [], isLoading } = useAtendimentos();
+
   const filtered = useMemo(() => {
-    return mockAtendimentos.filter((a) => {
+    return atendimentos.filter((a) => {
       const matchBusca =
         !busca ||
         a.protocolo.toLowerCase().includes(busca.toLowerCase()) ||
@@ -78,7 +81,7 @@ export default function Atendimentos() {
       const matchTipo = tipoProblemaFilter === "todos" || a.tipo_problema === tipoProblemaFilter;
       return matchBusca && matchStatus && matchCategoria && matchTipo;
     });
-  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter]);
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atendimentos]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -126,13 +129,7 @@ export default function Atendimentos() {
                 className="pl-9 h-9 bg-muted/50 border-transparent"
               />
             </div>
-            <Select
-              value={statusFilter}
-              onValueChange={(v) => {
-                setStatusFilter(v);
-                handleFilterChange();
-              }}
-            >
+            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); handleFilterChange(); }}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
@@ -144,13 +141,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select
-              value={categoriaFilter}
-              onValueChange={(v) => {
-                setCategoriaFilter(v);
-                handleFilterChange();
-              }}
-            >
+            <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); handleFilterChange(); }}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Categoria" />
@@ -162,13 +153,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select
-              value={tipoProblemaFilter}
-              onValueChange={(v) => {
-                setTipoProblemaFilter(v);
-                handleFilterChange();
-              }}
-            >
+            <Select value={tipoProblemaFilter} onValueChange={(v) => { setTipoProblemaFilter(v); handleFilterChange(); }}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Tipo de Problema" />
@@ -186,65 +171,71 @@ export default function Atendimentos() {
         {/* Table */}
         <Card>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginated.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
-                      Nenhum atendimento encontrado.
-                    </TableCell>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
                   </TableRow>
-                ) : (
-                  paginated.map((a) => (
-                    <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
-                      <TableCell>
-                        <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
-                          {a.protocolo}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
-                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                        {a.assunto}
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell">
-                        <Badge variant="outline" className="text-[10px]">
-                          {categoriaLabels[a.categoria]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell">
-                        <Badge variant="outline" className="text-[10px]">
-                          {tipoProblemaLabels[a.tipo_problema]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                        {canalLabels[a.canal]}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                        {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
-                          {statusIcons[a.status]}
-                          {statusLabels[a.status]}
-                        </Badge>
+                </TableHeader>
+                <TableBody>
+                  {paginated.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                        Nenhum atendimento encontrado.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    paginated.map((a) => (
+                      <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
+                        <TableCell>
+                          <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                            {a.protocolo}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
+                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                          {a.assunto}
+                        </TableCell>
+                        <TableCell className="hidden xl:table-cell">
+                          <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                            {categoriaLabels[a.categoria]}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden xl:table-cell">
+                          <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                            {tipoProblemaLabels[a.tipo_problema]}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                          {canalLabels[a.canal]}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                          {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
+                            {statusIcons[a.status]}
+                            {statusLabels[a.status]}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
@@ -255,33 +246,15 @@ export default function Atendimentos() {
               Página {page} de {totalPages}
             </p>
             <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
+              <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === 1} onClick={() => setPage(page - 1)}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Button
-                  key={p}
-                  variant={p === page ? "default" : "outline"}
-                  size="icon"
-                  className="h-8 w-8 text-xs"
-                  onClick={() => setPage(p)}
-                >
+                <Button key={p} variant={p === page ? "default" : "outline"} size="icon" className="h-8 w-8 text-xs" onClick={() => setPage(p)}>
                   {p}
                 </Button>
               ))}
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
+              <Button variant="outline" size="icon" className="h-8 w-8" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
