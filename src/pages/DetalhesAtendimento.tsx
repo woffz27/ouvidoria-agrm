@@ -1,35 +1,22 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
-  ArrowLeft,
-  Clock,
-  CheckCircle2,
-  MessageCircle,
-  AlertCircle,
-  Send,
-  User,
-  Mail,
-  Phone,
-  Globe,
-  Tag,
-  Calendar,
-  Hash,
-  Loader2,
+  ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
+  Send, User, Mail, Phone, Globe, Tag, Calendar, Hash,
+  Loader2, Pencil, Trash2, X, Check, Upload, CalendarClock,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { AppLayout } from "@/components/layout/AppLayout";
-import {
-  statusLabels,
-  categoriaLabels,
-  canalLabels,
-  tipoProblemaLabels,
-} from "@/lib/mock-data";
+import { statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels, type StatusType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import { useAtendimento, useAdicionarComentario } from "@/hooks/use-atendimentos";
+import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, uploadArquivos } from "@/hooks/use-atendimentos";
+import { AnexosList } from "@/components/atendimento/AnexosList";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -49,8 +36,17 @@ export default function DetalhesAtendimento() {
   const { id } = useParams();
   const { toast } = useToast();
   const [novoComentario, setNovoComentario] = useState("");
+  const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [editandoConteudo, setEditandoConteudo] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const comentarioFileRef = useRef<HTMLInputElement>(null);
+
   const { data: atendimento, isLoading } = useAtendimento(id);
   const adicionarComentario = useAdicionarComentario();
+  const editarComentario = useEditarComentario();
+  const excluirComentario = useExcluirComentario();
+  const alterarStatus = useAlterarStatus();
 
   if (isLoading) {
     return (
@@ -80,19 +76,58 @@ export default function DetalhesAtendimento() {
   const handleAddComment = async () => {
     if (!novoComentario.trim()) return;
     try {
+      setUploading(true);
+      let arquivoUrls: string[] = [];
+      if (comentarioArquivos.length > 0) {
+        arquivoUrls = await uploadArquivos(comentarioArquivos);
+      }
       await adicionarComentario.mutateAsync({
         atendimentoId: atendimento.id,
         conteudo: novoComentario,
+        arquivos: arquivoUrls.length > 0 ? arquivoUrls : undefined,
       });
       toast({ title: "Comentário adicionado!", description: "Seu comentário foi registrado." });
       setNovoComentario("");
+      setComentarioArquivos([]);
     } catch {
       toast({ title: "Erro ao adicionar comentário", variant: "destructive" });
+    } finally {
+      setUploading(false);
     }
   };
 
+  const handleEditSave = async (attId: string) => {
+    try {
+      await editarComentario.mutateAsync({ id: attId, conteudo: editandoConteudo, atendimentoId: atendimento.id });
+      toast({ title: "Comentário editado!" });
+      setEditandoId(null);
+    } catch {
+      toast({ title: "Erro ao editar", variant: "destructive" });
+    }
+  };
+
+  const handleDelete = async (attId: string) => {
+    try {
+      await excluirComentario.mutateAsync({ id: attId, atendimentoId: atendimento.id });
+      toast({ title: "Comentário excluído!" });
+    } catch {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
+  };
+
+  const handleStatusChange = async (novoStatus: string) => {
+    try {
+      await alterarStatus.mutateAsync({ atendimentoId: atendimento.id, novoStatus });
+      toast({ title: "Status atualizado!" });
+    } catch {
+      toast({ title: "Erro ao alterar status", variant: "destructive" });
+    }
+  };
+
+  const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
+
   const infoItems = [
-    { icon: <Hash className="h-4 w-4" />, label: "Número de Protocolo", value: atendimento.protocolo, mono: true },
+    { icon: <Hash className="h-4 w-4" />, label: "Protocolo", value: atendimento.protocolo, mono: true },
     { icon: <User className="h-4 w-4" />, label: "Solicitante", value: atendimento.solicitante },
     { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email || "—" },
     { icon: <Phone className="h-4 w-4" />, label: "Telefone", value: atendimento.telefone || "—" },
@@ -119,6 +154,11 @@ export default function DetalhesAtendimento() {
                 {statusIcons[atendimento.status]}
                 {statusLabels[atendimento.status]}
               </Badge>
+              {isAtrasado && (
+                <Badge variant="destructive" className="gap-1 shrink-0">
+                  <CalendarClock className="h-3.5 w-3.5" /> Atrasado
+                </Badge>
+              )}
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
@@ -141,6 +181,37 @@ export default function DetalhesAtendimento() {
                   </div>
                 </div>
               ))}
+
+              {/* Status management */}
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /></div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Alterar Status</p>
+                  <Select value={atendimento.status} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                        <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Prazo */}
+              {atendimento.prazo_resolucao && (
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 text-muted-foreground"><CalendarClock className="h-4 w-4" /></div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Prazo</p>
+                    <p className={`text-sm font-medium ${isAtrasado ? "text-destructive font-semibold" : ""}`}>
+                      {new Date(atendimento.prazo_resolucao).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -151,6 +222,7 @@ export default function DetalhesAtendimento() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm leading-relaxed text-muted-foreground">{atendimento.descricao}</p>
+                <AnexosList arquivos={atendimento.arquivos} />
               </CardContent>
             </Card>
 
@@ -174,8 +246,56 @@ export default function DetalhesAtendimento() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-semibold">{att.usuario}</span>
                             <span className="text-[10px] text-muted-foreground">{new Date(att.data).toLocaleString("pt-BR")}</span>
+                            {att.tipo === "comentario" && (
+                              <div className="flex gap-1 ml-auto">
+                                <button
+                                  onClick={() => { setEditandoId(att.id); setEditandoConteudo(att.conteudo); }}
+                                  className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <button className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Excluir comentário?</AlertDialogTitle>
+                                      <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDelete(att.id)}>Excluir</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            )}
                           </div>
-                          <p className="text-sm text-muted-foreground mt-0.5">{att.conteudo}</p>
+                          {editandoId === att.id ? (
+                            <div className="mt-1 space-y-2">
+                              <Textarea
+                                value={editandoConteudo}
+                                onChange={(e) => setEditandoConteudo(e.target.value)}
+                                className="min-h-[60px] text-sm"
+                              />
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={() => handleEditSave(att.id)} disabled={editarComentario.isPending}>
+                                  <Check className="h-3 w-3" /> Salvar
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-7 gap-1 text-xs" onClick={() => setEditandoId(null)}>
+                                  <X className="h-3 w-3" /> Cancelar
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm text-muted-foreground mt-0.5">{att.conteudo}</p>
+                              <AnexosList arquivos={att.arquivos} />
+                            </>
+                          )}
                         </div>
                       </div>
                       {i < (atendimento.atualizacoes?.length || 0) - 1 && <Separator className="my-3 ml-3.5" />}
@@ -191,14 +311,36 @@ export default function DetalhesAtendimento() {
                     onChange={(e) => setNovoComentario(e.target.value)}
                     className="min-h-[80px] mb-3"
                   />
-                  <Button
-                    size="sm"
-                    className="gap-1.5"
-                    onClick={handleAddComment}
-                    disabled={!novoComentario.trim() || adicionarComentario.isPending}
-                  >
-                    <Send className="h-3.5 w-3.5" /> {adicionarComentario.isPending ? "Enviando..." : "Enviar"}
-                  </Button>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Button
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={handleAddComment}
+                      disabled={!novoComentario.trim() || adicionarComentario.isPending || uploading}
+                    >
+                      <Send className="h-3.5 w-3.5" /> {uploading ? "Enviando..." : adicionarComentario.isPending ? "Enviando..." : "Enviar"}
+                    </Button>
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      <Upload className="h-3.5 w-3.5" />
+                      Anexar arquivo
+                      <input
+                        ref={comentarioFileRef}
+                        type="file"
+                        multiple
+                        accept="image/*,video/*,.pdf,.doc,.docx"
+                        onChange={(e) => {
+                          if (e.target.files) setComentarioArquivos(prev => [...prev, ...Array.from(e.target.files!)]);
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                    {comentarioArquivos.length > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        {comentarioArquivos.length} arquivo{comentarioArquivos.length > 1 ? "s" : ""} selecionado{comentarioArquivos.length > 1 ? "s" : ""}
+                        <button onClick={() => setComentarioArquivos([])} className="ml-1 text-destructive hover:underline">limpar</button>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

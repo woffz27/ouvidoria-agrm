@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   Globe,
   MessageSquare,
@@ -9,12 +11,16 @@ import {
   FileText,
   ImageIcon,
   Video,
+  CalendarIcon,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -25,7 +31,8 @@ import {
 import { AppLayout } from "@/components/layout/AppLayout";
 import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import { useCriarAtendimento } from "@/hooks/use-atendimentos";
+import { useCriarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
+import { cn } from "@/lib/utils";
 
 const canalIcons: Record<CanalType, React.ReactNode> = {
   site: <Globe className="h-4 w-4" />,
@@ -42,10 +49,13 @@ function gerarProtocolo(): string {
 export default function NovoAtendimento() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [arquivos, setArquivos] = useState<File[]>([]);
   const [canal, setCanal] = useState<CanalType | "">("");
   const [categoria, setCategoria] = useState<CategoriaType | "">("");
   const [tipoProblema, setTipoProblema] = useState<TipoProblemaType | "">("");
+  const [prazo, setPrazo] = useState<Date>();
+  const [uploading, setUploading] = useState(false);
   const criarAtendimento = useCriarAtendimento();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +95,12 @@ export default function NovoAtendimento() {
     const protocolo = gerarProtocolo();
 
     try {
+      setUploading(true);
+      let arquivoUrls: string[] = [];
+      if (arquivos.length > 0) {
+        arquivoUrls = await uploadArquivos(arquivos);
+      }
+
       await criarAtendimento.mutateAsync({
         protocolo,
         solicitante: formData.get("solicitante") as string,
@@ -95,6 +111,8 @@ export default function NovoAtendimento() {
         categoria: categoria as CategoriaType,
         canal: canal as CanalType,
         tipo_problema: tipoProblema as TipoProblemaType,
+        arquivos: arquivoUrls.length > 0 ? arquivoUrls : null,
+        prazo_resolucao: prazo ? prazo.toISOString() : null,
       });
 
       toast({
@@ -109,8 +127,12 @@ export default function NovoAtendimento() {
         description: error?.message || "Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setUploading(false);
     }
   };
+
+  const isSubmitting = criarAtendimento.isPending || uploading;
 
   return (
     <AppLayout>
@@ -215,26 +237,59 @@ export default function NovoAtendimento() {
                 />
               </div>
 
-              {/* File upload */}
+              {/* Prazo de resolução */}
+              <div className="space-y-2">
+                <Label>Prazo para Resolução</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !prazo && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {prazo ? format(prazo, "PPP", { locale: ptBR }) : "Selecione uma data"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={prazo}
+                      onSelect={setPrazo}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* File upload - fully clickable area */}
               <div className="space-y-3">
                 <Label>Anexos (fotos, vídeos, documentos)</Label>
-                <div className="rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/40 hover:bg-muted/30">
-                  <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                <label
+                  htmlFor="file-upload-input"
+                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/40 hover:bg-muted/30 cursor-pointer"
+                >
+                  <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground mb-1">
                     Arraste arquivos ou clique para selecionar
                   </p>
                   <p className="text-xs text-muted-foreground/60">
-                    Imagens, vídeos e documentos (máx. 10MB cada)
+                    Imagens, vídeos e documentos (máx. 20MB cada)
                   </p>
-                  <Input
+                  <input
+                    id="file-upload-input"
+                    ref={fileInputRef}
                     type="file"
                     multiple
                     accept="image/*,video/*,.pdf,.doc,.docx"
                     onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    style={{ position: "relative", marginTop: "8px" }}
+                    className="hidden"
                   />
-                </div>
+                </label>
 
                 {arquivos.length > 0 && (
                   <div className="space-y-2">
@@ -269,8 +324,12 @@ export default function NovoAtendimento() {
             <Button type="button" variant="outline" onClick={() => navigate(-1)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={criarAtendimento.isPending}>
-              {criarAtendimento.isPending ? "Registrando..." : "Registrar Atendimento"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Registrando...</>
+              ) : (
+                "Registrar Atendimento"
+              )}
             </Button>
           </div>
         </form>
