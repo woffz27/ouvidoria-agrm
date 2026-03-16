@@ -219,11 +219,9 @@ export default function Atendimentos() {
                           </TableCell>
                           <TableCell>
                             <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
-                              <SelectTrigger className="h-7 w-auto border-0 bg-transparent p-0 focus:ring-0">
-                                <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
-                                  {statusIcons[a.status]}
-                                  {statusLabels[a.status]}
-                                </Badge>
+                              <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                {statusIcons[a.status]}
+                                <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 {(Object.keys(statusLabels) as StatusType[]).map((s) => (
