@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import {
   ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
