@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      atendimentos: {
+        Row: {
+          arquivos: string[] | null
+          assunto: string
+          canal: Database["public"]["Enums"]["canal_type"]
+          categoria: Database["public"]["Enums"]["categoria_type"]
+          data_abertura: string
+          data_atualizacao: string
+          descricao: string
+          email: string | null
+          id: string
+          protocolo: string
+          solicitante: string
+          status: Database["public"]["Enums"]["status_type"]
+          telefone: string | null
+          tipo_problema: Database["public"]["Enums"]["tipo_problema_type"]
+        }
+        Insert: {
+          arquivos?: string[] | null
+          assunto: string
+          canal: Database["public"]["Enums"]["canal_type"]
+          categoria: Database["public"]["Enums"]["categoria_type"]
+          data_abertura?: string
+          data_atualizacao?: string
+          descricao: string
+          email?: string | null
+          id?: string
+          protocolo: string
+          solicitante: string
+          status?: Database["public"]["Enums"]["status_type"]
+          telefone?: string | null
+          tipo_problema?: Database["public"]["Enums"]["tipo_problema_type"]
+        }
+        Update: {
+          arquivos?: string[] | null
+          assunto?: string
+          canal?: Database["public"]["Enums"]["canal_type"]
+          categoria?: Database["public"]["Enums"]["categoria_type"]
+          data_abertura?: string
+          data_atualizacao?: string
+          descricao?: string
+          email?: string | null
+          id?: string
+          protocolo?: string
+          solicitante?: string
+          status?: Database["public"]["Enums"]["status_type"]
+          telefone?: string | null
+          tipo_problema?: Database["public"]["Enums"]["tipo_problema_type"]
+        }
+        Relationships: []
+      }
+      atualizacoes: {
+        Row: {
+          atendimento_id: string
+          conteudo: string
+          data: string
+          id: string
+          tipo: Database["public"]["Enums"]["atualizacao_tipo"]
+          usuario: string
+        }
+        Insert: {
+          atendimento_id: string
+          conteudo: string
+          data?: string
+          id?: string
+          tipo?: Database["public"]["Enums"]["atualizacao_tipo"]
+          usuario: string
+        }
+        Update: {
+          atendimento_id?: string
+          conteudo?: string
+          data?: string
+          id?: string
+          tipo?: Database["public"]["Enums"]["atualizacao_tipo"]
+          usuario?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atualizacoes_atendimento_id_fkey"
+            columns: ["atendimento_id"]
+            isOneToOne: false
+            referencedRelation: "atendimentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +108,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      atualizacao_tipo: "comentario" | "status_change"
+      canal_type: "site" | "whatsapp" | "telefone"
+      categoria_type: "reclamacao" | "sugestao" | "elogio" | "solicitacao"
+      status_type: "aberto" | "em_andamento" | "respondido" | "finalizado"
+      tipo_problema_type:
+        | "extravasamento_esgoto"
+        | "vazamento_agua"
+        | "pavimentacao"
+        | "outros"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +243,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      atualizacao_tipo: ["comentario", "status_change"],
+      canal_type: ["site", "whatsapp", "telefone"],
+      categoria_type: ["reclamacao", "sugestao", "elogio", "solicitacao"],
+      status_type: ["aberto", "em_andamento", "respondido", "finalizado"],
+      tipo_problema_type: [
+        "extravasamento_esgoto",
+        "vazamento_agua",
+        "pavimentacao",
+        "outros",
+      ],
+    },
   },
 } as const
