@@ -192,8 +192,8 @@ export default function Atendimentos() {
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Categoria</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Tipo</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
