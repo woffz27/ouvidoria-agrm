@@ -66,6 +66,21 @@ export default function NovoAtendimento() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const camposFaltando: string[] = [];
+    if (!canal) camposFaltando.push("Canal de Atendimento");
+    if (!categoria) camposFaltando.push("Categoria");
+    if (!tipoProblema) camposFaltando.push("Tipo de Problema");
+
+    if (camposFaltando.length > 0) {
+      toast({
+        title: "Campos obrigatórios",
+        description: `Preencha: ${camposFaltando.join(", ")}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
     const protocolo = gerarProtocolo();
 
@@ -87,10 +102,11 @@ export default function NovoAtendimento() {
         description: `Protocolo: ${protocolo}`,
       });
       navigate("/atendimentos");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erro ao criar atendimento:", error);
       toast({
         title: "Erro ao criar atendimento",
-        description: "Tente novamente.",
+        description: error?.message || "Tente novamente.",
         variant: "destructive",
       });
     }
