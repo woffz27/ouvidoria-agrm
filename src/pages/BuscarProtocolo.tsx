@@ -1,27 +1,38 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { mockAtendimentos, statusLabels, categoriaLabels, canalLabels } from "@/lib/mock-data";
+import { statusLabels, categoriaLabels, canalLabels } from "@/lib/mock-data";
+import { supabase } from "@/integrations/supabase/client";
+import type { Atendimento } from "@/hooks/use-atendimentos";
 
 export default function BuscarProtocolo() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [busca, setBusca] = useState(initialQuery);
-  const [resultado, setResultado] = useState(
-    initialQuery ? mockAtendimentos.find((a) => a.protocolo === initialQuery) : undefined
-  );
-  const [buscou, setBuscou] = useState(!!initialQuery);
+  const [resultado, setResultado] = useState<Atendimento | null>(null);
+  const [buscou, setBuscou] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const found = mockAtendimentos.find((a) => a.protocolo === busca.trim());
-    setResultado(found);
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from("atendimentos")
+        .select("*")
+        .eq("protocolo", busca.trim())
+        .maybeSingle();
+      setResultado(data);
+    } catch {
+      setResultado(null);
+    }
     setBuscou(true);
+    setLoading(false);
   };
 
   return (
@@ -44,10 +55,12 @@ export default function BuscarProtocolo() {
               className="pl-9 font-mono"
             />
           </div>
-          <Button type="submit">Buscar</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buscar"}
+          </Button>
         </form>
 
-        {buscou && !resultado && (
+        {buscou && !resultado && !loading && (
           <Card className="border-destructive/30">
             <CardContent className="flex items-center gap-3 py-8 justify-center">
               <AlertCircle className="h-5 w-5 text-destructive" />
@@ -92,9 +105,7 @@ export default function BuscarProtocolo() {
                 </div>
               </div>
               <Link to={`/atendimento/${resultado.id}`}>
-                <Button size="sm" className="w-full mt-2">
-                  Ver Detalhes Completos
-                </Button>
+                <Button size="sm" className="w-full mt-2">Ver Detalhes Completos</Button>
               </Link>
             </CardContent>
           </Card>

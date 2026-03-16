@@ -14,6 +14,7 @@ import {
   Tag,
   Calendar,
   Hash,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,13 +23,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
-  mockAtendimentos,
   statusLabels,
   categoriaLabels,
   canalLabels,
   tipoProblemaLabels,
 } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
+import { useAtendimento, useAdicionarComentario } from "@/hooks/use-atendimentos";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -48,8 +49,18 @@ export default function DetalhesAtendimento() {
   const { id } = useParams();
   const { toast } = useToast();
   const [novoComentario, setNovoComentario] = useState("");
+  const { data: atendimento, isLoading } = useAtendimento(id);
+  const adicionarComentario = useAdicionarComentario();
 
-  const atendimento = mockAtendimentos.find((a) => a.id === id);
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (!atendimento) {
     return (
@@ -57,9 +68,7 @@ export default function DetalhesAtendimento() {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
           <h2 className="text-lg font-semibold">Atendimento não encontrado</h2>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">
-            O atendimento solicitado não existe.
-          </p>
+          <p className="text-sm text-muted-foreground mt-1 mb-4">O atendimento solicitado não existe.</p>
           <Link to="/atendimentos">
             <Button variant="outline">Voltar para listagem</Button>
           </Link>
@@ -68,17 +77,25 @@ export default function DetalhesAtendimento() {
     );
   }
 
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (!novoComentario.trim()) return;
-    toast({ title: "Comentário adicionado!", description: "Seu comentário foi registrado." });
-    setNovoComentario("");
+    try {
+      await adicionarComentario.mutateAsync({
+        atendimentoId: atendimento.id,
+        conteudo: novoComentario,
+      });
+      toast({ title: "Comentário adicionado!", description: "Seu comentário foi registrado." });
+      setNovoComentario("");
+    } catch {
+      toast({ title: "Erro ao adicionar comentário", variant: "destructive" });
+    }
   };
 
   const infoItems = [
     { icon: <Hash className="h-4 w-4" />, label: "Número de Protocolo", value: atendimento.protocolo, mono: true },
     { icon: <User className="h-4 w-4" />, label: "Solicitante", value: atendimento.solicitante },
-    { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email },
-    { icon: <Phone className="h-4 w-4" />, label: "Telefone", value: atendimento.telefone },
+    { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email || "—" },
+    { icon: <Phone className="h-4 w-4" />, label: "Telefone", value: atendimento.telefone || "—" },
     { icon: <Globe className="h-4 w-4" />, label: "Canal", value: canalLabels[atendimento.canal] },
     { icon: <Tag className="h-4 w-4" />, label: "Categoria", value: categoriaLabels[atendimento.categoria] },
     { icon: <Tag className="h-4 w-4" />, label: "Tipo de Problema", value: tipoProblemaLabels[atendimento.tipo_problema] },
@@ -89,7 +106,6 @@ export default function DetalhesAtendimento() {
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Link to="/atendimentos">
             <Button variant="ghost" size="sm" className="gap-1.5">
@@ -105,16 +121,12 @@ export default function DetalhesAtendimento() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Protocolo{" "}
-              <span className="font-mono font-semibold text-primary">
-                {atendimento.protocolo}
-              </span>
+              Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
             </p>
           </div>
         </div>
 
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
-          {/* Info Card */}
           <Card className="xl:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">Informações</CardTitle>
@@ -124,81 +136,55 @@ export default function DetalhesAtendimento() {
                 <div key={item.label} className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                      {item.label}
-                    </p>
-                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>
-                      {item.value}
-                    </p>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{item.label}</p>
+                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
                   </div>
                 </div>
               ))}
             </CardContent>
           </Card>
 
-          {/* Main content */}
           <div className="xl:col-span-2 space-y-6">
-            {/* Description */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold">Descrição</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {atendimento.descricao}
-                </p>
+                <p className="text-sm leading-relaxed text-muted-foreground">{atendimento.descricao}</p>
               </CardContent>
             </Card>
 
-            {/* Timeline */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold">
-                  Histórico ({atendimento.atualizacoes.length})
+                  Histórico ({atendimento.atualizacoes?.length || 0})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {atendimento.atualizacoes.map((att, i) => (
+                  {atendimento.atualizacoes?.map((att, i) => (
                     <div key={att.id}>
                       <div className="flex items-start gap-3">
-                        <div
-                          className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                            att.tipo === "status_change"
-                              ? "bg-accent/20 text-accent"
-                              : "bg-primary/10 text-primary"
-                          }`}
-                        >
-                          {att.tipo === "status_change" ? (
-                            <Clock className="h-3.5 w-3.5" />
-                          ) : (
-                            <MessageCircle className="h-3.5 w-3.5" />
-                          )}
+                        <div className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                          att.tipo === "status_change" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"
+                        }`}>
+                          {att.tipo === "status_change" ? <Clock className="h-3.5 w-3.5" /> : <MessageCircle className="h-3.5 w-3.5" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-semibold">{att.usuario}</span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {new Date(att.data).toLocaleString("pt-BR")}
-                            </span>
+                            <span className="text-[10px] text-muted-foreground">{new Date(att.data).toLocaleString("pt-BR")}</span>
                           </div>
-                          <p className="text-sm text-muted-foreground mt-0.5">
-                            {att.conteudo}
-                          </p>
+                          <p className="text-sm text-muted-foreground mt-0.5">{att.conteudo}</p>
                         </div>
                       </div>
-                      {i < atendimento.atualizacoes.length - 1 && (
-                        <Separator className="my-3 ml-3.5" />
-                      )}
+                      {i < (atendimento.atualizacoes?.length || 0) - 1 && <Separator className="my-3 ml-3.5" />}
                     </div>
                   ))}
                 </div>
 
-                {/* Add comment */}
                 <div className="mt-6 pt-4 border-t">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Adicionar Comentário
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adicionar Comentário</p>
                   <Textarea
                     placeholder="Escreva sua resposta ou comentário..."
                     value={novoComentario}
@@ -209,9 +195,9 @@ export default function DetalhesAtendimento() {
                     size="sm"
                     className="gap-1.5"
                     onClick={handleAddComment}
-                    disabled={!novoComentario.trim()}
+                    disabled={!novoComentario.trim() || adicionarComentario.isPending}
                   >
-                    <Send className="h-3.5 w-3.5" /> Enviar
+                    <Send className="h-3.5 w-3.5" /> {adicionarComentario.isPending ? "Enviando..." : "Enviar"}
                   </Button>
                 </div>
               </CardContent>
