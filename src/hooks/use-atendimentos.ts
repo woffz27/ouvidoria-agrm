@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -11,6 +12,26 @@ export type AtendimentoComAtualizacoes = Atendimento & {
 };
 
 export function useAtendimentos() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("atendimentos-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "atendimentos" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["atendimentos"] });
+          queryClient.invalidateQueries({ queryKey: ["estatisticas"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ["atendimentos"],
     queryFn: async () => {
@@ -43,7 +64,6 @@ export function useAtendimento(id: string | undefined) {
 }
 
 export function useBuscarProtocolo() {
-  const queryClient = useQueryClient();
   return {
     buscar: async (protocolo: string) => {
       const { data, error } = await supabase
@@ -68,7 +88,6 @@ export function useCriarAtendimento() {
         .single();
       if (error) throw error;
 
-      // Create initial atualizacao
       const canalLabel = atendimento.canal === "site" ? "Site" : atendimento.canal === "whatsapp" ? "WhatsApp" : "Telefone";
       await supabase.from("atualizacoes").insert({
         atendimento_id: data.id,
@@ -89,7 +108,7 @@ export function useCriarAtendimento() {
 export function useAdicionarComentario() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ atendimentoId, conteudo }: { atendimentoId: string; conteudo: string }) => {
+    mutationFn: async ({ atendimentoId, conteudo, arquivos }: { atendimentoId: string; conteudo: string; arquivos?: string[] }) => {
       const { data, error } = await supabase
         .from("atualizacoes")
         .insert({
@@ -97,6 +116,7 @@ export function useAdicionarComentario() {
           usuario: "Atendente",
           conteudo,
           tipo: "comentario",
+          arquivos: arquivos || null,
         })
         .select()
         .single();
@@ -110,11 +130,91 @@ export function useAdicionarComentario() {
   });
 }
 
+export function useEditarComentario() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, conteudo, atendimentoId }: { id: string; conteudo: string; atendimentoId: string }) => {
+      const { error } = await supabase
+        .from("atualizacoes")
+        .update({ conteudo })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.atendimentoId] });
+    },
+  });
+}
+
+export function useExcluirComentario() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, atendimentoId }: { id: string; atendimentoId: string }) => {
+      const { error } = await supabase
+        .from("atualizacoes")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.atendimentoId] });
+    },
+  });
+}
+
+export function useAlterarStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ atendimentoId, novoStatus }: { atendimentoId: string; novoStatus: string }) => {
+      const { error: updateError } = await supabase
+        .from("atendimentos")
+        .update({ status: novoStatus as any })
+        .eq("id", atendimentoId);
+      if (updateError) throw updateError;
+
+      const statusLabels: Record<string, string> = {
+        aberto: "Aberto",
+        em_andamento: "Em Andamento",
+        respondido: "Respondido",
+        finalizado: "Finalizado",
+      };
+
+      await supabase.from("atualizacoes").insert({
+        atendimento_id: atendimentoId,
+        usuario: "Sistema",
+        conteudo: `Status alterado para ${statusLabels[novoStatus] || novoStatus}`,
+        tipo: "status_change",
+      });
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.atendimentoId] });
+      queryClient.invalidateQueries({ queryKey: ["atendimentos"] });
+      queryClient.invalidateQueries({ queryKey: ["estatisticas"] });
+    },
+  });
+}
+
+export async function uploadArquivos(files: File[]): Promise<string[]> {
+  const urls: string[] = [];
+  for (const file of files) {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `uploads/${fileName}`;
+
+    const { error } = await supabase.storage.from("anexos").upload(filePath, file);
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage.from("anexos").getPublicUrl(filePath);
+    urls.push(urlData.publicUrl);
+  }
+  return urls;
+}
+
 export function useEstatisticas() {
   return useQuery({
     queryKey: ["estatisticas"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("atendimentos").select("status, categoria, canal, tipo_problema");
+      const { data, error } = await supabase.from("atendimentos").select("status, categoria, canal, tipo_problema, prazo_resolucao");
       if (error) throw error;
 
       const total = data.length;
@@ -122,6 +222,9 @@ export function useEstatisticas() {
       const emAndamento = data.filter((a) => a.status === "em_andamento").length;
       const respondidos = data.filter((a) => a.status === "respondido").length;
       const finalizados = data.filter((a) => a.status === "finalizado").length;
+      const atrasados = data.filter(
+        (a) => a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado"
+      ).length;
 
       const porCategoria = {
         reclamacao: data.filter((a) => a.categoria === "reclamacao").length,
@@ -143,7 +246,7 @@ export function useEstatisticas() {
         outros: data.filter((a) => a.tipo_problema === "outros").length,
       };
 
-      return { total, abertos, emAndamento, respondidos, finalizados, porCategoria, porCanal, porTipoProblema };
+      return { total, abertos, emAndamento, respondidos, finalizados, atrasados, porCategoria, porCanal, porTipoProblema };
     },
   });
 }

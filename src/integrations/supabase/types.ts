@@ -25,6 +25,7 @@ export type Database = {
           descricao: string
           email: string | null
           id: string
+          prazo_resolucao: string | null
           protocolo: string
           solicitante: string
           status: Database["public"]["Enums"]["status_type"]
@@ -41,6 +42,7 @@ export type Database = {
           descricao: string
           email?: string | null
           id?: string
+          prazo_resolucao?: string | null
           protocolo: string
           solicitante: string
           status?: Database["public"]["Enums"]["status_type"]
@@ -57,6 +59,7 @@ export type Database = {
           descricao?: string
           email?: string | null
           id?: string
+          prazo_resolucao?: string | null
           protocolo?: string
           solicitante?: string
           status?: Database["public"]["Enums"]["status_type"]
@@ -67,6 +70,7 @@ export type Database = {
       }
       atualizacoes: {
         Row: {
+          arquivos: string[] | null
           atendimento_id: string
           conteudo: string
           data: string
@@ -75,6 +79,7 @@ export type Database = {
           usuario: string
         }
         Insert: {
+          arquivos?: string[] | null
           atendimento_id: string
           conteudo: string
           data?: string
@@ -83,6 +88,7 @@ export type Database = {
           usuario: string
         }
         Update: {
+          arquivos?: string[] | null
           atendimento_id?: string
           conteudo?: string
           data?: string

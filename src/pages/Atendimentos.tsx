@@ -1,48 +1,22 @@
 import { useState, useMemo } from "react";
 import {
-  FileText,
-  Search,
-  Filter,
-  AlertCircle,
-  Clock,
-  MessageCircle,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Loader2,
+  FileText, Search, Filter, AlertCircle, Clock, MessageCircle,
+  CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
-  statusLabels,
-  categoriaLabels,
-  canalLabels,
-  tipoProblemaLabels,
-  type StatusType,
-  type CategoriaType,
-  type TipoProblemaType,
+  statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels,
+  type StatusType, type CategoriaType, type TipoProblemaType,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
-import { useAtendimentos } from "@/hooks/use-atendimentos";
+import { useAtendimentos, useAlterarStatus } from "@/hooks/use-atendimentos";
+import { useToast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -65,9 +39,12 @@ export default function Atendimentos() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
+  const [atrasadosFilter, setAtrasadosFilter] = useState(false);
   const [page, setPage] = useState(1);
+  const { toast } = useToast();
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
+  const alterarStatus = useAlterarStatus();
 
   const filtered = useMemo(() => {
     return atendimentos.filter((a) => {
@@ -79,15 +56,23 @@ export default function Atendimentos() {
       const matchStatus = statusFilter === "todos" || a.status === statusFilter;
       const matchCategoria = categoriaFilter === "todos" || a.categoria === categoriaFilter;
       const matchTipo = tipoProblemaFilter === "todos" || a.tipo_problema === tipoProblemaFilter;
-      return matchBusca && matchStatus && matchCategoria && matchTipo;
+      const matchAtrasados = !atrasadosFilter || (a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado");
+      return matchBusca && matchStatus && matchCategoria && matchTipo && matchAtrasados;
     });
-  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atendimentos]);
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atrasadosFilter, atendimentos]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-  const handleFilterChange = () => {
-    setPage(1);
+  const handleFilterChange = () => setPage(1);
+
+  const handleInlineStatusChange = async (atendimentoId: string, novoStatus: string) => {
+    try {
+      await alterarStatus.mutateAsync({ atendimentoId, novoStatus });
+      toast({ title: "Status atualizado!" });
+    } catch {
+      toast({ title: "Erro ao alterar status", variant: "destructive" });
+    }
   };
 
   return (
@@ -102,13 +87,11 @@ export default function Atendimentos() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-1.5">
-              <Download className="h-4 w-4" />
-              Exportar PDF
+              <Download className="h-4 w-4" /> Exportar PDF
             </Button>
             <Link to="/novo-atendimento">
               <Button size="sm" className="gap-1.5">
-                <FileText className="h-4 w-4" />
-                Novo
+                <FileText className="h-4 w-4" /> Novo
               </Button>
             </Link>
           </div>
@@ -116,16 +99,13 @@ export default function Atendimentos() {
 
         {/* Filters */}
         <Card>
-          <CardContent className="flex flex-col sm:flex-row gap-3 p-4">
-            <div className="relative flex-1">
+          <CardContent className="flex flex-col sm:flex-row gap-3 p-4 flex-wrap">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Buscar por protocolo, solicitante ou assunto..."
                 value={busca}
-                onChange={(e) => {
-                  setBusca(e.target.value);
-                  handleFilterChange();
-                }}
+                onChange={(e) => { setBusca(e.target.value); handleFilterChange(); }}
                 className="pl-9 h-9 bg-muted/50 border-transparent"
               />
             </div>
@@ -165,6 +145,14 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              variant={atrasadosFilter ? "destructive" : "outline"}
+              size="sm"
+              className="gap-1.5 h-9"
+              onClick={() => { setAtrasadosFilter(!atrasadosFilter); handleFilterChange(); }}
+            >
+              <CalendarClock className="h-3.5 w-3.5" /> Atrasados
+            </Button>
           </CardContent>
         </Card>
 
@@ -197,41 +185,54 @@ export default function Atendimentos() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginated.map((a) => (
-                      <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
-                        <TableCell>
-                          <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
-                            {a.protocolo}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                          {a.assunto}
-                        </TableCell>
-                        <TableCell className="hidden xl:table-cell">
-                          <span className="text-[10px] border rounded-md px-1.5 py-0.5">
-                            {categoriaLabels[a.categoria]}
-                          </span>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-cell">
-                          <span className="text-[10px] border rounded-md px-1.5 py-0.5">
-                            {tipoProblemaLabels[a.tipo_problema]}
-                          </span>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                          {canalLabels[a.canal]}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                          {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
-                            {statusIcons[a.status]}
-                            {statusLabels[a.status]}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))
+                    paginated.map((a) => {
+                      const isAtrasado = a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado";
+                      return (
+                        <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                                {a.protocolo}
+                              </Link>
+                              {isAtrasado && <CalendarClock className="h-3.5 w-3.5 text-destructive" />}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
+                          <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                            {a.assunto}
+                          </TableCell>
+                          <TableCell className="hidden xl:table-cell">
+                            <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                              {categoriaLabels[a.categoria]}
+                            </span>
+                          </TableCell>
+                          <TableCell className="hidden xl:table-cell">
+                            <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                              {tipoProblemaLabels[a.tipo_problema]}
+                            </span>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                            {canalLabels[a.canal]}
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                            {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
+                          </TableCell>
+                          <TableCell>
+                            <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                              <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                {statusIcons[a.status]}
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                  <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
