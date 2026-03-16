@@ -48,6 +48,7 @@ export default function DetalhesAtendimento() {
   const editarComentario = useEditarComentario();
   const excluirComentario = useExcluirComentario();
   const alterarStatus = useAlterarStatus();
+  const excluirAtendimento = useExcluirAtendimento();
 
   if (isLoading) {
     return (
