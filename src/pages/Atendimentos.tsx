@@ -46,6 +46,16 @@ export default function Atendimentos() {
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
+  const excluirAtendimento = useExcluirAtendimento();
+
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirAtendimento.mutateAsync(id);
+      toast({ title: "Atendimento excluído!" });
+    } catch {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
+  };
 
   const filtered = useMemo(() => {
     return atendimentos.filter((a) => {
