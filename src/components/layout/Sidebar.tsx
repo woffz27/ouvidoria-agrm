@@ -3,9 +3,8 @@ import {
   FileText,
   PlusCircle,
   Search,
-  Settings,
-  Shield } from
-"lucide-react";
+  LogOut,
+} from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -19,15 +18,17 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-  useSidebar } from
-"@/components/ui/sidebar";
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+import agrmIcon from "@/assets/agrm-icon.ico";
 
 const menuItems = [
-{ title: "Dashboard", url: "/", icon: LayoutDashboard },
-{ title: "Atendimentos", url: "/atendimentos", icon: FileText },
-{ title: "Novo Atendimento", url: "/novo-atendimento", icon: PlusCircle },
-{ title: "Buscar Protocolo", url: "/buscar", icon: Search }];
-
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Atendimentos", url: "/atendimentos", icon: FileText },
+  { title: "Novo Atendimento", url: "/novo-atendimento", icon: PlusCircle },
+  { title: "Buscar Protocolo", url: "/buscar", icon: Search },
+];
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -35,16 +36,17 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
+  const { profile, signOut } = useAuth();
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#01234c]">
-            <Shield className="h-5 w-5 text-sidebar-primary-foreground" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+            <img src={agrmIcon} alt="AGRM" className="h-6 w-6 object-contain" />
           </div>
-          {!collapsed &&
-          <div className="animate-fade-in">
+          {!collapsed && (
+            <div className="animate-fade-in">
               <h1 className="text-sm font-bold tracking-wide text-sidebar-accent-foreground">
                 AGRM
               </h1>
@@ -52,7 +54,7 @@ export function AppSidebar() {
                 Ouvidoria
               </p>
             </div>
-          }
+          )}
         </div>
       </SidebarHeader>
 
@@ -63,25 +65,25 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) =>
-              <SidebarMenuItem key={item.title}>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                  asChild
-                  isActive={isActive(item.url)}
-                  tooltip={item.title}>
-                  
+                    asChild
+                    isActive={isActive(item.url)}
+                    tooltip={item.title}
+                  >
                     <NavLink
-                    to={item.url}
-                    end
-                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
-                    
+                      to={item.url}
+                      end
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold"
+                    >
                       <item.icon className="h-4 w-4 shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              )}
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -89,21 +91,30 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent">
-            <Settings className="h-4 w-4 text-sidebar-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent text-xs font-bold text-sidebar-accent-foreground">
+            {profile?.nome_completo?.charAt(0)?.toUpperCase() || "U"}
           </div>
-          {!collapsed &&
-          <div className="animate-fade-in">
-              <p className="text-xs font-medium text-sidebar-accent-foreground">
-                Administrador
+          {!collapsed && (
+            <div className="animate-fade-in flex-1 min-w-0">
+              <p className="text-xs font-medium text-sidebar-accent-foreground truncate">
+                {profile?.nome_completo || "Usuário"}
               </p>
-              <p className="text-[10px] text-sidebar-foreground/50">
-                admin@agrm.gov.br
+              <p className="text-[10px] text-sidebar-foreground/50 truncate">
+                {profile?.cargo || "—"}
               </p>
             </div>
-          }
+          )}
+          {!collapsed && (
+            <button
+              onClick={signOut}
+              className="rounded-lg p-1.5 text-sidebar-foreground/50 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              title="Sair"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </SidebarFooter>
-    </Sidebar>);
-
+    </Sidebar>
+  );
 }
