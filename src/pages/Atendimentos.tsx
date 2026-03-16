@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   FileText, Search, Filter, AlertCircle, Clock, MessageCircle,
-  CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock,
+  CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
