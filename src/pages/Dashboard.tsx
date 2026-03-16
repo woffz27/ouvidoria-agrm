@@ -120,7 +120,7 @@ export default function Dashboard() {
         </div>
 
         {/* Secondary stats */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
           {/* By category */}
           <Card>
             <CardHeader className="pb-3">

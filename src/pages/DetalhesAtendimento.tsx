@@ -137,7 +137,7 @@ export default function DetalhesAtendimento() {
           </Card>
 
           {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             {/* Description */}
             <Card>
               <CardHeader className="pb-3">

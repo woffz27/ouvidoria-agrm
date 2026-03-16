@@ -23,7 +23,7 @@ export function Header() {
 
       <div className="h-5 w-px bg-border" />
 
-      <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
+      <form onSubmit={handleSearch} className="relative flex-1 min-w-0 max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Buscar por protocolo (ex: 2025-000001)"

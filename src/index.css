@@ -107,6 +107,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   /* Custom scrollbar */

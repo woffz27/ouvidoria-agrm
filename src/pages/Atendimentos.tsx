@@ -218,12 +218,12 @@ export default function Atendimentos() {
                       <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
                         {a.assunto}
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      <TableCell className="hidden xl:table-cell">
                         <Badge variant="outline" className="text-[10px]">
                           {categoriaLabels[a.categoria]}
                         </Badge>
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      <TableCell className="hidden xl:table-cell">
                         <Badge variant="outline" className="text-[10px]">
                           {tipoProblemaLabels[a.tipo_problema]}
                         </Badge>
