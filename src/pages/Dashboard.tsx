@@ -27,6 +27,7 @@ import {
   statusLabels,
   categoriaLabels,
   canalLabels,
+  tipoProblemaLabels,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
 
