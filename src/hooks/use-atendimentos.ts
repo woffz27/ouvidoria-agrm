@@ -162,6 +162,22 @@ export function useExcluirComentario() {
   });
 }
 
+export function useExcluirAtendimento() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Delete related atualizacoes first
+      await supabase.from("atualizacoes").delete().eq("atendimento_id", id);
+      const { error } = await supabase.from("atendimentos").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["atendimentos"] });
+      queryClient.invalidateQueries({ queryKey: ["estatisticas"] });
+    },
+  });
+}
+
 export function useAlterarStatus() {
   const queryClient = useQueryClient();
   return useMutation({
