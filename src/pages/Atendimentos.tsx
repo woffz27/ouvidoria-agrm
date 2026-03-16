@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   FileText, Search, Filter, AlertCircle, Clock, MessageCircle,
-  CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock,
+  CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
   statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels,
   type StatusType, type CategoriaType, type TipoProblemaType,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
-import { useAtendimentos, useAlterarStatus } from "@/hooks/use-atendimentos";
+import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 
 const statusColors: Record<string, string> = {
@@ -45,6 +46,16 @@ export default function Atendimentos() {
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
+  const excluirAtendimento = useExcluirAtendimento();
+
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirAtendimento.mutateAsync(id);
+      toast({ title: "Atendimento excluído!" });
+    } catch {
+      toast({ title: "Erro ao excluir", variant: "destructive" });
+    }
+  };
 
   const filtered = useMemo(() => {
     return atendimentos.filter((a) => {
@@ -175,12 +186,13 @@ export default function Atendimentos() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginated.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                      <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
                         Nenhum atendimento encontrado.
                       </TableCell>
                     </TableRow>
@@ -229,6 +241,27 @@ export default function Atendimentos() {
                                 ))}
                               </SelectContent>
                             </Select>
+                          </TableCell>
+                          <TableCell>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    O atendimento <strong>{a.protocolo}</strong> será excluído permanentemente.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleExcluir(a.id)}>Excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </TableCell>
                         </TableRow>
                       );

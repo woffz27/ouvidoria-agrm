@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can delete atendimentos" ON public.atendimentos FOR DELETE USING (true);

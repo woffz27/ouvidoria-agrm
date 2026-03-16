@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import {
   ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels, type StatusType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, uploadArquivos } from "@/hooks/use-atendimentos";
+import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { AnexosList } from "@/components/atendimento/AnexosList";
 
 const statusColors: Record<string, string> = {
@@ -34,6 +34,7 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 export default function DetalhesAtendimento() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
@@ -47,6 +48,7 @@ export default function DetalhesAtendimento() {
   const editarComentario = useEditarComentario();
   const excluirComentario = useExcluirComentario();
   const alterarStatus = useAlterarStatus();
+  const excluirAtendimento = useExcluirAtendimento();
 
   if (isLoading) {
     return (
@@ -124,6 +126,16 @@ export default function DetalhesAtendimento() {
     }
   };
 
+  const handleExcluirAtendimento = async () => {
+    try {
+      await excluirAtendimento.mutateAsync(atendimento.id);
+      toast({ title: "Atendimento excluído!" });
+      navigate("/atendimentos");
+    } catch {
+      toast({ title: "Erro ao excluir atendimento", variant: "destructive" });
+    }
+  };
+
   const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
 
   const infoItems = [
@@ -164,6 +176,27 @@ export default function DetalhesAtendimento() {
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
             </p>
           </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" className="gap-1.5 shrink-0">
+                <Trash2 className="h-4 w-4" /> Excluir
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação é irreversível. O atendimento <strong>{atendimento.protocolo}</strong> e todo o seu histórico serão excluídos permanentemente.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleExcluirAtendimento} disabled={excluirAtendimento.isPending}>
+                  {excluirAtendimento.isPending ? "Excluindo..." : "Excluir"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
