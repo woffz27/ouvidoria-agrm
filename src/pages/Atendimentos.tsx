@@ -36,8 +36,10 @@ import {
   statusLabels,
   categoriaLabels,
   canalLabels,
+  tipoProblemaLabels,
   type StatusType,
   type CategoriaType,
+  type TipoProblemaType,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
 
@@ -61,6 +63,7 @@ export default function Atendimentos() {
   const [busca, setBusca] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
+  const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
@@ -72,9 +75,10 @@ export default function Atendimentos() {
         a.assunto.toLowerCase().includes(busca.toLowerCase());
       const matchStatus = statusFilter === "todos" || a.status === statusFilter;
       const matchCategoria = categoriaFilter === "todos" || a.categoria === categoriaFilter;
-      return matchBusca && matchStatus && matchCategoria;
+      const matchTipo = tipoProblemaFilter === "todos" || a.tipo_problema === tipoProblemaFilter;
+      return matchBusca && matchStatus && matchCategoria && matchTipo;
     });
-  }, [busca, statusFilter, categoriaFilter]);
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -158,6 +162,24 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
+            <Select
+              value={tipoProblemaFilter}
+              onValueChange={(v) => {
+                setTipoProblemaFilter(v);
+                handleFilterChange();
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-[170px] h-9 bg-muted/50 border-transparent">
+                <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                <SelectValue placeholder="Tipo de Problema" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os tipos</SelectItem>
+                {(Object.keys(tipoProblemaLabels) as TipoProblemaType[]).map((t) => (
+                  <SelectItem key={t} value={t}>{tipoProblemaLabels[t]}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 
@@ -171,6 +193,7 @@ export default function Atendimentos() {
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Categoria</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Tipo</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                   <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
@@ -179,7 +202,7 @@ export default function Atendimentos() {
               <TableBody>
                 {paginated.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
                       Nenhum atendimento encontrado.
                     </TableCell>
                   </TableRow>
@@ -198,6 +221,11 @@ export default function Atendimentos() {
                       <TableCell className="hidden lg:table-cell">
                         <Badge variant="outline" className="text-[10px]">
                           {categoriaLabels[a.categoria]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <Badge variant="outline" className="text-[10px]">
+                          {tipoProblemaLabels[a.tipo_problema]}
                         </Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
