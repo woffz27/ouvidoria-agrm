@@ -26,6 +26,7 @@ import {
   statusLabels,
   categoriaLabels,
   canalLabels,
+  tipoProblemaLabels,
 } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
 
