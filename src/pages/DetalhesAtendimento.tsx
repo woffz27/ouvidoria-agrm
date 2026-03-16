@@ -126,6 +126,16 @@ export default function DetalhesAtendimento() {
     }
   };
 
+  const handleExcluirAtendimento = async () => {
+    try {
+      await excluirAtendimento.mutateAsync(atendimento.id);
+      toast({ title: "Atendimento excluído!" });
+      navigate("/atendimentos");
+    } catch {
+      toast({ title: "Erro ao excluir atendimento", variant: "destructive" });
+    }
+  };
+
   const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
 
   const infoItems = [
