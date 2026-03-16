@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { gerarProtocolo, categoriaLabels, type CategoriaType, type CanalType } from "@/lib/mock-data";
+import { gerarProtocolo, categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
 
 const canalIcons: Record<CanalType, React.ReactNode> = {
