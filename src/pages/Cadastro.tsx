@@ -44,7 +44,7 @@ export default function Cadastro() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/1ed66903-5cc5-4ce4-b5ca-d23ad1111761.jpg" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/90314148-d148-4a05-a43f-ae68694bf73b.jpg" />
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
