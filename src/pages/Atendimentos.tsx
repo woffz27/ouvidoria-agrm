@@ -63,6 +63,7 @@ export default function Atendimentos() {
   const [busca, setBusca] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
+  const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
@@ -74,9 +75,10 @@ export default function Atendimentos() {
         a.assunto.toLowerCase().includes(busca.toLowerCase());
       const matchStatus = statusFilter === "todos" || a.status === statusFilter;
       const matchCategoria = categoriaFilter === "todos" || a.categoria === categoriaFilter;
-      return matchBusca && matchStatus && matchCategoria;
+      const matchTipo = tipoProblemaFilter === "todos" || a.tipo_problema === tipoProblemaFilter;
+      return matchBusca && matchStatus && matchCategoria && matchTipo;
     });
-  }, [busca, statusFilter, categoriaFilter]);
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
