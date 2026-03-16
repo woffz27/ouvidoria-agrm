@@ -169,7 +169,7 @@ export default function Atendimentos() {
                 handleFilterChange();
               }}
             >
-              <SelectTrigger className="w-full sm:w-[170px] h-9 bg-muted/50 border-transparent">
+              <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Tipo de Problema" />
               </SelectTrigger>
