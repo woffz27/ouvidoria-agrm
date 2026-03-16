@@ -192,7 +192,7 @@ export default function Atendimentos() {
                 <TableBody>
                   {paginated.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                      <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
                         Nenhum atendimento encontrado.
                       </TableCell>
                     </TableRow>
