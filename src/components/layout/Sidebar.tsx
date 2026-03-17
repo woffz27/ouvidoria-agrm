@@ -37,7 +37,12 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isAdmin } = useAuth();
+
+  const allMenuItems = [
+    ...menuItems,
+    ...(isAdmin ? [{ title: "Usuários", url: "/usuarios", icon: Users }] : []),
+  ];
 
   return (
     <Sidebar collapsible="icon">
