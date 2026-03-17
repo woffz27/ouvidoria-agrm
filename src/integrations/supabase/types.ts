@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           arquivos: string[] | null
           assunto: string
+          bairro: string | null
           canal: Database["public"]["Enums"]["canal_type"]
           categoria: Database["public"]["Enums"]["categoria_type"]
           cep: string | null
@@ -26,6 +27,7 @@ export type Database = {
           descricao: string
           email: string | null
           id: string
+          logradouro: string | null
           matricula_imovel: string | null
           ordem_servico_caern: string | null
           prazo_resolucao: string | null
@@ -38,6 +40,7 @@ export type Database = {
         Insert: {
           arquivos?: string[] | null
           assunto: string
+          bairro?: string | null
           canal: Database["public"]["Enums"]["canal_type"]
           categoria: Database["public"]["Enums"]["categoria_type"]
           cep?: string | null
@@ -46,6 +49,7 @@ export type Database = {
           descricao: string
           email?: string | null
           id?: string
+          logradouro?: string | null
           matricula_imovel?: string | null
           ordem_servico_caern?: string | null
           prazo_resolucao?: string | null
@@ -58,6 +62,7 @@ export type Database = {
         Update: {
           arquivos?: string[] | null
           assunto?: string
+          bairro?: string | null
           canal?: Database["public"]["Enums"]["canal_type"]
           categoria?: Database["public"]["Enums"]["categoria_type"]
           cep?: string | null
@@ -66,6 +71,7 @@ export type Database = {
           descricao?: string
           email?: string | null
           id?: string
+          logradouro?: string | null
           matricula_imovel?: string | null
           ordem_servico_caern?: string | null
           prazo_resolucao?: string | null

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useCriarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { cn } from "@/lib/utils";
@@ -116,6 +117,8 @@ export default function NovoAtendimento() {
         ordem_servico_caern: (formData.get("ordem_servico_caern") as string) || null,
         cep: (formData.get("cep") as string) || null,
         matricula_imovel: (formData.get("matricula_imovel") as string) || null,
+        logradouro: (formData.get("logradouro") as string) || null,
+        bairro: (formData.get("bairro") as string) || null,
       } as any);
 
       toast({
@@ -187,6 +190,36 @@ export default function NovoAtendimento() {
                   </Select>
                 </div>
               </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="ordem_servico_caern">Ordem de Serviço (CAERN)</Label>
+                  <Input id="ordem_servico_caern" name="ordem_servico_caern" placeholder="Nº da O.S." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="matricula_imovel">Matrícula (Imóvel CAERN)</Label>
+                  <Input id="matricula_imovel" name="matricula_imovel" placeholder="Nº da matrícula" />
+                </div>
+              </div>
+
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Endereço</p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="logradouro">Logradouro (com nº)</Label>
+                  <Input id="logradouro" name="logradouro" placeholder="Rua Exemplo, 123" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bairro">Bairro</Label>
+                  <Input id="bairro" name="bairro" placeholder="Bairro" />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input id="cep" name="cep" placeholder="59000-000" />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -224,20 +257,8 @@ export default function NovoAtendimento() {
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="ordem_servico_caern">Ordem de Serviço (CAERN)</Label>
-                  <Input id="ordem_servico_caern" name="ordem_servico_caern" placeholder="Nº da O.S." />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input id="cep" name="cep" placeholder="59000-000" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="matricula_imovel">Matrícula (Imóvel CAERN)</Label>
-                  <Input id="matricula_imovel" name="matricula_imovel" placeholder="Nº da matrícula" />
-                </div>
-              </div>
+
+
 
               <div className="space-y-2">
                 <Label htmlFor="assunto">Assunto *</Label>

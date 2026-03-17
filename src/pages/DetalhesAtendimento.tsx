@@ -286,10 +286,14 @@ export default function DetalhesAtendimento() {
                 </div>
               ))}
 
-              {/* New editable fields */}
+              {/* Editable fields - Solicitante */}
               {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
-              {editableField("cep", "CEP", att.cep)}
               {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
+
+              {/* Endereço */}
+              {editableField("logradouro", "Logradouro", att.logradouro)}
+              {editableField("bairro", "Bairro", att.bairro)}
+              {editableField("cep", "CEP", att.cep)}
 
               {/* Status management - admin only */}
               {isAdmin && (
