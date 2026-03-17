@@ -6,11 +6,11 @@ import {
   Loader2, Pencil, Trash2, X, Check, Upload, CalendarClock,
   FileText, MessageSquare,
 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -20,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, useEditarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { AnexosList } from "@/components/atendimento/AnexosList";
 import { useAuth } from "@/contexts/AuthContext";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
