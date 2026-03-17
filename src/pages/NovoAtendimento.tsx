@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useCriarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { cn } from "@/lib/utils";
