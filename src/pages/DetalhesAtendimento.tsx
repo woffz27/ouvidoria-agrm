@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
   Send, User, Mail, Phone, Globe, Tag, Calendar, Hash,
