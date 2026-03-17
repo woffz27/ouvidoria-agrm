@@ -437,39 +437,51 @@ export default function DetalhesAtendimento() {
 
                 <div className="mt-6 pt-4 border-t">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adicionar Comentário</p>
-                  <Textarea
+                  <RichTextEditor
+                    content={novoComentario}
+                    onChange={setNovoComentario}
                     placeholder="Escreva sua resposta ou comentário..."
-                    value={novoComentario}
-                    onChange={(e) => setNovoComentario(e.target.value)}
-                    className="min-h-[80px] mb-3"
+                    minHeight="100px"
+                    className="mb-3"
                   />
+
+                  {/* Email recipient field */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <Input
+                      type="email"
+                      placeholder="Destinatário (email)"
+                      value={emailDestinatario}
+                      onChange={(e) => setEmailDestinatario(e.target.value)}
+                      className="h-8 text-sm max-w-xs"
+                    />
+                  </div>
+
                   <div className="flex items-center gap-3 flex-wrap">
                     <Button
                       size="sm"
                       className="gap-1.5"
                       onClick={handleAddComment}
-                      disabled={!novoComentario.trim() || adicionarComentario.isPending || uploading}
+                      disabled={!novoComentario.trim() || novoComentario === "<p></p>" || adicionarComentario.isPending || uploading}
                     >
                       <Send className="h-3.5 w-3.5" /> {uploading ? "Enviando..." : adicionarComentario.isPending ? "Enviando..." : "Enviar"}
                     </Button>
-                    {atendimento.email && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5"
-                        onClick={() => handleEnviarEmail(novoComentario)}
-                        disabled={!novoComentario.trim()}
-                      >
-                        <Mail className="h-3.5 w-3.5" /> Enviar por E-mail
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={handleEnviarEmail}
+                      disabled={!novoComentario.trim() || novoComentario === "<p></p>" || !emailDestinatario || enviandoEmail}
+                    >
+                      <Mail className="h-3.5 w-3.5" /> {enviandoEmail ? "Enviando..." : "Enviar por E-mail"}
+                    </Button>
                     {atendimento.telefone && (
                       <Button
                         size="sm"
                         variant="outline"
                         className="gap-1.5"
                         onClick={() => handleWhatsApp(novoComentario)}
-                        disabled={!novoComentario.trim()}
+                        disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
                       >
                         <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
                       </Button>
