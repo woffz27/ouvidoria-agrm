@@ -10,6 +10,7 @@ import loginBg from "@/assets/login-bg.png";
 export default function Cadastro() {
   const { signUp, user, loading } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
