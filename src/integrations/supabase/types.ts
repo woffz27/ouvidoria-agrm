@@ -20,11 +20,14 @@ export type Database = {
           assunto: string
           canal: Database["public"]["Enums"]["canal_type"]
           categoria: Database["public"]["Enums"]["categoria_type"]
+          cep: string | null
           data_abertura: string
           data_atualizacao: string
           descricao: string
           email: string | null
           id: string
+          matricula_imovel: string | null
+          ordem_servico_caern: string | null
           prazo_resolucao: string | null
           protocolo: string
           solicitante: string
@@ -37,11 +40,14 @@ export type Database = {
           assunto: string
           canal: Database["public"]["Enums"]["canal_type"]
           categoria: Database["public"]["Enums"]["categoria_type"]
+          cep?: string | null
           data_abertura?: string
           data_atualizacao?: string
           descricao: string
           email?: string | null
           id?: string
+          matricula_imovel?: string | null
+          ordem_servico_caern?: string | null
           prazo_resolucao?: string | null
           protocolo: string
           solicitante: string
@@ -54,11 +60,14 @@ export type Database = {
           assunto?: string
           canal?: Database["public"]["Enums"]["canal_type"]
           categoria?: Database["public"]["Enums"]["categoria_type"]
+          cep?: string | null
           data_abertura?: string
           data_atualizacao?: string
           descricao?: string
           email?: string | null
           id?: string
+          matricula_imovel?: string | null
+          ordem_servico_caern?: string | null
           prazo_resolucao?: string | null
           protocolo?: string
           solicitante?: string

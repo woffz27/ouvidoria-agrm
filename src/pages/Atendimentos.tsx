@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -43,6 +44,7 @@ export default function Atendimentos() {
   const [atrasadosFilter, setAtrasadosFilter] = useState(false);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
@@ -186,13 +188,13 @@ export default function Atendimentos() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>
+                    {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginated.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
+                      <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-12 text-muted-foreground">
                         Nenhum atendimento encontrado.
                       </TableCell>
                     </TableRow>
@@ -230,39 +232,48 @@ export default function Atendimentos() {
                             {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
                           </TableCell>
                           <TableCell>
-                            <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
-                              <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                            {isAdmin ? (
+                              <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                                <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                  {statusIcons[a.status]}
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                    <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Badge className={`gap-1 ${statusColors[a.status]}`}>
                                 {statusIcons[a.status]}
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(Object.keys(statusLabels) as StatusType[]).map((s) => (
-                                  <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                                {statusLabels[a.status]}
+                              </Badge>
+                            )}
                           </TableCell>
-                          <TableCell>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    O atendimento <strong>{a.protocolo}</strong> será excluído permanentemente.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleExcluir(a.id)}>Excluir</AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TableCell>
+                          {isAdmin && (
+                            <TableCell>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      O atendimento <strong>{a.protocolo}</strong> será excluído permanentemente.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleExcluir(a.id)}>Excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </TableCell>
+                          )}
                         </TableRow>
                       );
                     })

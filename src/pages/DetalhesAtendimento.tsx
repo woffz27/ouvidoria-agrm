@@ -4,10 +4,12 @@ import {
   ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
   Send, User, Mail, Phone, Globe, Tag, Calendar, Hash,
   Loader2, Pencil, Trash2, X, Check, Upload, CalendarClock,
+  FileText, MessageSquare,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,8 +17,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AppLayout } from "@/components/layout/AppLayout";
 import { statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels, type StatusType } from "@/lib/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
+import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, useEditarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { AnexosList } from "@/components/atendimento/AnexosList";
+import { useAuth } from "@/contexts/AuthContext";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -36,11 +39,14 @@ export default function DetalhesAtendimento() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [editandoConteudo, setEditandoConteudo] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [editandoCampo, setEditandoCampo] = useState<string | null>(null);
+  const [editandoValor, setEditandoValor] = useState("");
   const comentarioFileRef = useRef<HTMLInputElement>(null);
 
   const { data: atendimento, isLoading } = useAtendimento(id);
@@ -49,6 +55,7 @@ export default function DetalhesAtendimento() {
   const excluirComentario = useExcluirComentario();
   const alterarStatus = useAlterarStatus();
   const excluirAtendimento = useExcluirAtendimento();
+  const editarAtendimento = useEditarAtendimento();
 
   if (isLoading) {
     return (
@@ -136,7 +143,69 @@ export default function DetalhesAtendimento() {
     }
   };
 
+  const handleSalvarCampo = async (campo: string) => {
+    try {
+      await editarAtendimento.mutateAsync({ id: atendimento.id, dados: { [campo]: editandoValor || null } });
+      toast({ title: "Campo atualizado!" });
+      setEditandoCampo(null);
+    } catch {
+      toast({ title: "Erro ao atualizar", variant: "destructive" });
+    }
+  };
+
+  const handleWhatsApp = (mensagem: string) => {
+    if (!atendimento.telefone) {
+      toast({ title: "Sem telefone cadastrado", variant: "destructive" });
+      return;
+    }
+    const tel = atendimento.telefone.replace(/\D/g, "");
+    const telFormatted = tel.startsWith("55") ? tel : `55${tel}`;
+    const url = `https://wa.me/${telFormatted}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleEnviarEmail = (mensagem: string) => {
+    if (!atendimento.email) {
+      toast({ title: "Sem e-mail cadastrado", variant: "destructive" });
+      return;
+    }
+    const subject = encodeURIComponent(`Re: ${atendimento.assunto} - Protocolo ${atendimento.protocolo}`);
+    const body = encodeURIComponent(mensagem);
+    window.open(`mailto:${atendimento.email}?subject=${subject}&body=${body}`, "_blank");
+  };
+
   const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
+
+  const att = atendimento as any;
+
+  const editableField = (campo: string, label: string, value: string | null) => (
+    <div className="flex items-start gap-3">
+      <div className="mt-0.5 text-muted-foreground"><FileText className="h-4 w-4" /></div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
+        {editandoCampo === campo ? (
+          <div className="flex items-center gap-1 mt-0.5">
+            <Input
+              value={editandoValor}
+              onChange={(e) => setEditandoValor(e.target.value)}
+              className="h-7 text-sm"
+            />
+            <button onClick={() => handleSalvarCampo(campo)} className="rounded p-1 text-primary hover:bg-primary/10"><Check className="h-3.5 w-3.5" /></button>
+            <button onClick={() => setEditandoCampo(null)} className="rounded p-1 text-muted-foreground hover:bg-muted"><X className="h-3.5 w-3.5" /></button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1">
+            <p className="text-sm font-medium">{value || "—"}</p>
+            {isAdmin && (
+              <button onClick={() => { setEditandoCampo(campo); setEditandoValor(value || ""); }} className="rounded p-0.5 text-muted-foreground hover:text-foreground">
+                <Pencil className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   const infoItems = [
     { icon: <Hash className="h-4 w-4" />, label: "Protocolo", value: atendimento.protocolo, mono: true },
@@ -176,27 +245,29 @@ export default function DetalhesAtendimento() {
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
             </p>
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm" className="gap-1.5 shrink-0">
-                <Trash2 className="h-4 w-4" /> Excluir
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação é irreversível. O atendimento <strong>{atendimento.protocolo}</strong> e todo o seu histórico serão excluídos permanentemente.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleExcluirAtendimento} disabled={excluirAtendimento.isPending}>
-                  {excluirAtendimento.isPending ? "Excluindo..." : "Excluir"}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {isAdmin && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-1.5 shrink-0">
+                  <Trash2 className="h-4 w-4" /> Excluir
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação é irreversível. O atendimento <strong>{atendimento.protocolo}</strong> e todo o seu histórico serão excluídos permanentemente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleExcluirAtendimento} disabled={excluirAtendimento.isPending}>
+                    {excluirAtendimento.isPending ? "Excluindo..." : "Excluir"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
 
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
@@ -215,23 +286,30 @@ export default function DetalhesAtendimento() {
                 </div>
               ))}
 
-              {/* Status management */}
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /></div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Alterar Status</p>
-                  <Select value={atendimento.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(statusLabels) as StatusType[]).map((s) => (
-                        <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* New editable fields */}
+              {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
+              {editableField("cep", "CEP", att.cep)}
+              {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
+
+              {/* Status management - admin only */}
+              {isAdmin && (
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /></div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Alterar Status</p>
+                    <Select value={atendimento.status} onValueChange={handleStatusChange}>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                          <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Prazo */}
               {atendimento.prazo_resolucao && (
@@ -279,7 +357,7 @@ export default function DetalhesAtendimento() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-semibold">{att.usuario}</span>
                             <span className="text-[10px] text-muted-foreground">{new Date(att.data).toLocaleString("pt-BR")}</span>
-                            {att.tipo === "comentario" && (
+                            {att.tipo === "comentario" && isAdmin && (
                               <div className="flex gap-1 ml-auto">
                                 <button
                                   onClick={() => { setEditandoId(att.id); setEditandoConteudo(att.conteudo); }}
@@ -353,6 +431,28 @@ export default function DetalhesAtendimento() {
                     >
                       <Send className="h-3.5 w-3.5" /> {uploading ? "Enviando..." : adicionarComentario.isPending ? "Enviando..." : "Enviar"}
                     </Button>
+                    {atendimento.email && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5"
+                        onClick={() => handleEnviarEmail(novoComentario)}
+                        disabled={!novoComentario.trim()}
+                      >
+                        <Mail className="h-3.5 w-3.5" /> Enviar por E-mail
+                      </Button>
+                    )}
+                    {atendimento.telefone && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5"
+                        onClick={() => handleWhatsApp(novoComentario)}
+                        disabled={!novoComentario.trim()}
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
+                      </Button>
+                    )}
                     <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
                       <Upload className="h-3.5 w-3.5" />
                       Anexar arquivo

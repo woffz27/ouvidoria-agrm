@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import loginBg from "@/assets/login-bg.png";
 export default function Cadastro() {
   const { signUp, user, loading } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
@@ -37,6 +38,8 @@ export default function Cadastro() {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
+      navigate("/login");
+      return;
     }
     setSubmitting(false);
   };
@@ -44,7 +47,7 @@ export default function Cadastro() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/90314148-d148-4a05-a43f-ae68694bf73b.jpg" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={loginBg} />
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
