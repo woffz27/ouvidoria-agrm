@@ -61,6 +61,12 @@ export default function DetalhesAtendimento() {
   const excluirAtendimento = useExcluirAtendimento();
   const editarAtendimento = useEditarAtendimento();
 
+  useEffect(() => {
+    if (atendimento?.email && !emailDestinatario) {
+      setEmailDestinatario(atendimento.email);
+    }
+  }, [atendimento?.email]);
+
   if (isLoading) {
     return (
       <AppLayout>
