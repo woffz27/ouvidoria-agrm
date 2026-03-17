@@ -4,7 +4,7 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import TColor from "@tiptap/extension-color";
-import TextStyle from "@tiptap/extension-text-style";
+import { TextStyle } from "@tiptap/extension-text-style";
 import ImageExt from "@tiptap/extension-image";
 import { useState, useCallback, useEffect } from "react";
 import {
