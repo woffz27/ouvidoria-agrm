@@ -168,14 +168,27 @@ export default function DetalhesAtendimento() {
     window.open(url, "_blank");
   };
 
-  const handleEnviarEmail = (mensagem: string) => {
-    if (!atendimento.email) {
-      toast({ title: "Sem e-mail cadastrado", variant: "destructive" });
+  const handleEnviarEmail = async () => {
+    if (!emailDestinatario || !novoComentario.trim()) {
+      toast({ title: "Preencha o destinatário e o comentário", variant: "destructive" });
       return;
     }
-    const subject = encodeURIComponent(`Re: ${atendimento.assunto} - Protocolo ${atendimento.protocolo}`);
-    const body = encodeURIComponent(mensagem);
-    window.open(`mailto:${atendimento.email}?subject=${subject}&body=${body}`, "_blank");
+    try {
+      setEnviandoEmail(true);
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          to: emailDestinatario,
+          subject: `Re: ${atendimento.assunto} - Protocolo ${atendimento.protocolo}`,
+          html_body: novoComentario,
+        },
+      });
+      if (error) throw error;
+      toast({ title: "Email enviado com sucesso!" });
+    } catch {
+      toast({ title: "Erro ao enviar email", variant: "destructive" });
+    } finally {
+      setEnviandoEmail(false);
+    }
   };
 
   const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
