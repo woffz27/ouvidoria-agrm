@@ -116,6 +116,8 @@ export default function NovoAtendimento() {
         ordem_servico_caern: (formData.get("ordem_servico_caern") as string) || null,
         cep: (formData.get("cep") as string) || null,
         matricula_imovel: (formData.get("matricula_imovel") as string) || null,
+        logradouro: (formData.get("logradouro") as string) || null,
+        bairro: (formData.get("bairro") as string) || null,
       } as any);
 
       toast({
