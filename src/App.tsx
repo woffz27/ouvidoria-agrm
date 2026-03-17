@@ -15,6 +15,7 @@ import Cadastro from "./pages/Cadastro";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import GerenciarUsuarios from "./pages/GerenciarUsuarios";
 
 const queryClient = new QueryClient();
 
