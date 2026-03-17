@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Loader2, Eye, EyeOff, User, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@/assets/login-bg.png";
+import cadastroBg from "@/assets/cadastro-bg.jpg";
 
 export default function Cadastro() {
   const { signUp, user, loading } = useAuth();
