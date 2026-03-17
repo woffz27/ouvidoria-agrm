@@ -4,6 +4,7 @@ import {
   PlusCircle,
   Search,
   LogOut,
+  Users,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -36,7 +37,12 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isAdmin } = useAuth();
+
+  const allMenuItems = [
+    ...menuItems,
+    ...(isAdmin ? [{ title: "Usuários", url: "/usuarios", icon: Users }] : []),
+  ];
 
   return (
     <Sidebar collapsible="icon">
@@ -65,7 +71,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {allMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
