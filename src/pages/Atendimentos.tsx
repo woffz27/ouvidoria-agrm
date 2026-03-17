@@ -44,6 +44,7 @@ export default function Atendimentos() {
   const [atrasadosFilter, setAtrasadosFilter] = useState(false);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
