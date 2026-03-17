@@ -1,16 +1,16 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ArrowLeft, Clock, CheckCircle2, MessageCircle, AlertCircle,
   Send, User, Mail, Phone, Globe, Tag, Calendar, Hash,
   Loader2, Pencil, Trash2, X, Check, Upload, CalendarClock,
   FileText, MessageSquare,
 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -20,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluirComentario, useAlterarStatus, useExcluirAtendimento, useEditarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
 import { AnexosList } from "@/components/atendimento/AnexosList";
 import { useAuth } from "@/contexts/AuthContext";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -47,6 +49,8 @@ export default function DetalhesAtendimento() {
   const [uploading, setUploading] = useState(false);
   const [editandoCampo, setEditandoCampo] = useState<string | null>(null);
   const [editandoValor, setEditandoValor] = useState("");
+  const [emailDestinatario, setEmailDestinatario] = useState("");
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
   const comentarioFileRef = useRef<HTMLInputElement>(null);
 
   const { data: atendimento, isLoading } = useAtendimento(id);
@@ -56,6 +60,12 @@ export default function DetalhesAtendimento() {
   const alterarStatus = useAlterarStatus();
   const excluirAtendimento = useExcluirAtendimento();
   const editarAtendimento = useEditarAtendimento();
+
+  useEffect(() => {
+    if (atendimento?.email && !emailDestinatario) {
+      setEmailDestinatario(atendimento.email);
+    }
+  }, [atendimento?.email]);
 
   if (isLoading) {
     return (
@@ -164,14 +174,27 @@ export default function DetalhesAtendimento() {
     window.open(url, "_blank");
   };
 
-  const handleEnviarEmail = (mensagem: string) => {
-    if (!atendimento.email) {
-      toast({ title: "Sem e-mail cadastrado", variant: "destructive" });
+  const handleEnviarEmail = async () => {
+    if (!emailDestinatario || !novoComentario.trim()) {
+      toast({ title: "Preencha o destinatário e o comentário", variant: "destructive" });
       return;
     }
-    const subject = encodeURIComponent(`Re: ${atendimento.assunto} - Protocolo ${atendimento.protocolo}`);
-    const body = encodeURIComponent(mensagem);
-    window.open(`mailto:${atendimento.email}?subject=${subject}&body=${body}`, "_blank");
+    try {
+      setEnviandoEmail(true);
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          to: emailDestinatario,
+          subject: `Re: ${atendimento.assunto} - Protocolo ${atendimento.protocolo}`,
+          html_body: novoComentario,
+        },
+      });
+      if (error) throw error;
+      toast({ title: "Email enviado com sucesso!" });
+    } catch {
+      toast({ title: "Erro ao enviar email", variant: "destructive" });
+    } finally {
+      setEnviandoEmail(false);
+    }
   };
 
   const isAtrasado = atendimento.prazo_resolucao && new Date(atendimento.prazo_resolucao) < new Date() && atendimento.status !== "finalizado";
@@ -391,10 +414,10 @@ export default function DetalhesAtendimento() {
                           </div>
                           {editandoId === att.id ? (
                             <div className="mt-1 space-y-2">
-                              <Textarea
-                                value={editandoConteudo}
-                                onChange={(e) => setEditandoConteudo(e.target.value)}
-                                className="min-h-[60px] text-sm"
+                              <RichTextEditor
+                                content={editandoConteudo}
+                                onChange={setEditandoConteudo}
+                                minHeight="60px"
                               />
                               <div className="flex gap-2">
                                 <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={() => handleEditSave(att.id)} disabled={editarComentario.isPending}>
@@ -407,7 +430,7 @@ export default function DetalhesAtendimento() {
                             </div>
                           ) : (
                             <>
-                              <p className="text-sm text-muted-foreground mt-0.5">{att.conteudo}</p>
+                              <div className="text-sm text-muted-foreground mt-0.5 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(att.conteudo) }} />
                               <AnexosList arquivos={att.arquivos} />
                             </>
                           )}
@@ -420,39 +443,51 @@ export default function DetalhesAtendimento() {
 
                 <div className="mt-6 pt-4 border-t">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Adicionar Comentário</p>
-                  <Textarea
+                  <RichTextEditor
+                    content={novoComentario}
+                    onChange={setNovoComentario}
                     placeholder="Escreva sua resposta ou comentário..."
-                    value={novoComentario}
-                    onChange={(e) => setNovoComentario(e.target.value)}
-                    className="min-h-[80px] mb-3"
+                    minHeight="100px"
+                    className="mb-3"
                   />
+
+                  {/* Email recipient field */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <Input
+                      type="email"
+                      placeholder="Destinatário (email)"
+                      value={emailDestinatario}
+                      onChange={(e) => setEmailDestinatario(e.target.value)}
+                      className="h-8 text-sm max-w-xs"
+                    />
+                  </div>
+
                   <div className="flex items-center gap-3 flex-wrap">
                     <Button
                       size="sm"
                       className="gap-1.5"
                       onClick={handleAddComment}
-                      disabled={!novoComentario.trim() || adicionarComentario.isPending || uploading}
+                      disabled={!novoComentario.trim() || novoComentario === "<p></p>" || adicionarComentario.isPending || uploading}
                     >
                       <Send className="h-3.5 w-3.5" /> {uploading ? "Enviando..." : adicionarComentario.isPending ? "Enviando..." : "Enviar"}
                     </Button>
-                    {atendimento.email && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5"
-                        onClick={() => handleEnviarEmail(novoComentario)}
-                        disabled={!novoComentario.trim()}
-                      >
-                        <Mail className="h-3.5 w-3.5" /> Enviar por E-mail
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={handleEnviarEmail}
+                      disabled={!novoComentario.trim() || novoComentario === "<p></p>" || !emailDestinatario || enviandoEmail}
+                    >
+                      <Mail className="h-3.5 w-3.5" /> {enviandoEmail ? "Enviando..." : "Enviar por E-mail"}
+                    </Button>
                     {atendimento.telefone && (
                       <Button
                         size="sm"
                         variant="outline"
                         className="gap-1.5"
                         onClick={() => handleWhatsApp(novoComentario)}
-                        disabled={!novoComentario.trim()}
+                        disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
                       >
                         <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
                       </Button>
