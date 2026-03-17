@@ -30,7 +30,7 @@ export default function RecuperarSenha() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img alt="" className="absolute inset-0 h-full w-full object-cover" src="/lovable-uploads/db5a323a-6d1d-49ec-b04e-8ed2dabb41aa.jpg" />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={loginBg} />
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
