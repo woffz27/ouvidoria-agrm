@@ -113,7 +113,10 @@ export default function NovoAtendimento() {
         tipo_problema: tipoProblema as TipoProblemaType,
         arquivos: arquivoUrls.length > 0 ? arquivoUrls : null,
         prazo_resolucao: prazo ? prazo.toISOString() : null,
-      });
+        ordem_servico_caern: (formData.get("ordem_servico_caern") as string) || null,
+        cep: (formData.get("cep") as string) || null,
+        matricula_imovel: (formData.get("matricula_imovel") as string) || null,
+      } as any);
 
       toast({
         title: "Atendimento criado!",

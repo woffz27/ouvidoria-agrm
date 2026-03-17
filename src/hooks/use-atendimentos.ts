@@ -210,6 +210,23 @@ export function useAlterarStatus() {
   });
 }
 
+export function useEditarAtendimento() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, dados }: { id: string; dados: Record<string, any> }) => {
+      const { error } = await supabase
+        .from("atendimentos")
+        .update(dados)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.id] });
+      queryClient.invalidateQueries({ queryKey: ["atendimentos"] });
+    },
+  });
+}
+
 export async function uploadArquivos(files: File[]): Promise<string[]> {
   const urls: string[] = [];
   for (const file of files) {
