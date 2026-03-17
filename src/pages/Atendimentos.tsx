@@ -188,7 +188,7 @@ export default function Atendimentos() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>
+                    {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
