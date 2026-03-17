@@ -49,6 +49,8 @@ export default function DetalhesAtendimento() {
   const [uploading, setUploading] = useState(false);
   const [editandoCampo, setEditandoCampo] = useState<string | null>(null);
   const [editandoValor, setEditandoValor] = useState("");
+  const [emailDestinatario, setEmailDestinatario] = useState("");
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
   const comentarioFileRef = useRef<HTMLInputElement>(null);
 
   const { data: atendimento, isLoading } = useAtendimento(id);
