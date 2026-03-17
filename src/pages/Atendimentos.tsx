@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
