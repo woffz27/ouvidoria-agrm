@@ -37,6 +37,8 @@ export default function Cadastro() {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
+      navigate("/login");
+      return;
     }
     setSubmitting(false);
   };
