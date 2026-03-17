@@ -36,7 +36,7 @@ export default function RecuperarSenha() {
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex justify-center mb-6">
-            <img src={loginBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
+            <img src={recuperarBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
           </div>
 
           <div className="text-center space-y-2">
