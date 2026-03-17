@@ -221,6 +221,21 @@ export default function NovoAtendimento() {
                 </div>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="ordem_servico_caern">Ordem de Serviço (CAERN)</Label>
+                  <Input id="ordem_servico_caern" name="ordem_servico_caern" placeholder="Nº da O.S." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input id="cep" name="cep" placeholder="59000-000" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="matricula_imovel">Matrícula (Imóvel CAERN)</Label>
+                  <Input id="matricula_imovel" name="matricula_imovel" placeholder="Nº da matrícula" />
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="assunto">Assunto *</Label>
                 <Input id="assunto" name="assunto" required placeholder="Resumo do atendimento" />
