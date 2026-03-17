@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@/assets/login-bg.png";
+import loginBg from "@/assets/login-bg.jpg";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
