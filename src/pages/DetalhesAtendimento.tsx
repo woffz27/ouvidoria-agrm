@@ -408,10 +408,10 @@ export default function DetalhesAtendimento() {
                           </div>
                           {editandoId === att.id ? (
                             <div className="mt-1 space-y-2">
-                              <Textarea
-                                value={editandoConteudo}
-                                onChange={(e) => setEditandoConteudo(e.target.value)}
-                                className="min-h-[60px] text-sm"
+                              <RichTextEditor
+                                content={editandoConteudo}
+                                onChange={setEditandoConteudo}
+                                minHeight="60px"
                               />
                               <div className="flex gap-2">
                                 <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={() => handleEditSave(att.id)} disabled={editarComentario.isPending}>
@@ -424,7 +424,7 @@ export default function DetalhesAtendimento() {
                             </div>
                           ) : (
                             <>
-                              <p className="text-sm text-muted-foreground mt-0.5">{att.conteudo}</p>
+                              <div className="text-sm text-muted-foreground mt-0.5 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(att.conteudo) }} />
                               <AnexosList arquivos={att.arquivos} />
                             </>
                           )}
