@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Loader2, Eye, EyeOff, User, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@/assets/login-bg.png";
+import cadastroBg from "@/assets/cadastro-bg.jpg";
 
 export default function Cadastro() {
   const { signUp, user, loading } = useAuth();
@@ -47,13 +47,13 @@ export default function Cadastro() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={loginBg} />
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={cadastroBg} />
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex justify-center mb-6">
-            <img src={loginBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
+            <img src={cadastroBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
           </div>
 
           <div className="text-center space-y-2">
