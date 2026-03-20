@@ -131,82 +131,45 @@ export default function GerenciarUsuarios() {
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Cargo</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Permissão</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user) => {
-                  const isUserAdmin = user.roles.includes("admin");
-                  return (
-                    <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
-                      <TableCell className="font-medium">{user.nome_completo || "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                      <TableCell>{user.cargo || "—"}</TableCell>
-                      <TableCell>
-                        <Badge variant={user.aprovado ? "default" : "outline"} className={!user.aprovado ? "border-amber-500 text-amber-600" : ""}>
-                          {user.aprovado ? "Aprovado" : "Pendente"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={isUserAdmin ? "default" : "secondary"}>
-                          {isUserAdmin ? "Admin" : "Usuário"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+            <>
+              {/* Mobile/Tablet: Cards */}
+              <div className="block lg:hidden divide-y">
+                {users.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</p>
+                ) : (
+                  users.map((user) => {
+                    const isUserAdmin = user.roles.includes("admin");
+                    return (
+                      <div key={user.id} className={`p-4 space-y-3 ${!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold truncate">{user.nome_completo || "—"}</p>
+                            <p className="text-xs text-muted-foreground break-all">{user.email}</p>
+                            {user.cargo && <p className="text-xs text-muted-foreground mt-0.5">{user.cargo}</p>}
+                          </div>
+                          <div className="flex flex-col items-end gap-1.5 shrink-0">
+                            <Badge variant={user.aprovado ? "default" : "outline"} className={`text-[10px] ${!user.aprovado ? "border-amber-500 text-amber-600" : ""}`}>
+                              {user.aprovado ? "Aprovado" : "Pendente"}
+                            </Badge>
+                            <Badge variant={isUserAdmin ? "default" : "secondary"} className="text-[10px]">
+                              {isUserAdmin ? "Admin" : "Usuário"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
                           {!user.aprovado && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => approveUser(user.id)}
-                              disabled={actionLoading === user.id + "_approve"}
-                              title="Aprovar cadastro"
-                              className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                            >
-                              {actionLoading === user.id + "_approve" ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <CheckCircle2 className="h-4 w-4" />
-                              )}
+                            <Button variant="outline" size="sm" onClick={() => approveUser(user.id)} disabled={actionLoading === user.id + "_approve"} className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1.5 text-xs">
+                              {actionLoading === user.id + "_approve" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />} Aprovar
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => toggleRole(user.id)}
-                            disabled={actionLoading === user.id + "_role"}
-                            title={isUserAdmin ? "Remover admin" : "Tornar admin"}
-                          >
-                            {actionLoading === user.id + "_role" ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : isUserAdmin ? (
-                              <ShieldOff className="h-4 w-4" />
-                            ) : (
-                              <Shield className="h-4 w-4" />
-                            )}
+                          <Button variant="outline" size="sm" onClick={() => toggleRole(user.id)} disabled={actionLoading === user.id + "_role"} className="gap-1.5 text-xs">
+                            {actionLoading === user.id + "_role" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
+                            {isUserAdmin ? "Remover admin" : "Tornar admin"}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-destructive hover:text-destructive"
-                                disabled={actionLoading === user.id + "_delete"}
-                                title="Excluir usuário"
-                              >
-                                {actionLoading === user.id + "_delete" ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Trash2 className="h-4 w-4" />
-                                )}
+                              <Button variant="outline" size="sm" className="text-destructive hover:text-destructive gap-1.5 text-xs" disabled={actionLoading === user.id + "_delete"}>
+                                {actionLoading === user.id + "_delete" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} Excluir
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
@@ -220,29 +183,95 @@ export default function GerenciarUsuarios() {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => deleteUser(user.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Excluir
-                                </AlertDialogAction>
+                                <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Excluir</AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-                {users.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      Nenhum usuário encontrado.
-                    </TableCell>
-                  </TableRow>
+                      </div>
+                    );
+                  })
                 )}
-              </TableBody>
-            </Table>
+              </div>
+
+              {/* Desktop: Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Cargo</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Permissão</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => {
+                      const isUserAdmin = user.roles.includes("admin");
+                      return (
+                        <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
+                          <TableCell className="font-medium">{user.nome_completo || "—"}</TableCell>
+                          <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                          <TableCell>{user.cargo || "—"}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.aprovado ? "default" : "outline"} className={!user.aprovado ? "border-amber-500 text-amber-600" : ""}>
+                              {user.aprovado ? "Aprovado" : "Pendente"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={isUserAdmin ? "default" : "secondary"}>
+                              {isUserAdmin ? "Admin" : "Usuário"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {!user.aprovado && (
+                                <Button variant="outline" size="sm" onClick={() => approveUser(user.id)} disabled={actionLoading === user.id + "_approve"} title="Aprovar cadastro" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
+                                  {actionLoading === user.id + "_approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                </Button>
+                              )}
+                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id)} disabled={actionLoading === user.id + "_role"} title={isUserAdmin ? "Remover admin" : "Tornar admin"}>
+                                {actionLoading === user.id + "_role" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" disabled={actionLoading === user.id + "_delete"} title="Excluir usuário">
+                                    {actionLoading === user.id + "_delete" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir usuário</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Tem certeza que deseja excluir o acesso de{" "}
+                                      <strong>{user.nome_completo || user.email}</strong>?
+                                      Esta ação não pode ser desfeita.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Excluir</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {users.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                          Nenhum usuário encontrado.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           )}
         </div>
       </div>

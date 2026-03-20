@@ -491,10 +491,10 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                     />
                   </div>
 
-                  <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-wrap">
                     <Button
                       size="sm"
-                      className="gap-1.5"
+                      className="gap-1.5 w-full sm:w-auto"
                       onClick={handleAddComment}
                       disabled={!novoComentario.trim() || novoComentario === "<p></p>" || adicionarComentario.isPending || uploading}
                     >
@@ -503,7 +503,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                     <Button
                       size="sm"
                       variant="outline"
-                      className="gap-1.5"
+                      className="gap-1.5 w-full sm:w-auto"
                       onClick={handleEnviarEmail}
                       disabled={!novoComentario.trim() || novoComentario === "<p></p>" || !emailDestinatario || enviandoEmail}
                     >
@@ -514,7 +514,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1.5"
+                          className="gap-1.5 w-full sm:w-auto"
                           onClick={() => handleWhatsApp(novoComentario)}
                           disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
                         >
@@ -523,7 +523,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1.5 border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
+                          className="gap-1.5 w-full sm:w-auto border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
                           onClick={handleWhatsAppProtocolo}
                         >
                           <MessageSquare className="h-3.5 w-3.5" /> Enviar Protocolo via WhatsApp
