@@ -1,38 +1,20 @@
 
 
-## Plano: Tornar tabelas e textos responsivos em tablets e celulares
+## Plano: Tornar cards de status do Dashboard responsivos
 
 ### Problema
-As tabelas do sistema usam layout fixo que comprime o texto em telas menores (768px e abaixo) em vez de adaptar o layout. A página de Usuários é a mais afetada -- 6 colunas visíveis sem nenhuma ocultação responsiva.
+No viewport atual (768px), o grid `sm:grid-cols-2` faz 5 cards ficarem em 2 colunas + 1 sozinho, e o texto/números podem estar sendo comprimidos.
 
 ### Solução
-Converter tabelas para layout de cards em telas pequenas (mobile/tablet) e manter tabelas em telas maiores. Adicionar `overflow-x-auto` como fallback.
+Ajustar o grid e o conteúdo dos cards para melhor adaptação em telas menores:
 
-### Alterações
+### Alterações em `src/pages/Dashboard.tsx`
 
-**1. `src/pages/GerenciarUsuarios.tsx`**
-- Em mobile/tablet (< lg): renderizar cada usuário como um Card empilhado com nome, email, status, permissão e botões de ação
-- Em desktop (>= lg): manter a tabela atual
-- Usar `hidden lg:block` / `block lg:hidden` para alternar entre os dois layouts
-
-**2. `src/pages/Atendimentos.tsx`**
-- Em mobile (< md): renderizar atendimentos como cards com protocolo, solicitante, status e ações
-- Em desktop (>= md): manter tabela atual
-- Ocultar mais colunas em breakpoints intermediários
-
-**3. `src/pages/Atrasados.tsx`**
-- Mesma abordagem: cards em mobile, tabela em desktop
-
-**4. `src/pages/Dashboard.tsx`**
-- Tabela de recentes: já tem colunas ocultas, mas adicionar `overflow-x-auto` no container
-- Cards de stats: já responsivos, sem alteração
-
-**5. `src/pages/DetalhesAtendimento.tsx`**
-- Botões de ação (Enviar, WhatsApp, Email): já usam `flex-wrap`, ajustar para `w-full` em mobile
-- Garantir que textos longos usem `break-words` e `min-w-0`
-
-**6. `src/pages/BuscarProtocolo.tsx`**
-- Já está bem responsivo, apenas garantir `break-words` nos resultados
-
-Total: **4 arquivos principais** alterados (GerenciarUsuarios, Atendimentos, Atrasados, DetalhesAtendimento)
+1. **Grid dos stat cards** (linha 84): mudar de `grid-cols-1 sm:grid-cols-2 xl:grid-cols-5` para `grid-cols-2 md:grid-cols-3 xl:grid-cols-5` — melhor distribuição em tablets
+2. **Conteúdo dos cards** (linhas 88-95): tornar o layout interno mais compacto em mobile:
+   - Reduzir padding: `p-5` → `p-3 sm:p-5`
+   - Reduzir gap: `gap-4` → `gap-2 sm:gap-4`
+   - Ícone menor em mobile: `h-11 w-11` → `h-8 w-8 sm:h-11 sm:w-11`
+   - Valor menor em mobile: `text-2xl` → `text-lg sm:text-2xl`
+   - Título com `truncate` para não quebrar linha
 
