@@ -189,41 +189,66 @@ export default function Dashboard() {
             </Link>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
-                  <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentes.map((a) => (
-                  <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
-                    <TableCell>
+            {/* Mobile: Cards */}
+            <div className="block md:hidden divide-y">
+              {recentes.map((a) => (
+                <div key={a.id} className="p-4 space-y-1.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
                       <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
                         {a.protocolo}
                       </Link>
-                    </TableCell>
-                    <TableCell className="text-sm">{a.solicitante}</TableCell>
-                    <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                      {a.assunto}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      <span className="text-xs text-muted-foreground">{canalLabels[a.canal]}</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
-                        {statusIcons[a.status]}
-                        {statusLabels[a.status]}
-                      </Badge>
-                    </TableCell>
+                      <p className="text-sm font-medium mt-0.5">{a.solicitante}</p>
+                      <p className="text-xs text-muted-foreground truncate">{a.assunto}</p>
+                    </div>
+                    <Badge className={`gap-1 text-[10px] shrink-0 ${statusColors[a.status]}`}>
+                      {statusIcons[a.status]}
+                      {statusLabels[a.status]}
+                    </Badge>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">{canalLabels[a.canal]}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {recentes.map((a) => (
+                    <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
+                      <TableCell>
+                        <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                          {a.protocolo}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-sm">{a.solicitante}</TableCell>
+                      <TableCell className="hidden lg:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                        {a.assunto}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-muted-foreground">{canalLabels[a.canal]}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
+                          {statusIcons[a.status]}
+                          {statusLabels[a.status]}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

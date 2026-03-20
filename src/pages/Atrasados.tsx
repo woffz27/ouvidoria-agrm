@@ -127,69 +127,121 @@ export default function Atrasados() {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Prazo</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Atraso</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Mobile: Cards */}
+                <div className="block md:hidden divide-y">
                   {paginated.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
-                        Nenhum atendimento atrasado encontrado.
-                      </TableCell>
-                    </TableRow>
+                    <p className="text-center py-12 text-muted-foreground">Nenhum atendimento atrasado encontrado.</p>
                   ) : (
                     paginated.map((a) => (
-                      <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
-                        <TableCell>
-                          <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
-                            {a.protocolo}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                          {a.assunto}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                          {a.prazo_resolucao ? new Date(a.prazo_resolucao).toLocaleDateString("pt-BR") : "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="destructive" className="text-[10px]">
-                            {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {isAdmin ? (
-                            <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
-                              <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
-                                {statusIcons[a.status]}
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {(Object.keys(statusLabels) as StatusType[]).map((s) => (
-                                  <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <Badge className={`gap-1 ${statusColors[a.status]}`}>
-                              {statusIcons[a.status]}
-                              {statusLabels[a.status]}
+                      <div key={a.id} className="p-4 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                              {a.protocolo}
+                            </Link>
+                            <p className="text-sm font-medium mt-0.5">{a.solicitante}</p>
+                            <p className="text-xs text-muted-foreground truncate">{a.assunto}</p>
+                          </div>
+                          <div className="flex flex-col items-end gap-1.5 shrink-0">
+                            <Badge variant="destructive" className="text-[10px]">
+                              {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
                             </Badge>
-                          )}
-                        </TableCell>
-                      </TableRow>
+                            {isAdmin ? (
+                              <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                                <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                  {statusIcons[a.status]}
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                    <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
+                                {statusIcons[a.status]}
+                                {statusLabels[a.status]}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">
+                          Prazo: {a.prazo_resolucao ? new Date(a.prazo_resolucao).toLocaleDateString("pt-BR") : "—"}
+                        </p>
+                      </div>
                     ))
                   )}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* Desktop: Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazo</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Atraso</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginated.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                            Nenhum atendimento atrasado encontrado.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        paginated.map((a) => (
+                          <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
+                            <TableCell>
+                              <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                                {a.protocolo}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
+                            <TableCell className="hidden lg:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                              {a.assunto}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {a.prazo_resolucao ? new Date(a.prazo_resolucao).toLocaleDateString("pt-BR") : "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="destructive" className="text-[10px]">
+                                {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {isAdmin ? (
+                                <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                                  <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                    {statusIcons[a.status]}
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                      <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Badge className={`gap-1 ${statusColors[a.status]}`}>
+                                  {statusIcons[a.status]}
+                                  {statusLabels[a.status]}
+                                </Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

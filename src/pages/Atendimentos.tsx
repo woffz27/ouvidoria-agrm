@@ -169,7 +169,7 @@ export default function Atendimentos() {
           </CardContent>
         </Card>
 
-        {/* Table */}
+        {/* Content */}
         <Card>
           <CardContent className="p-0">
             {isLoading ? (
@@ -177,86 +177,55 @@ export default function Atendimentos() {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden md:table-cell">Assunto</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Canal</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider hidden sm:table-cell">Data</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                    {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Mobile: Cards */}
+                <div className="block md:hidden divide-y">
                   {paginated.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-12 text-muted-foreground">
-                        Nenhum atendimento encontrado.
-                      </TableCell>
-                    </TableRow>
+                    <p className="text-center py-12 text-muted-foreground">Nenhum atendimento encontrado.</p>
                   ) : (
                     paginated.map((a) => {
                       const isAtrasado = a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado";
                       return (
-                        <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
-                          <TableCell>
-                            <div className="flex items-center gap-1.5">
+                        <div key={a.id} className="p-4 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
                               <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
                                 {a.protocolo}
                               </Link>
-                              {isAtrasado && <CalendarClock className="h-3.5 w-3.5 text-destructive" />}
+                              {isAtrasado && <CalendarClock className="inline h-3.5 w-3.5 text-destructive ml-1.5" />}
+                              <p className="text-sm font-medium mt-0.5">{a.solicitante}</p>
+                              <p className="text-xs text-muted-foreground truncate">{a.assunto}</p>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
-                          <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                            {a.assunto}
-                          </TableCell>
-                          <TableCell className="hidden xl:table-cell">
-                            <span className="text-[10px] border rounded-md px-1.5 py-0.5">
-                              {categoriaLabels[a.categoria]}
-                            </span>
-                          </TableCell>
-                          <TableCell className="hidden xl:table-cell">
-                            <span className="text-[10px] border rounded-md px-1.5 py-0.5">
-                              {tipoProblemaLabels[a.tipo_problema]}
-                            </span>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                            {canalLabels[a.canal]}
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                            {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
-                          </TableCell>
-                          <TableCell>
-                            {isAdmin ? (
-                              <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
-                                <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                              {isAdmin ? (
+                                <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                                  <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                    {statusIcons[a.status]}
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                      <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              ) : (
+                                <Badge className={`gap-1 text-[10px] ${statusColors[a.status]}`}>
                                   {statusIcons[a.status]}
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {(Object.keys(statusLabels) as StatusType[]).map((s) => (
-                                    <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <Badge className={`gap-1 ${statusColors[a.status]}`}>
-                                {statusIcons[a.status]}
-                                {statusLabels[a.status]}
-                              </Badge>
-                            )}
-                          </TableCell>
-                          {isAdmin && (
-                            <TableCell>
+                                  {statusLabels[a.status]}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                            <span>{canalLabels[a.canal]}</span>
+                            <span>{new Date(a.data_abertura).toLocaleDateString("pt-BR")}</span>
+                            <span>{categoriaLabels[a.categoria]}</span>
+                            {isAdmin && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-                                    <Trash2 className="h-4 w-4" />
+                                  <button className="ml-auto rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                    <Trash2 className="h-3.5 w-3.5" />
                                   </button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -272,14 +241,121 @@ export default function Atendimentos() {
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
-                            </TableCell>
-                          )}
-                        </TableRow>
+                            )}
+                          </div>
+                        </div>
                       );
                     })
                   )}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* Desktop: Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Categoria</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider hidden xl:table-cell">Tipo</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Data</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                        {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginated.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-12 text-muted-foreground">
+                            Nenhum atendimento encontrado.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        paginated.map((a) => {
+                          const isAtrasado = a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado";
+                          return (
+                            <TableRow key={a.id} className="cursor-pointer transition-colors hover:bg-muted/50">
+                              <TableCell>
+                                <div className="flex items-center gap-1.5">
+                                  <Link to={`/atendimento/${a.id}`} className="font-mono text-xs font-semibold text-primary hover:underline">
+                                    {a.protocolo}
+                                  </Link>
+                                  {isAtrasado && <CalendarClock className="h-3.5 w-3.5 text-destructive" />}
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-sm font-medium">{a.solicitante}</TableCell>
+                              <TableCell className="hidden lg:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                                {a.assunto}
+                              </TableCell>
+                              <TableCell className="hidden xl:table-cell">
+                                <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                                  {categoriaLabels[a.categoria]}
+                                </span>
+                              </TableCell>
+                              <TableCell className="hidden xl:table-cell">
+                                <span className="text-[10px] border rounded-md px-1.5 py-0.5">
+                                  {tipoProblemaLabels[a.tipo_problema]}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {canalLabels[a.canal]}
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
+                              </TableCell>
+                              <TableCell>
+                                {isAdmin ? (
+                                  <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
+                                    <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
+                                      {statusIcons[a.status]}
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {(Object.keys(statusLabels) as StatusType[]).map((s) => (
+                                        <SelectItem key={s} value={s}>{statusLabels[s]}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <Badge className={`gap-1 ${statusColors[a.status]}`}>
+                                    {statusIcons[a.status]}
+                                    {statusLabels[a.status]}
+                                  </Badge>
+                                )}
+                              </TableCell>
+                              {isAdmin && (
+                                <TableCell>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Excluir atendimento?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          O atendimento <strong>{a.protocolo}</strong> será excluído permanentemente.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleExcluir(a.id)}>Excluir</AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </TableCell>
+                              )}
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
