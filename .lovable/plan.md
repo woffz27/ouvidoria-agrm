@@ -1,25 +1,35 @@
-## Plano: Texto responsivo na página de Login
+
+
+## Plano: Envio de WhatsApp com mensagem padrão de protocolo via wa.me
 
 ### O que será feito
 
-Usar classes Tailwind responsivas (`text-xl md:text-2xl`, `text-xs md:text-sm`, etc.) nos textos da página de Login para que ajustem automaticamente ao tamanho da tela.
+Atualizar o botão "Enviar por WhatsApp" em `DetalhesAtendimento.tsx` para usar o número **84996556587** como remetente de referência e enviar a mensagem padrão de protocolo registrado via link `wa.me`.
 
-### Alterações em `src/pages/Login.tsx`
+### Alterações em `src/pages/DetalhesAtendimento.tsx`
 
+**1. Atualizar `handleWhatsApp`** para montar a mensagem padrão com os dados do atendimento:
 
-| Elemento                         | Atual       | Responsivo                            |
-| -------------------------------- | ----------- | ------------------------------------- |
-| Título "Entrar no Sistema"       | `text-2xl`  | `text-lg sm:text-xl md:text-2xl`      |
-| Subtítulo "Sistema de Ouvidoria" | `text-sm`   | `text-xs sm:text-sm`                  |
-| Labels (E-mail, Senha)           | `text-sm`   | `text-xs sm:text-sm`                  |
-| "Lembrar-me"                     | `text-sm`   | `text-xs sm:text-sm`                  |
-| "Esqueceu a senha?"              | `text-sm`   | `text-xs sm:text-sm`                  |
-| "Não tem conta?"                 | `text-sm`   | `text-xs sm:text-sm`                  |
-| Padding do container             | `p-8`       | `p-4 sm:p-6 md:p-8`                   |
-| Spacing do form                  | `space-y-8` | `space-y-4 sm:space-y-6 md:space-y-8` |
-| Spacing interno form             | `space-y-5` | `space-y-3 sm:space-y-5`              |
+```
+📩 Ouvidoria AGRM – Protocolo Registrado
 
+Olá! 👋
+Informamos que sua manifestação foi recebida com sucesso pela Ouvidoria da AGRM.
 
-Também aplicar as mesmas classes responsivas nas páginas **Cadastro**, **RecuperarSenha** e **ResetPassword** para manter consistência.
+📄 Protocolo nº: [protocolo do atendimento]
 
-aplicar na verdade em todo o sistema, não só nas telas de cadastros, recuperar senha reset
+Sua solicitação está em análise e será encaminhada ao setor responsável.
+
+⏱️ O prazo para resposta é de até [prazo calculado] dias úteis.
+
+📌 Guarde o número do protocolo para acompanhamento.
+
+Agradecemos o seu contato e permanecemos à disposição.
+```
+
+- O protocolo e prazo são preenchidos automaticamente a partir dos dados do atendimento
+- O número do destinatário continua sendo o telefone do solicitante cadastrado no atendimento
+- O link `wa.me` abre o WhatsApp com a mensagem já preenchida
+
+**2. Adicionar botão separado** para enviar a mensagem padrão de protocolo (distinto do botão que envia o comentário digitado), ou substituir o comportamento atual — o botão "Enviar por WhatsApp" enviará sempre a mensagem padrão de protocolo.
+
