@@ -39,8 +39,8 @@ export default function Login() {
       </div>
 
       {/* Right side - form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           {/* Mobile logo */}
           <div className="lg:hidden flex justify-center mb-6 relative h-40 rounded-xl overflow-hidden">
             <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -48,15 +48,15 @@ export default function Login() {
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Entrar no Sistema</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Entrar no Sistema</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Sistema de Ouvidoria da AGRM
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">E-mail</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">E-mail</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -66,12 +66,11 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required />
-                
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Senha</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -81,12 +80,10 @@ export default function Login() {
                   onChange={(e) => setSenha(e.target.value)}
                   className="pl-10 pr-10"
                   required />
-                
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -95,11 +92,11 @@ export default function Login() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Checkbox id="remember" />
-                <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+                <label htmlFor="remember" className="text-xs sm:text-sm text-muted-foreground cursor-pointer">
                   Lembrar-me
                 </label>
               </div>
-              <Link to="/recuperar-senha" className="text-sm font-medium text-primary hover:underline">
+              <Link to="/recuperar-senha" className="text-xs sm:text-sm font-medium text-primary hover:underline">
                 Esqueceu a senha?
               </Link>
             </div>
@@ -110,7 +107,7 @@ export default function Login() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             Não tem conta?{" "}
             <Link to="/cadastro" className="font-medium hover:underline text-success">
               Cadastre-se
@@ -119,5 +116,4 @@ export default function Login() {
         </div>
       </div>
     </div>);
-
 }
