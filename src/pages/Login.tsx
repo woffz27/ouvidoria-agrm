@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@/assets/login-bg.jpg";
+import loginBg from "@/assets/login-bg-new.png";
+import loginLogo from "@/assets/login-logo.png";
 
 export default function Login() {
   const { signIn, user, loading } = useAuth();
