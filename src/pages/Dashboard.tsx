@@ -81,20 +81,27 @@ export default function Dashboard() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-          {statCards.map((stat) => (
-            <Card key={stat.title} className={`card-hover border-l-4 ${stat.color}`}>
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${stat.bg} ${stat.iconColor}`}>
-                  {stat.icon}
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground font-medium">{stat.title}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
+          {statCards.map((stat) => {
+            const content = (
+              <Card key={stat.title} className={`card-hover border-l-4 ${stat.color} ${(stat as any).link ? "cursor-pointer" : ""}`}>
+                <CardContent className="flex items-center gap-4 p-5">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${stat.bg} ${stat.iconColor}`}>
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-xs text-muted-foreground font-medium">{stat.title}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+            return (stat as any).link ? (
+              <Link key={stat.title} to={(stat as any).link}>{content}</Link>
+            ) : (
+              <div key={stat.title}>{content}</div>
+            );
+          })}
         </div>
 
         {/* Secondary stats */}
