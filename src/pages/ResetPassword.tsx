@@ -67,9 +67,9 @@ export default function ResetPassword() {
           </div>
 
           {ready && (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Nova Senha</label>
+                <label className="text-xs sm:text-sm font-medium text-foreground">Nova Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input type={showPassword ? "text" : "password"} placeholder="Mínimo 6 caracteres" value={senha} onChange={(e) => setSenha(e.target.value)} className="pl-10 pr-10" required />
