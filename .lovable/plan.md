@@ -1,29 +1,50 @@
+## Plano: Cadastro pendente com aprovação de admin
 
+### Como funciona hoje
 
-## Plano: Substituir emojis incompatíveis na mensagem de WhatsApp
-
-### Problema
-Os emojis `📩`, `👋`, `📄`, `⏱️`, `📌` usados na mensagem podem não renderizar corretamente no WhatsApp dependendo do dispositivo/encoding da URL.
+Qualquer pessoa se cadastra e já consegue acessar o sistema imediatamente após confirmar o e-mail.
 
 ### Solução
-Alterar `src/pages/DetalhesAtendimento.tsx` (linhas 188-201) — substituir os emojis por caracteres compatíveis com WhatsApp ou removê-los, usando formatação com asteriscos (`*texto*`) para negrito no WhatsApp:
 
-```
-*Ouvidoria AGRM - Protocolo Registrado*
+Adicionar um campo `aprovado` na tabela `profiles` (default `false`). O sistema bloqueia o acesso de usuários não aprovados. Admins aprovam pelo painel de usuários.
 
-Olá!
-Informamos que sua manifestação foi recebida com sucesso pela Ouvidoria da AGRM.
+### Alterações
 
-*Protocolo nº:* ${protocolo}
+**1. Migração no banco de dados**
 
-Sua solicitação está em análise e será encaminhada ao setor responsável para as devidas providências.
+- Adicionar coluna `aprovado boolean NOT NULL DEFAULT false` na tabela `profiles`
+- Atualizar o perfil do admin principal (`emanuellleandro15@gmail.com`) para `aprovado = true`
+- Atualizar perfis existentes para `aprovado = true` (para não bloquear quem já está cadastrado)
 
-*Prazo para resposta:* até ${prazo} dias úteis, podendo ser concluído antes desse período.
+**2. Atualizar `AuthContext.tsx**`
 
-Guarde o número do protocolo para acompanhamento.
+- Buscar o campo `aprovado` junto com o perfil
+- Expor `aprovado` no contexto (ou um campo `pendente`)
 
-Agradecemos o seu contato e permanecemos à disposição.
-```
+**3. Atualizar `ProtectedRoute.tsx**`
 
-Usa formatação nativa do WhatsApp (`*negrito*`) em vez de emojis, garantindo compatibilidade total.
+- Se o usuário está autenticado mas `aprovado = false`, exibir tela de "Cadastro pendente — aguarde aprovação de um administrador" em vez de redirecionar para login
+- Botão para sair (logout)
 
+**4. Atualizar `Cadastro.tsx**`
+
+- Após cadastro com sucesso, mostrar mensagem: "Cadastro enviado! Aguarde a aprovação de um administrador."
+
+**5. Atualizar edge function `manage-users**`
+
+- No GET: incluir campo `aprovado` na lista de usuários
+- Nova action `approve_user`: seta `aprovado = true` no perfil do usuário
+
+**6. Atualizar `GerenciarUsuarios.tsx**`
+
+- Mostrar coluna "Status" (Pendente / Aprovado)
+- Botão para aprovar usuários pendentes (ícone de check)
+- Filtro ou destaque visual para pendentes no topo da lista
+
+&nbsp;
+
+&nbsp;
+
+Gostaria também de que os atendimentos aos quais estão fora dos prazos, sejam enviados automáticamente para a página de atrasados.  Adicione Atrasados no dashboard também para podermos dá mais atenção
+
+&nbsp;
