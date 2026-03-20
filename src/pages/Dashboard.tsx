@@ -81,17 +81,17 @@ export default function Dashboard() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {statCards.map((stat) => {
             const content = (
               <Card key={stat.title} className={`card-hover border-l-4 ${stat.color} ${(stat as any).link ? "cursor-pointer" : ""}`}>
-                <CardContent className="flex items-center gap-4 p-5">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${stat.bg} ${stat.iconColor}`}>
+                <CardContent className="flex items-center gap-2 sm:gap-4 p-3 sm:p-5">
+                  <div className={`flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl ${stat.bg} ${stat.iconColor}`}>
                     {stat.icon}
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground font-medium">{stat.title}</p>
+                  <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold">{stat.value}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground font-medium truncate">{stat.title}</p>
                   </div>
                 </CardContent>
               </Card>
