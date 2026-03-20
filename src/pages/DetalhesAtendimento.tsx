@@ -174,6 +174,34 @@ export default function DetalhesAtendimento() {
     window.open(url, "_blank");
   };
 
+  const calcularPrazoDias = () => {
+    if (!atendimento.prazo_resolucao) return "15";
+    const hoje = new Date();
+    const prazo = new Date(atendimento.prazo_resolucao);
+    const diffMs = prazo.getTime() - hoje.getTime();
+    const diffDias = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    return String(diffDias);
+  };
+
+  const handleWhatsAppProtocolo = () => {
+    const prazo = calcularPrazoDias();
+    const mensagem = `📩 Ouvidoria AGRM – Protocolo Registrado
+
+Olá! 👋
+Informamos que sua manifestação foi recebida com sucesso pela Ouvidoria da AGRM.
+
+📄 Protocolo nº: ${atendimento.protocolo}
+
+Sua solicitação está em análise e será encaminhada ao setor responsável para as devidas providências.
+
+⏱️ O prazo para resposta é de até ${prazo} dias úteis, podendo ser concluído antes desse período.
+
+📌 Guarde o número do protocolo para acompanhamento.
+
+Agradecemos o seu contato e permanecemos à disposição.`;
+    handleWhatsApp(mensagem);
+  };
+
   const handleEnviarEmail = async () => {
     if (!emailDestinatario || !novoComentario.trim()) {
       toast({ title: "Preencha o destinatário e o comentário", variant: "destructive" });
@@ -482,15 +510,25 @@ export default function DetalhesAtendimento() {
                       <Mail className="h-3.5 w-3.5" /> {enviandoEmail ? "Enviando..." : "Enviar por E-mail"}
                     </Button>
                     {atendimento.telefone && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5"
-                        onClick={() => handleWhatsApp(novoComentario)}
-                        disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
-                      >
-                        <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
-                      </Button>
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                          onClick={() => handleWhatsApp(novoComentario)}
+                          disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
+                          onClick={handleWhatsAppProtocolo}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Enviar Protocolo via WhatsApp
+                        </Button>
+                      </>
                     )}
                     <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
                       <Upload className="h-3.5 w-3.5" />
