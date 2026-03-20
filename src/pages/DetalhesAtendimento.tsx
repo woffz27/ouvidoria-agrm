@@ -510,15 +510,25 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                       <Mail className="h-3.5 w-3.5" /> {enviandoEmail ? "Enviando..." : "Enviar por E-mail"}
                     </Button>
                     {atendimento.telefone && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1.5"
-                        onClick={() => handleWhatsApp(novoComentario)}
-                        disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
-                      >
-                        <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
-                      </Button>
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                          onClick={() => handleWhatsApp(novoComentario)}
+                          disabled={!novoComentario.trim() || novoComentario === "<p></p>"}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Enviar por WhatsApp
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
+                          onClick={handleWhatsAppProtocolo}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Enviar Protocolo via WhatsApp
+                        </Button>
+                      </>
                     )}
                     <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
                       <Upload className="h-3.5 w-3.5" />
