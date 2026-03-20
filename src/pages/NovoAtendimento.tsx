@@ -144,8 +144,8 @@ export default function NovoAtendimento() {
     <AppLayout>
       <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Novo Atendimento</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Novo Atendimento</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Registre um novo atendimento na ouvidoria
           </p>
         </div>

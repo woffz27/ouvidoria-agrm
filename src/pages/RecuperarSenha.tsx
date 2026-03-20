@@ -33,23 +33,23 @@ export default function RecuperarSenha() {
         <img alt="" className="absolute inset-0 h-full w-full object-cover" src={recuperarBg} />
       </div>
 
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           <div className="lg:hidden flex justify-center mb-6">
             <img src={recuperarBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Recuperar Senha</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Recuperar Senha</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {sent ? "Um link de recuperação foi enviado para seu e-mail." : "Digite seu e-mail para receber o link de recuperação."}
             </p>
           </div>
 
           {!sent &&
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">E-mail</label>
+                <label className="text-xs sm:text-sm font-medium text-foreground">E-mail</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" required />
@@ -64,7 +64,7 @@ export default function RecuperarSenha() {
           }
 
           <div className="text-center">
-            <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+            <Link to="/login" className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary hover:underline">
               <ArrowLeft className="h-4 w-4" />
               Voltar para Login
             </Link>

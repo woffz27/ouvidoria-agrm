@@ -39,8 +39,8 @@ export default function BuscarProtocolo() {
     <AppLayout>
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Buscar Protocolo</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Buscar Protocolo</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Informe o número do protocolo no formato AAAA-NNNNNN
           </p>
         </div>

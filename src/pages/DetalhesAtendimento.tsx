@@ -253,7 +253,7 @@ export default function DetalhesAtendimento() {
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl font-bold tracking-tight break-words min-w-0">{atendimento.assunto}</h1>
+              <h1 className="text-base sm:text-lg md:text-xl font-bold tracking-tight break-words min-w-0">{atendimento.assunto}</h1>
               <Badge className={`gap-1 shrink-0 ${statusColors[atendimento.status]}`}>
                 {statusIcons[atendimento.status]}
                 {statusLabels[atendimento.status]}
@@ -264,7 +264,7 @@ export default function DetalhesAtendimento() {
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
             </p>
           </div>

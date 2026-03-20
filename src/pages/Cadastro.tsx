@@ -50,20 +50,20 @@ export default function Cadastro() {
         <img alt="" className="absolute inset-0 h-full w-full object-cover" src={cadastroBg} />
       </div>
 
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           <div className="lg:hidden flex justify-center mb-6">
             <img src={cadastroBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Criar Conta</h1>
-            <p className="text-sm text-muted-foreground">Preencha os dados para se cadastrar</p>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Criar Conta</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Preencha os dados para se cadastrar</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Nome Completo</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Nome Completo</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input placeholder="Seu nome completo" value={nome} onChange={(e) => setNome(e.target.value)} className="pl-10" required />
@@ -71,7 +71,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Cargo</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Cargo</label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input placeholder="Ex: Ouvidor, Atendente" value={cargo} onChange={(e) => setCargo(e.target.value)} className="pl-10" required />
@@ -79,7 +79,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">E-mail</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">E-mail</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" required />
@@ -87,7 +87,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Senha</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input type={showPassword ? "text" : "password"} placeholder="Mínimo 6 caracteres" value={senha} onChange={(e) => setSenha(e.target.value)} className="pl-10 pr-10" required />
@@ -98,7 +98,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Confirmar Senha</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Confirmar Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input type={showPassword ? "text" : "password"} placeholder="Repita a senha" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className="pl-10" required />
@@ -111,7 +111,7 @@ export default function Cadastro() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             Já tem conta?{" "}
             <Link to="/login" className="font-medium text-primary hover:underline">
               Entrar

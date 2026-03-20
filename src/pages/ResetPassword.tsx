@@ -57,19 +57,19 @@ export default function ResetPassword() {
         <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       </div>
 
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Nova Senha</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Nova Senha</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {ready ? "Defina sua nova senha abaixo." : "Verificando link de recuperação..."}
             </p>
           </div>
 
           {ready && (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Nova Senha</label>
+                <label className="text-xs sm:text-sm font-medium text-foreground">Nova Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input type={showPassword ? "text" : "password"} placeholder="Mínimo 6 caracteres" value={senha} onChange={(e) => setSenha(e.target.value)} className="pl-10 pr-10" required />
@@ -80,7 +80,7 @@ export default function ResetPassword() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Confirmar Nova Senha</label>
+                <label className="text-xs sm:text-sm font-medium text-foreground">Confirmar Nova Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input type={showPassword ? "text" : "password"} placeholder="Repita a nova senha" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} className="pl-10" required />

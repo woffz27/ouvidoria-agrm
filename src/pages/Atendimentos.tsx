@@ -93,8 +93,8 @@ export default function Atendimentos() {
       <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Atendimentos</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Atendimentos</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {filtered.length} atendimento{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
