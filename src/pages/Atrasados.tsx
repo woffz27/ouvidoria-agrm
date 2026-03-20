@@ -21,7 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
-  em_andamento: "bg-secondary text-secondary-foreground",
+  em_andamento: "bg-blue-600 text-white",
   respondido: "bg-primary text-primary-foreground",
   finalizado: "bg-success text-success-foreground",
 };

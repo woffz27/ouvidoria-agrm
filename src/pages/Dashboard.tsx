@@ -34,7 +34,7 @@ import { useAtendimentos, useEstatisticas } from "@/hooks/use-atendimentos";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
-  em_andamento: "bg-secondary text-secondary-foreground",
+  em_andamento: "bg-blue-600 text-white",
   respondido: "bg-primary text-primary-foreground",
   finalizado: "bg-success text-success-foreground",
 };
@@ -55,7 +55,7 @@ export default function Dashboard() {
   const statCards = stats ? [
     { title: "Total de Atendimentos", value: stats.total, icon: <FileText className="h-5 w-5" />, color: "border-l-primary", bg: "bg-primary/5", iconColor: "text-primary" },
     { title: "Abertos", value: stats.abertos, icon: <AlertCircle className="h-5 w-5" />, color: "border-l-accent", bg: "bg-accent/10", iconColor: "text-accent" },
-    { title: "Em Andamento", value: stats.emAndamento, icon: <Clock className="h-5 w-5" />, color: "border-l-secondary", bg: "bg-secondary/10", iconColor: "text-secondary" },
+    { title: "Em Andamento", value: stats.emAndamento, icon: <Clock className="h-5 w-5" />, color: "border-l-blue-600", bg: "bg-blue-600/10", iconColor: "text-blue-600" },
     { title: "Atrasados", value: stats.atrasados, icon: <CalendarClock className="h-5 w-5" />, color: "border-l-destructive", bg: "bg-destructive/10", iconColor: "text-destructive", link: "/atrasados" },
     { title: "Finalizados", value: stats.finalizados, icon: <CheckCircle2 className="h-5 w-5" />, color: "border-l-success", bg: "bg-success/10", iconColor: "text-success" },
   ] : [];
