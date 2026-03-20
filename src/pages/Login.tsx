@@ -33,8 +33,9 @@ export default function Login() {
   return (
     <div className="flex min-h-screen">
       {/* Left side - background image */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-primary items-center justify-center">
-        <img alt="" className="absolute inset-0 h-full w-full object-contain" src={loginBg} />
+      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden">
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={loginBg} />
+        <img alt="AGRM" className="relative z-10 w-3/5 max-w-md drop-shadow-lg" src={loginLogo} />
       </div>
 
       {/* Right side - form */}
