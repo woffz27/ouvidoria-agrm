@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN aprovado boolean NOT NULL DEFAULT false;
