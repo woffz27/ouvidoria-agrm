@@ -61,7 +61,7 @@ export default function Cadastro() {
             <p className="text-xs sm:text-sm text-muted-foreground">Preencha os dados para se cadastrar</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">Nome Completo</label>
               <div className="relative">
