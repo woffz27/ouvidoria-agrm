@@ -74,8 +74,8 @@ export default function Dashboard() {
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Visão geral da Ouvidoria AGRM</p>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Visão geral da Ouvidoria AGRM</p>
         </div>
 
         {/* Stats grid */}
