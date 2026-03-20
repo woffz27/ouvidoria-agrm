@@ -57,8 +57,8 @@ export default function ResetPassword() {
         <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       </div>
 
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-bold text-foreground">Nova Senha</h1>
             <p className="text-sm text-muted-foreground">
