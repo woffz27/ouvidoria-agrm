@@ -71,7 +71,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Cargo</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Cargo</label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input placeholder="Ex: Ouvidor, Atendente" value={cargo} onChange={(e) => setCargo(e.target.value)} className="pl-10" required />
