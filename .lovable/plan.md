@@ -1,50 +1,45 @@
-## Plano: Cadastro pendente com aprovação de admin
 
-### Como funciona hoje
 
-Qualquer pessoa se cadastra e já consegue acessar o sistema imediatamente após confirmar o e-mail.
+## Plano: Novo tema de cores — Tecnológico e Inovador
 
-### Solução
+### Direção visual
 
-Adicionar um campo `aprovado` na tabela `profiles` (default `false`). O sistema bloqueia o acesso de usuários não aprovados. Admins aprovam pelo painel de usuários.
+Manter a identidade AGRM (azul institucional + ouro) mas modernizar com:
+- **Azul mais profundo e saturado** como primário, com gradientes sutis
+- **Ciano/teal** como cor secundária (ar tecnológico e inovador)
+- **Ouro mais refinado** (tom âmbar dourado) como acento
+- **Backgrounds mais limpos** com tons slate em vez de cinza neutro
+- **Sidebar escura** (slate/navy profundo) para contraste premium
+
+### Paleta proposta
+
+```text
+Primário:     #0F2B5B → azul marinho profundo (mantém identidade)
+Secundário:   #0EA5E9 → ciano vibrante (toque tech/inovador)
+Acento:       #F59E0B → âmbar dourado (refinado)
+Sucesso:      #10B981 → verde esmeralda
+Destrutivo:   #EF4444 → vermelho
+Background:   #F8FAFC → slate-50 (mais limpo)
+Card:         #FFFFFF → branco puro para cards
+Sidebar:      #0C1E3A → navy escuro profundo
+Sidebar hover:#1A3A5C → navy médio
+```
 
 ### Alterações
 
-**1. Migração no banco de dados**
+**1. `src/index.css`** — Atualizar todas as variáveis CSS (`:root` e `.dark`):
+- Backgrounds mais claros e limpos (slate-based)
+- Primário azul profundo, secundário ciano tech
+- Sidebar com navy escuro e acentos ciano
+- Melhor contraste geral
 
-- Adicionar coluna `aprovado boolean NOT NULL DEFAULT false` na tabela `profiles`
-- Atualizar o perfil do admin principal (`emanuellleandro15@gmail.com`) para `aprovado = true`
-- Atualizar perfis existentes para `aprovado = true` (para não bloquear quem já está cadastrado)
+**2. `src/index.css`** — Atualizar utilitários (`.tech-glow`, `.gradient-primary`):
+- Gradientes atualizados com as novas cores
+- Glow effect com ciano
 
-**2. Atualizar `AuthContext.tsx**`
+**3. `tailwind.config.ts`** — Sem alterações estruturais necessárias (usa variáveis CSS)
 
-- Buscar o campo `aprovado` junto com o perfil
-- Expor `aprovado` no contexto (ou um campo `pendente`)
+**4. Componentes** — Sem alterações necessárias (já usam as variáveis do tema)
 
-**3. Atualizar `ProtectedRoute.tsx**`
+Total: **1 arquivo alterado** (`src/index.css`)
 
-- Se o usuário está autenticado mas `aprovado = false`, exibir tela de "Cadastro pendente — aguarde aprovação de um administrador" em vez de redirecionar para login
-- Botão para sair (logout)
-
-**4. Atualizar `Cadastro.tsx**`
-
-- Após cadastro com sucesso, mostrar mensagem: "Cadastro enviado! Aguarde a aprovação de um administrador."
-
-**5. Atualizar edge function `manage-users**`
-
-- No GET: incluir campo `aprovado` na lista de usuários
-- Nova action `approve_user`: seta `aprovado = true` no perfil do usuário
-
-**6. Atualizar `GerenciarUsuarios.tsx**`
-
-- Mostrar coluna "Status" (Pendente / Aprovado)
-- Botão para aprovar usuários pendentes (ícone de check)
-- Filtro ou destaque visual para pendentes no topo da lista
-
-&nbsp;
-
-&nbsp;
-
-Gostaria também de que os atendimentos aos quais estão fora dos prazos, sejam enviados automáticamente para a página de atrasados.  Adicione Atrasados no dashboard também para podermos dá mais atenção
-
-&nbsp;
