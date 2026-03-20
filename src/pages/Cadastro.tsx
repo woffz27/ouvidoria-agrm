@@ -98,7 +98,7 @@ export default function Cadastro() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground">Confirmar Senha</label>
+              <label className="text-xs sm:text-sm font-medium text-foreground">Confirmar Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input type={showPassword ? "text" : "password"} placeholder="Repita a senha" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className="pl-10" required />
