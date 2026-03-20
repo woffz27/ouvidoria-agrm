@@ -42,8 +42,9 @@ export default function Login() {
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
         <div className="w-full max-w-md space-y-8">
           {/* Mobile logo */}
-          <div className="lg:hidden flex justify-center mb-6">
-            <img src={loginBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
+          <div className="lg:hidden flex justify-center mb-6 relative h-40 rounded-xl overflow-hidden">
+            <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={loginLogo} alt="AGRM" className="relative z-10 w-40 self-center drop-shadow-lg" />
           </div>
 
           <div className="text-center space-y-2">
