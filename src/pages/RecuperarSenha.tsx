@@ -40,8 +40,8 @@ export default function RecuperarSenha() {
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Recuperar Senha</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Recuperar Senha</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {sent ? "Um link de recuperação foi enviado para seu e-mail." : "Digite seu e-mail para receber o link de recuperação."}
             </p>
           </div>
