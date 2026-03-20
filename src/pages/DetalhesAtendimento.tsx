@@ -185,18 +185,18 @@ export default function DetalhesAtendimento() {
 
   const handleWhatsAppProtocolo = () => {
     const prazo = calcularPrazoDias();
-    const mensagem = `📩 Ouvidoria AGRM – Protocolo Registrado
+    const mensagem = `*Ouvidoria AGRM - Protocolo Registrado*
 
-Olá! 👋
+Olá!
 Informamos que sua manifestação foi recebida com sucesso pela Ouvidoria da AGRM.
 
-📄 Protocolo nº: ${atendimento.protocolo}
+*Protocolo nº:* ${atendimento.protocolo}
 
 Sua solicitação está em análise e será encaminhada ao setor responsável para as devidas providências.
 
-⏱️ O prazo para resposta é de até ${prazo} dias úteis, podendo ser concluído antes desse período.
+*Prazo para resposta:* até ${prazo} dias úteis, podendo ser concluído antes desse período.
 
-📌 Guarde o número do protocolo para acompanhamento.
+Guarde o número do protocolo para acompanhamento.
 
 Agradecemos o seu contato e permanecemos à disposição.`;
     handleWhatsApp(mensagem);
