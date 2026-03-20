@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import loginBg from "@/assets/login-bg.jpg";
+import loginBg from "@/assets/login-bg-new.png";
+import loginLogo from "@/assets/login-logo.png";
 
 export default function Login() {
   const { signIn, user, loading } = useAuth();
@@ -32,16 +33,18 @@ export default function Login() {
   return (
     <div className="flex min-h-screen">
       {/* Left side - background image */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-primary items-center justify-center">
-        <img alt="" className="absolute inset-0 h-full w-full object-contain" src={loginBg} />
+      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden">
+        <img alt="" className="absolute inset-0 h-full w-full object-cover" src={loginBg} />
+        <img alt="AGRM" className="relative z-10 w-3/5 max-w-md drop-shadow-lg" src={loginLogo} />
       </div>
 
       {/* Right side - form */}
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
         <div className="w-full max-w-md space-y-8">
           {/* Mobile logo */}
-          <div className="lg:hidden flex justify-center mb-6">
-            <img src={loginBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
+          <div className="lg:hidden flex justify-center mb-6 relative h-40 rounded-xl overflow-hidden">
+            <img src={loginBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={loginLogo} alt="AGRM" className="relative z-10 w-40 self-center drop-shadow-lg" />
           </div>
 
           <div className="text-center space-y-2">
