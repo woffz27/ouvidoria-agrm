@@ -80,7 +80,7 @@ export default function ResetPassword() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Confirmar Nova Senha</label>
+                <label className="text-xs sm:text-sm font-medium text-foreground">Confirmar Nova Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input type={showPassword ? "text" : "password"} placeholder="Repita a nova senha" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} className="pl-10" required />

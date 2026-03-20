@@ -111,7 +111,7 @@ export default function Cadastro() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             Já tem conta?{" "}
             <Link to="/login" className="font-medium text-primary hover:underline">
               Entrar

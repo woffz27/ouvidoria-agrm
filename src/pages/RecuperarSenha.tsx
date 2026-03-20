@@ -64,7 +64,7 @@ export default function RecuperarSenha() {
           }
 
           <div className="text-center">
-            <Link to="/login" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+            <Link to="/login" className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary hover:underline">
               <ArrowLeft className="h-4 w-4" />
               Voltar para Login
             </Link>
