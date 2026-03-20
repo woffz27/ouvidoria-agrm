@@ -50,8 +50,8 @@ export default function Cadastro() {
         <img alt="" className="absolute inset-0 h-full w-full object-cover" src={cadastroBg} />
       </div>
 
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-8 bg-card">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 sm:p-6 md:p-8 bg-card">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6 md:space-y-8">
           <div className="lg:hidden flex justify-center mb-6">
             <img src={cadastroBg} alt="AGRM" className="h-32 w-auto rounded-xl object-cover" />
           </div>
