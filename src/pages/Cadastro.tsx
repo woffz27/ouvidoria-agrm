@@ -57,8 +57,8 @@ export default function Cadastro() {
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">Criar Conta</h1>
-            <p className="text-sm text-muted-foreground">Preencha os dados para se cadastrar</p>
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Criar Conta</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Preencha os dados para se cadastrar</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
