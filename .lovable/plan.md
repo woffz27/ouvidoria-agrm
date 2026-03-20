@@ -1,45 +1,17 @@
 
 
-## Plano: Novo tema de cores — Tecnológico e Inovador
+## Plano: Escurecer o azul do status "Em Andamento"
 
-### Direção visual
+### Problema
+O status "Em Andamento" usa `bg-secondary` que é o ciano vibrante (`#0EA5E9`) — claro demais como fundo de badge.
 
-Manter a identidade AGRM (azul institucional + ouro) mas modernizar com:
-- **Azul mais profundo e saturado** como primário, com gradientes sutis
-- **Ciano/teal** como cor secundária (ar tecnológico e inovador)
-- **Ouro mais refinado** (tom âmbar dourado) como acento
-- **Backgrounds mais limpos** com tons slate em vez de cinza neutro
-- **Sidebar escura** (slate/navy profundo) para contraste premium
+### Solução
+Trocar de `bg-secondary text-secondary-foreground` para `bg-blue-600 text-white` (ou similar mais escuro) nos 4 arquivos que definem `statusColors`:
 
-### Paleta proposta
+- `src/pages/Dashboard.tsx` (linha 37)
+- `src/pages/Atendimentos.tsx` (linha 25)
+- `src/pages/Atrasados.tsx` (linha 24)
+- `src/pages/DetalhesAtendimento.tsx` (linha 28)
 
-```text
-Primário:     #0F2B5B → azul marinho profundo (mantém identidade)
-Secundário:   #0EA5E9 → ciano vibrante (toque tech/inovador)
-Acento:       #F59E0B → âmbar dourado (refinado)
-Sucesso:      #10B981 → verde esmeralda
-Destrutivo:   #EF4444 → vermelho
-Background:   #F8FAFC → slate-50 (mais limpo)
-Card:         #FFFFFF → branco puro para cards
-Sidebar:      #0C1E3A → navy escuro profundo
-Sidebar hover:#1A3A5C → navy médio
-```
-
-### Alterações
-
-**1. `src/index.css`** — Atualizar todas as variáveis CSS (`:root` e `.dark`):
-- Backgrounds mais claros e limpos (slate-based)
-- Primário azul profundo, secundário ciano tech
-- Sidebar com navy escuro e acentos ciano
-- Melhor contraste geral
-
-**2. `src/index.css`** — Atualizar utilitários (`.tech-glow`, `.gradient-primary`):
-- Gradientes atualizados com as novas cores
-- Glow effect com ciano
-
-**3. `tailwind.config.ts`** — Sem alterações estruturais necessárias (usa variáveis CSS)
-
-**4. Componentes** — Sem alterações necessárias (já usam as variáveis do tema)
-
-Total: **1 arquivo alterado** (`src/index.css`)
+Também ajustar o card do Dashboard (linha 58) de `border-l-secondary` / `text-secondary` para `border-l-blue-600` / `text-blue-600`.
 
