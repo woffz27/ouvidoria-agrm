@@ -37,7 +37,7 @@ export default function Cadastro() {
     if (error) {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Cadastro realizado!", description: "Verifique seu e-mail para confirmar a conta." });
+      toast({ title: "Cadastro enviado!", description: "Aguarde a aprovação de um administrador para acessar o sistema." });
       navigate("/login");
       return;
     }

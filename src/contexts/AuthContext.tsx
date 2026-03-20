@@ -7,6 +7,7 @@ type Profile = {
   nome_completo: string;
   cargo: string;
   avatar_url: string | null;
+  aprovado: boolean;
 };
 
 type AuthContextType = {
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("profiles" as any).select("*").eq("id", userId).single();
     if (data) {
       const d = data as any;
-      setProfile({ id: d.id, nome_completo: d.nome_completo, cargo: d.cargo, avatar_url: d.avatar_url });
+      setProfile({ id: d.id, nome_completo: d.nome_completo, cargo: d.cargo, avatar_url: d.avatar_url, aprovado: d.aprovado ?? false });
     }
   };
 

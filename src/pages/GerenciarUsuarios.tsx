@@ -4,26 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, Trash2, Loader2, Users } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Loader2, Users, CheckCircle2 } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 type UserItem = {
@@ -32,6 +20,7 @@ type UserItem = {
   nome_completo: string;
   cargo: string;
   roles: string[];
+  aprovado: boolean;
   created_at: string;
 };
 
@@ -45,27 +34,42 @@ export default function GerenciarUsuarios() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke("manage-users", {
-        method: "GET",
-      });
+      const { data, error } = await supabase.functions.invoke("manage-users", { method: "GET" });
       if (error) throw error;
-      setUsers(data || []);
-    } catch (err: any) {
-      toast({
-        title: "Erro ao carregar usuários",
-        description: err.message,
-        variant: "destructive",
+      // Sort: pending first
+      const sorted = (data || []).sort((a: UserItem, b: UserItem) => {
+        if (a.aprovado === b.aprovado) return 0;
+        return a.aprovado ? 1 : -1;
       });
+      setUsers(sorted);
+    } catch (err: any) {
+      toast({ title: "Erro ao carregar usuários", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isAdmin && session) {
-      fetchUsers();
-    }
+    if (isAdmin && session) fetchUsers();
   }, [isAdmin, session]);
+
+  const approveUser = async (userId: string) => {
+    try {
+      setActionLoading(userId + "_approve");
+      const { data, error } = await supabase.functions.invoke("manage-users", {
+        method: "POST",
+        body: { action: "approve_user", user_id: userId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Usuário aprovado com sucesso!" });
+      await fetchUsers();
+    } catch (err: any) {
+      toast({ title: "Erro ao aprovar", description: err.message, variant: "destructive" });
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const toggleRole = async (userId: string) => {
     try {
@@ -79,11 +83,7 @@ export default function GerenciarUsuarios() {
       toast({ title: "Permissão atualizada com sucesso" });
       await fetchUsers();
     } catch (err: any) {
-      toast({
-        title: "Erro ao alterar permissão",
-        description: err.message,
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao alterar permissão", description: err.message, variant: "destructive" });
     } finally {
       setActionLoading(null);
     }
@@ -101,11 +101,7 @@ export default function GerenciarUsuarios() {
       toast({ title: "Usuário excluído com sucesso" });
       await fetchUsers();
     } catch (err: any) {
-      toast({
-        title: "Erro ao excluir usuário",
-        description: err.message,
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao excluir usuário", description: err.message, variant: "destructive" });
     } finally {
       setActionLoading(null);
     }
@@ -141,6 +137,7 @@ export default function GerenciarUsuarios() {
                   <TableHead>Nome</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Cargo</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Permissão</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
@@ -149,14 +146,15 @@ export default function GerenciarUsuarios() {
                 {users.map((user) => {
                   const isUserAdmin = user.roles.includes("admin");
                   return (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        {user.nome_completo || "—"}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {user.email}
-                      </TableCell>
+                    <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
+                      <TableCell className="font-medium">{user.nome_completo || "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">{user.email}</TableCell>
                       <TableCell>{user.cargo || "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant={user.aprovado ? "default" : "outline"} className={!user.aprovado ? "border-amber-500 text-amber-600" : ""}>
+                          {user.aprovado ? "Aprovado" : "Pendente"}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={isUserAdmin ? "default" : "secondary"}>
                           {isUserAdmin ? "Admin" : "Usuário"}
@@ -164,6 +162,22 @@ export default function GerenciarUsuarios() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {!user.aprovado && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => approveUser(user.id)}
+                              disabled={actionLoading === user.id + "_approve"}
+                              title="Aprovar cadastro"
+                              className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            >
+                              {actionLoading === user.id + "_approve" ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"
@@ -179,7 +193,6 @@ export default function GerenciarUsuarios() {
                               <Shield className="h-4 w-4" />
                             )}
                           </Button>
-
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
@@ -223,7 +236,7 @@ export default function GerenciarUsuarios() {
                 })}
                 {users.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       Nenhum usuário encontrado.
                     </TableCell>
                   </TableRow>

@@ -26,7 +26,6 @@ Deno.serve(async (req) => {
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify caller is admin
     const anonClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -41,8 +40,6 @@ Deno.serve(async (req) => {
     }
 
     const callerId = claimsData.claims.sub;
-
-    // Use service role to check admin status
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
     const { data: callerRole } = await adminClient
@@ -84,6 +81,7 @@ Deno.serve(async (req) => {
           nome_completo: profile?.nome_completo || "",
           cargo: profile?.cargo || "",
           roles: roleMap.get(u.id) || [],
+          aprovado: profile?.aprovado ?? false,
           created_at: u.created_at,
         };
       });
@@ -105,11 +103,19 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Get target user email to protect main admin
       const { data: targetUser } = await adminClient.auth.admin.getUserById(user_id);
 
+      if (action === "approve_user") {
+        await adminClient
+          .from("profiles")
+          .update({ aprovado: true })
+          .eq("id", user_id);
+        return new Response(JSON.stringify({ message: "User approved" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       if (action === "toggle_role") {
-        // Prevent removing admin from protected user
         if (targetUser?.user?.email === PROTECTED_EMAIL) {
           const { data: existingRole } = await adminClient
             .from("user_roles")
@@ -126,7 +132,6 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Check if user already has admin role
         const { data: existing } = await adminClient
           .from("user_roles")
           .select("id")

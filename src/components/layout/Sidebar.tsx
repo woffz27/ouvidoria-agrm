@@ -5,6 +5,7 @@ import {
   Search,
   LogOut,
   Users,
+  CalendarClock,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -28,6 +29,7 @@ const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Atendimentos", url: "/atendimentos", icon: FileText },
   { title: "Novo Atendimento", url: "/novo-atendimento", icon: PlusCircle },
+  { title: "Atrasados", url: "/atrasados", icon: CalendarClock },
   { title: "Buscar Protocolo", url: "/buscar", icon: Search },
 ];
 
