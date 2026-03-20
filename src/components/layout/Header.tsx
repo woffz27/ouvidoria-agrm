@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
-import { Search, Bell, LogOut } from "lucide-react";
+import { Bell, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,9 @@ export function Header() {
     }
   };
 
-  const initials = profile?.nome_completo
-    ? profile.nome_completo.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
-    : "U";
+  const initials = profile?.nome_completo ?
+  profile.nome_completo.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() :
+  "U";
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md">
@@ -30,13 +30,13 @@ export function Header() {
       <div className="h-5 w-px bg-border" />
 
       <form onSubmit={handleSearch} className="relative flex-1 min-w-0 max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        
         <Input
           placeholder="Buscar por protocolo (ex: 2025-000001)"
           value={protocolo}
           onChange={(e) => setProtocolo(e.target.value)}
-          className="h-9 pl-9 text-sm bg-muted/50 border-transparent focus:border-primary/30 focus:bg-card"
-        />
+          className="h-9 pl-9 text-sm bg-muted/50 border-transparent focus:border-primary/30 focus:bg-card" />
+        
       </form>
 
       <div className="ml-auto flex items-center gap-3">
@@ -61,11 +61,11 @@ export function Header() {
         <button
           onClick={signOut}
           className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          title="Sair"
-        >
+          title="Sair">
+          
           <LogOut className="h-4 w-4" />
         </button>
       </div>
-    </header>
-  );
+    </header>);
+
 }
