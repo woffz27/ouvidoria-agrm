@@ -343,7 +343,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
 
               {/* Endereço */}
               {editableField("logradouro", "Logradouro", att.logradouro)}
-              {editableField("bairro", "Bairro", att.bairro)}
+              {editableField("bairro", "Bairro:", att.bairro)}
               {editableField("cep", "CEP", att.cep)}
 
               {/* Status management - admin only */}
