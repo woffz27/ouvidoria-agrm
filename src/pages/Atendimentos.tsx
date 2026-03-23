@@ -84,7 +84,7 @@ export default function Atendimentos() {
 
   const handleExportPDF = () => {
     const img = new Image();
-    img.src = loginLogo;
+    img.src = agrmLogo;
     img.onload = () => {
       const doc = new jsPDF();
       const canvas = document.createElement("canvas");
