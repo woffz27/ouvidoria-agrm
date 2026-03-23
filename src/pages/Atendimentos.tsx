@@ -81,6 +81,31 @@ export default function Atendimentos() {
 
   const handleFilterChange = () => setPage(1);
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Relatório de Atendimentos - Ouvidoria AGRM", 14, 18);
+    doc.setFontSize(9);
+    doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}  |  ${filtered.length} registro(s)`, 14, 25);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
+      body: filtered.map((a) => [
+        a.protocolo,
+        a.solicitante,
+        a.assunto,
+        categoriaLabels[a.categoria],
+        statusLabels[a.status],
+        new Date(a.data_abertura).toLocaleDateString("pt-BR"),
+      ]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [41, 128, 185] },
+    });
+
+    doc.save("atendimentos.pdf");
+  };
+
   const handleInlineStatusChange = async (atendimentoId: string, novoStatus: string) => {
     try {
       await alterarStatus.mutateAsync({ atendimentoId, novoStatus });
