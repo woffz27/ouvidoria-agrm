@@ -1,20 +1,47 @@
 
 
-## Plano: Tornar cards de status do Dashboard responsivos
+## Plano: Melhorar mensagem pré-preenchida do WhatsApp com mais detalhes
 
-### Problema
-No viewport atual (768px), o grid `sm:grid-cols-2` faz 5 cards ficarem em 2 colunas + 1 sozinho, e o texto/números podem estar sendo comprimidos.
+### O que muda
 
-### Solução
-Ajustar o grid e o conteúdo dos cards para melhor adaptação em telas menores:
+Apenas a mensagem no `handleWhatsAppProtocolo` em `src/pages/DetalhesAtendimento.tsx` (linhas 186-202). A mensagem atual inclui protocolo e prazo. Será enriquecida com:
 
-### Alterações em `src/pages/Dashboard.tsx`
+- **Nome do solicitante**
+- **Categoria** (Reclamação, Sugestão, etc.)
+- **Tipo de problema** (Extravasamento, Vazamento, etc.)
+- **Canal de entrada** (Site, WhatsApp, Telefone)
+- **Data de abertura** formatada
+- **Endereço/Bairro** (se preenchidos)
+- **Resumo da descrição** (primeiros 150 caracteres)
 
-1. **Grid dos stat cards** (linha 84): mudar de `grid-cols-1 sm:grid-cols-2 xl:grid-cols-5` para `grid-cols-2 md:grid-cols-3 xl:grid-cols-5` — melhor distribuição em tablets
-2. **Conteúdo dos cards** (linhas 88-95): tornar o layout interno mais compacto em mobile:
-   - Reduzir padding: `p-5` → `p-3 sm:p-5`
-   - Reduzir gap: `gap-4` → `gap-2 sm:gap-4`
-   - Ícone menor em mobile: `h-11 w-11` → `h-8 w-8 sm:h-11 sm:w-11`
-   - Valor menor em mobile: `text-2xl` → `text-lg sm:text-2xl`
-   - Título com `truncate` para não quebrar linha
+### Arquivo alterado
+
+**`src/pages/DetalhesAtendimento.tsx`** — Atualizar a função `handleWhatsAppProtocolo` para compor uma mensagem mais completa usando os labels já existentes (`categoriaLabels`, `tipoProblemaLabels`, `canalLabels`) e os campos do atendimento.
+
+### Exemplo da nova mensagem
+
+```text
+*Ouvidoria AGRM - Protocolo Registrado*
+
+Olá, João Silva!
+Informamos que sua manifestação foi recebida com sucesso.
+
+*Protocolo nº:* 2025-000123
+*Data de abertura:* 20/03/2025, 14:30
+*Categoria:* Reclamação
+*Tipo:* Vazamento de Água
+*Canal:* WhatsApp
+*Local:* Rua das Flores, 123 - Centro
+
+*Resumo:* Vazamento na esquina da rua principal...
+
+Sua solicitação está em análise e será encaminhada ao setor responsável.
+
+*Prazo para resposta:* até 15 dias úteis.
+
+Guarde o número do protocolo para acompanhamento.
+Agradecemos o seu contato e permanecemos à disposição.
+```
+
+Total: **1 arquivo**, ~20 linhas alteradas.
 
