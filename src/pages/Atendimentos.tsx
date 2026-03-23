@@ -1,8 +1,10 @@
 import { useState, useMemo } from "react";
 import {
-  FileText, Search, Filter, AlertCircle, Clock, MessageCircle,
+  Search, Filter, AlertCircle, Clock, MessageCircle,
   CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
