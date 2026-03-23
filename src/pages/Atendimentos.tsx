@@ -1,8 +1,10 @@
 import { useState, useMemo } from "react";
 import {
-  FileText, Search, Filter, AlertCircle, Clock, MessageCircle,
+  Search, Filter, AlertCircle, Clock, MessageCircle,
   CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,6 +81,31 @@ export default function Atendimentos() {
 
   const handleFilterChange = () => setPage(1);
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Relatório de Atendimentos - Ouvidoria AGRM", 14, 18);
+    doc.setFontSize(9);
+    doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}  |  ${filtered.length} registro(s)`, 14, 25);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
+      body: filtered.map((a) => [
+        a.protocolo,
+        a.solicitante,
+        a.assunto,
+        categoriaLabels[a.categoria],
+        statusLabels[a.status],
+        new Date(a.data_abertura).toLocaleDateString("pt-BR"),
+      ]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [41, 128, 185] },
+    });
+
+    doc.save("atendimentos.pdf");
+  };
+
   const handleInlineStatusChange = async (atendimentoId: string, novoStatus: string) => {
     try {
       await alterarStatus.mutateAsync({ atendimentoId, novoStatus });
@@ -98,16 +125,9 @@ export default function Atendimentos() {
               {filtered.length} atendimento{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Download className="h-4 w-4" /> Exportar PDF
-            </Button>
-            <Link to="/novo-atendimento">
-              <Button size="sm" className="gap-1.5">
-                <FileText className="h-4 w-4" /> Novo
-              </Button>
-            </Link>
-          </div>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
+            <Download className="h-4 w-4" /> Exportar PDF
+          </Button>
         </div>
 
         {/* Filters */}

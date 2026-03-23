@@ -192,9 +192,6 @@ export default function DetalhesAtendimento() {
     const tipo = tipoProblemaLabels[atendimento.tipo_problema] || atendimento.tipo_problema;
     const canal = canalLabels[atendimento.canal] || atendimento.canal;
     const local = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" - ");
-    const resumo = atendimento.descricao.length > 150
-      ? atendimento.descricao.substring(0, 150) + "..."
-      : atendimento.descricao;
 
     const mensagem = `*Ouvidoria AGRM - Protocolo Registrado*
 
@@ -206,8 +203,6 @@ Informamos que sua manifestação foi recebida com sucesso.
 *Categoria:* ${categoria}
 *Tipo:* ${tipo}
 *Canal:* ${canal}${local ? `\n*Local:* ${local}` : ""}
-
-*Resumo:* ${resumo}
 
 Sua solicitação está em análise e será encaminhada ao setor responsável.
 
