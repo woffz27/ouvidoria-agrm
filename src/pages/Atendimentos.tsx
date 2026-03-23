@@ -125,16 +125,9 @@ export default function Atendimentos() {
               {filtered.length} atendimento{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Download className="h-4 w-4" /> Exportar PDF
-            </Button>
-            <Link to="/novo-atendimento">
-              <Button size="sm" className="gap-1.5">
-                <FileText className="h-4 w-4" /> Novo
-              </Button>
-            </Link>
-          </div>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
+            <Download className="h-4 w-4" /> Exportar PDF
+          </Button>
         </div>
 
         {/* Filters */}
