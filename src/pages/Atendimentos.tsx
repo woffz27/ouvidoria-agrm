@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import loginLogo from "@/assets/login-logo.png";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -82,28 +83,43 @@ export default function Atendimentos() {
   const handleFilterChange = () => setPage(1);
 
   const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("Relatório de Atendimentos - Ouvidoria AGRM", 14, 18);
-    doc.setFontSize(9);
-    doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}  |  ${filtered.length} registro(s)`, 14, 25);
+    const img = new Image();
+    img.src = loginLogo;
+    img.onload = () => {
+      const doc = new jsPDF();
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0);
+      const base64 = canvas.toDataURL("image/png");
 
-    autoTable(doc, {
-      startY: 30,
-      head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
-      body: filtered.map((a) => [
-        a.protocolo,
-        a.solicitante,
-        a.assunto,
-        categoriaLabels[a.categoria],
-        statusLabels[a.status],
-        new Date(a.data_abertura).toLocaleDateString("pt-BR"),
-      ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+      const logoH = 20;
+      const logoW = (img.width / img.height) * logoH;
+      doc.addImage(base64, "PNG", 14, 8, logoW, logoH);
 
-    doc.save("atendimentos.pdf");
+      doc.setFontSize(14);
+      doc.text("Relatório de Atendimentos - Ouvidoria AGRM", 14 + logoW + 4, 18);
+      doc.setFontSize(9);
+      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}  |  ${filtered.length} registro(s)`, 14 + logoW + 4, 25);
+
+      autoTable(doc, {
+        startY: 34,
+        head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
+        body: filtered.map((a) => [
+          a.protocolo,
+          a.solicitante,
+          a.assunto,
+          categoriaLabels[a.categoria],
+          statusLabels[a.status],
+          new Date(a.data_abertura).toLocaleDateString("pt-BR"),
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [41, 128, 185] },
+      });
+
+      doc.save("atendimentos.pdf");
+    };
   };
 
   const handleInlineStatusChange = async (atendimentoId: string, novoStatus: string) => {
