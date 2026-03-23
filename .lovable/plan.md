@@ -1,20 +1,23 @@
 
 
-## Plano: 3 correções rápidas
+## Plano: Adicionar logotipo no cabeçalho do PDF exportado
 
-### 1. Exportar PDF — implementar funcionalidade
-O botão "Exportar PDF" na página de Atendimentos (linha 102) não tem `onClick` — é apenas visual. Implementar a geração de PDF usando `jspdf` + `jspdf-autotable` para exportar a lista filtrada de atendimentos em formato tabular.
+### O que muda
 
-**`src/pages/Atendimentos.tsx`**:
-- Instalar `jspdf` e `jspdf-autotable`
-- Criar função `handleExportPDF` que gera um PDF com cabeçalho "Relatório de Atendimentos - Ouvidoria AGRM", tabela com colunas (Protocolo, Solicitante, Assunto, Categoria, Status, Data) usando os dados filtrados
-- Conectar ao `onClick` do botão
+**`src/pages/Atendimentos.tsx`** — Atualizar `handleExportPDF` para incluir o logotipo `login-logo.png` no topo do PDF antes do título.
 
-### 2. Remover botão "Novo" ao lado de "Exportar PDF"
-**`src/pages/Atendimentos.tsx`** (linhas 105-109): Remover o `<Link to="/novo-atendimento">` e o `<Button>` "Novo".
+### Como funciona
 
-### 3. Remover "Resumo" da mensagem WhatsApp
-**`src/pages/DetalhesAtendimento.tsx`** (linhas 195-197, 210): Remover as variáveis e a linha `*Resumo:* ${resumo}` da mensagem pré-preenchida.
+1. Importar `loginLogo` de `@/assets/login-logo.png`
+2. Na função `handleExportPDF`, carregar a imagem como base64 usando `Image()` + canvas, e inserir com `doc.addImage()` no canto superior esquerdo
+3. Reposicionar o título e subtítulo para ficar ao lado/abaixo do logo
+4. Ajustar o `startY` da tabela para acomodar o logo
 
-Total: **2 arquivos** alterados + 1 dependência (`jspdf`, `jspdf-autotable`).
+### Detalhes técnicos
+
+- Converter o import do PNG para base64 via canvas no momento da geração (necessário para jsPDF)
+- Logo posicionado no topo esquerdo (~30x30px no PDF), título ao lado
+- Tabela começa após o cabeçalho com logo
+
+Total: **1 arquivo** alterado, ~15 linhas adicionadas.
 
