@@ -1,47 +1,20 @@
 
 
-## Plano: Melhorar mensagem pré-preenchida do WhatsApp com mais detalhes
+## Plano: 3 correções rápidas
 
-### O que muda
+### 1. Exportar PDF — implementar funcionalidade
+O botão "Exportar PDF" na página de Atendimentos (linha 102) não tem `onClick` — é apenas visual. Implementar a geração de PDF usando `jspdf` + `jspdf-autotable` para exportar a lista filtrada de atendimentos em formato tabular.
 
-Apenas a mensagem no `handleWhatsAppProtocolo` em `src/pages/DetalhesAtendimento.tsx` (linhas 186-202). A mensagem atual inclui protocolo e prazo. Será enriquecida com:
+**`src/pages/Atendimentos.tsx`**:
+- Instalar `jspdf` e `jspdf-autotable`
+- Criar função `handleExportPDF` que gera um PDF com cabeçalho "Relatório de Atendimentos - Ouvidoria AGRM", tabela com colunas (Protocolo, Solicitante, Assunto, Categoria, Status, Data) usando os dados filtrados
+- Conectar ao `onClick` do botão
 
-- **Nome do solicitante**
-- **Categoria** (Reclamação, Sugestão, etc.)
-- **Tipo de problema** (Extravasamento, Vazamento, etc.)
-- **Canal de entrada** (Site, WhatsApp, Telefone)
-- **Data de abertura** formatada
-- **Endereço/Bairro** (se preenchidos)
-- **Resumo da descrição** (primeiros 150 caracteres)
+### 2. Remover botão "Novo" ao lado de "Exportar PDF"
+**`src/pages/Atendimentos.tsx`** (linhas 105-109): Remover o `<Link to="/novo-atendimento">` e o `<Button>` "Novo".
 
-### Arquivo alterado
+### 3. Remover "Resumo" da mensagem WhatsApp
+**`src/pages/DetalhesAtendimento.tsx`** (linhas 195-197, 210): Remover as variáveis e a linha `*Resumo:* ${resumo}` da mensagem pré-preenchida.
 
-**`src/pages/DetalhesAtendimento.tsx`** — Atualizar a função `handleWhatsAppProtocolo` para compor uma mensagem mais completa usando os labels já existentes (`categoriaLabels`, `tipoProblemaLabels`, `canalLabels`) e os campos do atendimento.
-
-### Exemplo da nova mensagem
-
-```text
-*Ouvidoria AGRM - Protocolo Registrado*
-
-Olá, João Silva!
-Informamos que sua manifestação foi recebida com sucesso.
-
-*Protocolo nº:* 2025-000123
-*Data de abertura:* 20/03/2025, 14:30
-*Categoria:* Reclamação
-*Tipo:* Vazamento de Água
-*Canal:* WhatsApp
-*Local:* Rua das Flores, 123 - Centro
-
-*Resumo:* Vazamento na esquina da rua principal...
-
-Sua solicitação está em análise e será encaminhada ao setor responsável.
-
-*Prazo para resposta:* até 15 dias úteis.
-
-Guarde o número do protocolo para acompanhamento.
-Agradecemos o seu contato e permanecemos à disposição.
-```
-
-Total: **1 arquivo**, ~20 linhas alteradas.
+Total: **2 arquivos** alterados + 1 dependência (`jspdf`, `jspdf-autotable`).
 
