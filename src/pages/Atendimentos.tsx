@@ -105,20 +105,21 @@ export default function Atendimentos() {
 
       autoTable(doc, {
         startY: 34,
-      head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
-      body: filtered.map((a) => [
-        a.protocolo,
-        a.solicitante,
-        a.assunto,
-        categoriaLabels[a.categoria],
-        statusLabels[a.status],
-        new Date(a.data_abertura).toLocaleDateString("pt-BR"),
-      ]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+        head: [["Protocolo", "Solicitante", "Assunto", "Categoria", "Status", "Data"]],
+        body: filtered.map((a) => [
+          a.protocolo,
+          a.solicitante,
+          a.assunto,
+          categoriaLabels[a.categoria],
+          statusLabels[a.status],
+          new Date(a.data_abertura).toLocaleDateString("pt-BR"),
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [41, 128, 185] },
+      });
 
-    doc.save("atendimentos.pdf");
+      doc.save("atendimentos.pdf");
+    };
   };
 
   const handleInlineStatusChange = async (atendimentoId: string, novoStatus: string) => {
