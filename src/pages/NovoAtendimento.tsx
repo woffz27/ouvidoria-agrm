@@ -12,8 +12,8 @@ import {
   ImageIcon,
   Video,
   CalendarIcon,
-  Loader2,
-} from "lucide-react";
+  Loader2 } from
+"lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +26,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
 import { Separator } from "@/components/ui/separator";
@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils";
 const canalIcons: Record<CanalType, React.ReactNode> = {
   site: <Globe className="h-4 w-4" />,
   whatsapp: <MessageSquare className="h-4 w-4" />,
-  telefone: <Phone className="h-4 w-4" />,
+  telefone: <Phone className="h-4 w-4" />
 };
 
 function gerarProtocolo(): string {
@@ -87,7 +87,7 @@ export default function NovoAtendimento() {
       toast({
         title: "Campos obrigatórios",
         description: `Preencha: ${camposFaltando.join(", ")}`,
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
@@ -105,8 +105,8 @@ export default function NovoAtendimento() {
       await criarAtendimento.mutateAsync({
         protocolo,
         solicitante: formData.get("solicitante") as string,
-        email: (formData.get("email") as string) || null,
-        telefone: (formData.get("telefone") as string) || null,
+        email: formData.get("email") as string || null,
+        telefone: formData.get("telefone") as string || null,
         assunto: formData.get("assunto") as string,
         descricao: formData.get("descricao") as string,
         categoria: categoria as CategoriaType,
@@ -114,16 +114,16 @@ export default function NovoAtendimento() {
         tipo_problema: tipoProblema as TipoProblemaType,
         arquivos: arquivoUrls.length > 0 ? arquivoUrls : null,
         prazo_resolucao: prazo ? prazo.toISOString() : null,
-        ordem_servico_caern: (formData.get("ordem_servico_caern") as string) || null,
-        cep: (formData.get("cep") as string) || null,
-        matricula_imovel: (formData.get("matricula_imovel") as string) || null,
-        logradouro: (formData.get("logradouro") as string) || null,
-        bairro: (formData.get("bairro") as string) || null,
+        ordem_servico_caern: formData.get("ordem_servico_caern") as string || null,
+        cep: formData.get("cep") as string || null,
+        matricula_imovel: formData.get("matricula_imovel") as string || null,
+        logradouro: formData.get("logradouro") as string || null,
+        bairro: formData.get("bairro") as string || null
       } as any);
 
       toast({
         title: "Atendimento criado!",
-        description: `Protocolo: ${protocolo}`,
+        description: `Protocolo: ${protocolo}`
       });
       navigate("/atendimentos");
     } catch (error: any) {
@@ -131,7 +131,7 @@ export default function NovoAtendimento() {
       toast({
         title: "Erro ao criar atendimento",
         description: error?.message || "Tente novamente.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setUploading(false);
@@ -178,14 +178,14 @@ export default function NovoAtendimento() {
                       <SelectValue placeholder="Selecione o canal" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(["site", "whatsapp", "telefone"] as CanalType[]).map((c) => (
-                        <SelectItem key={c} value={c}>
+                      {(["site", "whatsapp", "telefone"] as CanalType[]).map((c) =>
+                      <SelectItem key={c} value={c}>
                           <span className="flex items-center gap-2">
                             {canalIcons[c]}
                             {c === "site" ? "Site" : c === "whatsapp" ? "WhatsApp" : "Telefone"}
                           </span>
                         </SelectItem>
-                      ))}
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -203,7 +203,7 @@ export default function NovoAtendimento() {
               </div>
 
               <Separator />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Endereço</p>
+              <p className="text-xs uppercase tracking-wider font-bold text-gray-950">ENDEREÇO:</p>
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="logradouro">Logradouro (com nº)</Label>
@@ -236,9 +236,9 @@ export default function NovoAtendimento() {
                       <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(categoriaLabels) as CategoriaType[]).map((c) => (
-                        <SelectItem key={c} value={c}>{categoriaLabels[c]}</SelectItem>
-                      ))}
+                      {(Object.keys(categoriaLabels) as CategoriaType[]).map((c) =>
+                      <SelectItem key={c} value={c}>{categoriaLabels[c]}</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -249,9 +249,9 @@ export default function NovoAtendimento() {
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(tipoProblemaLabels) as TipoProblemaType[]).map((t) => (
-                        <SelectItem key={t} value={t}>{tipoProblemaLabels[t]}</SelectItem>
-                      ))}
+                      {(Object.keys(tipoProblemaLabels) as TipoProblemaType[]).map((t) =>
+                      <SelectItem key={t} value={t}>{tipoProblemaLabels[t]}</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -272,8 +272,8 @@ export default function NovoAtendimento() {
                   name="descricao"
                   required
                   placeholder="Descreva detalhadamente a situação..."
-                  className="min-h-[120px]"
-                />
+                  className="min-h-[120px]" />
+                
               </div>
 
               {/* Prazo de resolução */}
@@ -286,8 +286,8 @@ export default function NovoAtendimento() {
                       className={cn(
                         "w-full justify-start text-left font-normal",
                         !prazo && "text-muted-foreground"
-                      )}
-                    >
+                      )}>
+                      
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {prazo ? format(prazo, "PPP", { locale: ptBR }) : "Selecione uma data"}
                     </Button>
@@ -299,8 +299,8 @@ export default function NovoAtendimento() {
                       onSelect={setPrazo}
                       disabled={(date) => date < new Date()}
                       initialFocus
-                      className={cn("p-3 pointer-events-auto")}
-                    />
+                      className={cn("p-3 pointer-events-auto")} />
+                    
                   </PopoverContent>
                 </Popover>
               </div>
@@ -310,8 +310,8 @@ export default function NovoAtendimento() {
                 <Label>Anexos (fotos, vídeos, documentos)</Label>
                 <label
                   htmlFor="file-upload-input"
-                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/40 hover:bg-muted/30 cursor-pointer"
-                >
+                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/40 hover:bg-muted/30 cursor-pointer">
+                  
                   <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground mb-1">
                     Arraste arquivos ou clique para selecionar
@@ -326,17 +326,17 @@ export default function NovoAtendimento() {
                     multiple
                     accept="image/*,video/*,.pdf,.doc,.docx"
                     onChange={handleFileChange}
-                    className="hidden"
-                  />
+                    className="hidden" />
+                  
                 </label>
 
-                {arquivos.length > 0 && (
-                  <div className="space-y-2">
-                    {arquivos.map((file, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between rounded-md border bg-muted/30 px-3 py-2"
-                      >
+                {arquivos.length > 0 &&
+                <div className="space-y-2">
+                    {arquivos.map((file, i) =>
+                  <div
+                    key={i}
+                    className="flex items-center justify-between rounded-md border bg-muted/30 px-3 py-2">
+                    
                         <div className="flex items-center gap-2 min-w-0">
                           {getFileIcon(file)}
                           <span className="text-sm truncate">{file.name}</span>
@@ -345,16 +345,16 @@ export default function NovoAtendimento() {
                           </span>
                         </div>
                         <button
-                          type="button"
-                          onClick={() => removeFile(i)}
-                          className="ml-2 rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                        >
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      className="ml-2 rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                      
                           <X className="h-3.5 w-3.5" />
                         </button>
                       </div>
-                    ))}
+                  )}
                   </div>
-                )}
+                }
               </div>
             </CardContent>
           </Card>
@@ -364,15 +364,15 @@ export default function NovoAtendimento() {
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Registrando...</>
-              ) : (
-                "Registrar Atendimento"
-              )}
+              {isSubmitting ?
+              <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Registrando...</> :
+
+              "Registrar Atendimento"
+              }
             </Button>
           </div>
         </form>
       </div>
-    </AppLayout>
-  );
+    </AppLayout>);
+
 }
