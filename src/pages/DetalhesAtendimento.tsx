@@ -185,19 +185,35 @@ export default function DetalhesAtendimento() {
 
   const handleWhatsAppProtocolo = () => {
     const prazo = calcularPrazoDias();
+    const dataAbertura = new Date(atendimento.data_abertura).toLocaleString("pt-BR", {
+      day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+    const categoria = categoriaLabels[atendimento.categoria] || atendimento.categoria;
+    const tipo = tipoProblemaLabels[atendimento.tipo_problema] || atendimento.tipo_problema;
+    const canal = canalLabels[atendimento.canal] || atendimento.canal;
+    const local = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" - ");
+    const resumo = atendimento.descricao.length > 150
+      ? atendimento.descricao.substring(0, 150) + "..."
+      : atendimento.descricao;
+
     const mensagem = `*Ouvidoria AGRM - Protocolo Registrado*
 
-Olá!
-Informamos que sua manifestação foi recebida com sucesso pela Ouvidoria da AGRM.
+Olá, ${atendimento.solicitante}!
+Informamos que sua manifestação foi recebida com sucesso.
 
 *Protocolo nº:* ${atendimento.protocolo}
+*Data de abertura:* ${dataAbertura}
+*Categoria:* ${categoria}
+*Tipo:* ${tipo}
+*Canal:* ${canal}${local ? `\n*Local:* ${local}` : ""}
 
-Sua solicitação está em análise e será encaminhada ao setor responsável para as devidas providências.
+*Resumo:* ${resumo}
 
-*Prazo para resposta:* até ${prazo} dias úteis, podendo ser concluído antes desse período.
+Sua solicitação está em análise e será encaminhada ao setor responsável.
+
+*Prazo para resposta:* até ${prazo} dias úteis.
 
 Guarde o número do protocolo para acompanhamento.
-
 Agradecemos o seu contato e permanecemos à disposição.`;
     handleWhatsApp(mensagem);
   };
