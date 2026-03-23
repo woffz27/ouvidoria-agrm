@@ -210,7 +210,7 @@ export default function NovoAtendimento() {
                   <Input id="logradouro" name="logradouro" placeholder="Rua Exemplo, 123" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bairro">Bairro</Label>
+                  <Label htmlFor="bairro">Bairro:</Label>
                   <Input id="bairro" name="bairro" placeholder="Bairro" />
                 </div>
               </div>
