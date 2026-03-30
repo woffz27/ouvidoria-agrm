@@ -215,30 +215,41 @@ Agradecemos o seu contato e permanecemos à disposição.`;
 
   // Envio para a fiscalização — número fixo (84) 99655-9562
   const handleEnvioFiscalizacao = () => {
+    // Emojis gerados em runtime para evitar problemas de encoding/transpilação
+    const PIN = String.fromCodePoint(0x1F4CC);
+    const DOC = String.fromCodePoint(0x1F4C4);
+    const CAL = String.fromCodePoint(0x1F4C5);
+    const USER = String.fromCodePoint(0x1F464);
+    const PHONE = String.fromCodePoint(0x1F4DE);
+    const LOC = String.fromCodePoint(0x1F4CD);
+    const WARN = String.fromCodePoint(0x26A0, 0xFE0F);
+    const MEMO = String.fromCodePoint(0x1F4DD);
+    const CLIP = String.fromCodePoint(0x1F4CE);
+
     const dataAbertura = new Date(atendimento.data_abertura).toLocaleString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "numeric",
     });
     const tipo = tipoProblemaLabels[atendimento.tipo_problema] || atendimento.tipo_problema;
-    const endereco = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" – ");
+    const endereco = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" \u2013 ");
 
     const linhas: string[] = [];
-    linhas.push("\u{1F4CC} *ENVIO PARA FISCALIZA\u00C7\u00C3O*\n");
-    linhas.push(`\u{1F4C4} Protocolo AGRM: ${atendimento.protocolo}`);
-    if (atendimento.ordem_servico_caern) linhas.push(`\u{1F4C4} Protocolo CAERN: ${atendimento.ordem_servico_caern}`);
-    linhas.push(`\u{1F4C5} Data do Atendimento: ${dataAbertura}`);
-    linhas.push(`\u{1F464} Solicitante: ${atendimento.solicitante}`);
-    if (atendimento.telefone) linhas.push(`\u{1F4DE} Telefone: ${atendimento.telefone}`);
-    if (endereco) linhas.push(`\u{1F4CD} Endere\u00E7o da Ocorr\u00EAncia:\n${endereco}`);
-    linhas.push(`\u26A0\uFE0F Tipo de Ocorr\u00EAncia: ${tipo}`);
+    linhas.push(`${PIN} *ENVIO PARA FISCALIZA\u00C7\u00C3O*\n`);
+    linhas.push(`${DOC} Protocolo AGRM: ${atendimento.protocolo}`);
+    if (atendimento.ordem_servico_caern) linhas.push(`${DOC} Protocolo CAERN: ${atendimento.ordem_servico_caern}`);
+    linhas.push(`${CAL} Data do Atendimento: ${dataAbertura}`);
+    linhas.push(`${USER} Solicitante: ${atendimento.solicitante}`);
+    if (atendimento.telefone) linhas.push(`${PHONE} Telefone: ${atendimento.telefone}`);
+    if (endereco) linhas.push(`${LOC} Endere\u00E7o da Ocorr\u00EAncia:\n${endereco}`);
+    linhas.push(`${WARN} Tipo de Ocorr\u00EAncia: ${tipo}`);
     if (atendimento.descricao) {
       const descLimpa = atendimento.descricao.replace(/<[^>]*>/g, "").trim();
-      if (descLimpa) linhas.push(`\u{1F4DD} Descri\u00E7\u00E3o:\n${descLimpa}`);
+      if (descLimpa) linhas.push(`${MEMO} Descri\u00E7\u00E3o:\n${descLimpa}`);
     }
-    if (atendimento.assunto) linhas.push(`\u{1F4CE} Assunto: ${atendimento.assunto}`);
-    linhas.push("\n---\nFavor verificar a situação acima.");
+    if (atendimento.assunto) linhas.push(`${CLIP} Assunto: ${atendimento.assunto}`);
+    linhas.push("\n---\nFavor verificar a situa\u00E7\u00E3o acima.");
 
-    const mensagem = linhas.join("\n");
-    const url = `https://wa.me/5584996559562?text=${encodeURIComponent(mensagem)}`;
+    const mensagem = linhas.join("\n").normalize("NFC");
+    const url = `https://api.whatsapp.com/send?phone=5584996559562&text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
   };
 
