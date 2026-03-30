@@ -267,6 +267,38 @@ export default function NovoAtendimento() {
               </div>
 
 
+              {/* Data de abertura - Admin only */}
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Label>Data de Abertura (opcional)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dataAbertura && "text-muted-foreground"
+                        )}>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dataAbertura ? format(dataAbertura, "PPP", { locale: ptBR }) : "Usar data atual (padrão)"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dataAbertura}
+                        onSelect={setDataAbertura}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")} />
+                    </PopoverContent>
+                  </Popover>
+                  {dataAbertura && (
+                    <button type="button" onClick={() => setDataAbertura(undefined)} className="text-xs text-muted-foreground hover:text-foreground underline">
+                      Limpar (usar data atual)
+                    </button>
+                  )}
+                </div>
+              )}
 
 
               <div className="space-y-2">
