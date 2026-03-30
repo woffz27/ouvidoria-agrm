@@ -231,7 +231,7 @@ export default function GerenciarUsuarios() {
                               {user.aprovado ? "Aprovado" : "Pendente"}
                             </Badge>
                             <Badge variant={isUserAdmin ? "default" : "secondary"} className="text-[10px]">
-                              {isUserAdmin ? "Admin" : "Usuário"}
+                              {isUserAdmin ? "Admin" : isUserOuvidor ? "Ouvidor" : "Usuário"}
                             </Badge>
                           </div>
                         </div>
