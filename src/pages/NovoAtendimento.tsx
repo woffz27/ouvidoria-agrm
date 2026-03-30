@@ -57,8 +57,10 @@ export default function NovoAtendimento() {
   const [categoria, setCategoria] = useState<CategoriaType | "">("");
   const [tipoProblema, setTipoProblema] = useState<TipoProblemaType | "">("");
   const [prazo, setPrazo] = useState<Date>();
+  const [dataAbertura, setDataAbertura] = useState<Date>();
   const [uploading, setUploading] = useState(false);
   const criarAtendimento = useCriarAtendimento();
+  const { isAdmin } = useAuth();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
