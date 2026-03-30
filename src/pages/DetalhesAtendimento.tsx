@@ -383,9 +383,31 @@ Agradecemos o seu contato e permanecemos à disposição.`;
               {infoItems.map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{item.label}</p>
-                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    {item.field === "data_abertura" && isAdmin ? (
+                      editandoCampo === "data_abertura" ? (
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Input
+                            type="datetime-local"
+                            value={editandoValor}
+                            onChange={(e) => setEditandoValor(e.target.value)}
+                            className="h-7 text-sm"
+                          />
+                          <button onClick={() => handleSalvarCampo("data_abertura")} className="rounded p-1 text-primary hover:bg-primary/10"><Check className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => setEditandoCampo(null)} className="rounded p-1 text-muted-foreground hover:bg-muted"><X className="h-3.5 w-3.5" /></button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <p className="text-sm font-medium">{item.value}</p>
+                          <button onClick={() => { setEditandoCampo("data_abertura"); setEditandoValor(new Date(atendimento.data_abertura).toISOString().slice(0, 16)); }} className="rounded p-0.5 text-muted-foreground hover:text-foreground">
+                            <Pencil className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )
+                    ) : (
+                      <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    )}
                   </div>
                 </div>
               ))}

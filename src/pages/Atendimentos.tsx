@@ -343,7 +343,7 @@ export default function Atendimentos() {
                                 {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
                               </TableCell>
                               <TableCell>
-                                {isAdmin ? (
+                                {canChangeStatus ? (
                                   <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                     <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                       {statusIcons[a.status]}
