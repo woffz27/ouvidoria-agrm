@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Shield, ShieldOff, Trash2, Loader2, Users, CheckCircle2, Camera } from "lucide-react";
+import { Shield, ShieldOff, Trash2, Loader2, Users, CheckCircle2, Camera, Eye, EyeOff } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -74,12 +74,12 @@ export default function GerenciarUsuarios() {
     }
   };
 
-  const toggleRole = async (userId: string) => {
+  const toggleRole = async (userId: string, role: "admin" | "ouvidor" = "admin") => {
     try {
-      setActionLoading(userId + "_role");
+      setActionLoading(userId + "_role_" + role);
       const { data, error } = await supabase.functions.invoke("manage-users", {
         method: "POST",
-        body: { action: "toggle_role", user_id: userId },
+        body: { action: "toggle_role", user_id: userId, role },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -214,6 +214,7 @@ export default function GerenciarUsuarios() {
                 ) : (
                   users.map((user) => {
                     const isUserAdmin = user.roles.includes("admin");
+                    const isUserOuvidor = user.roles.includes("ouvidor");
                     return (
                       <div key={user.id} className={`p-4 space-y-3 ${!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
                         <div className="flex items-start justify-between gap-3">
@@ -230,7 +231,7 @@ export default function GerenciarUsuarios() {
                               {user.aprovado ? "Aprovado" : "Pendente"}
                             </Badge>
                             <Badge variant={isUserAdmin ? "default" : "secondary"} className="text-[10px]">
-                              {isUserAdmin ? "Admin" : "Usuário"}
+                              {isUserAdmin ? "Admin" : isUserOuvidor ? "Ouvidor" : "Usuário"}
                             </Badge>
                           </div>
                         </div>
@@ -240,9 +241,13 @@ export default function GerenciarUsuarios() {
                               {actionLoading === user.id + "_approve" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />} Aprovar
                             </Button>
                           )}
-                          <Button variant="outline" size="sm" onClick={() => toggleRole(user.id)} disabled={actionLoading === user.id + "_role"} className="gap-1.5 text-xs">
-                            {actionLoading === user.id + "_role" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
+                          <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "admin")} disabled={actionLoading === user.id + "_role_admin"} className="gap-1.5 text-xs">
+                            {actionLoading === user.id + "_role_admin" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-3.5 w-3.5" /> : <Shield className="h-3.5 w-3.5" />}
                             {isUserAdmin ? "Remover admin" : "Tornar admin"}
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "ouvidor")} disabled={actionLoading === user.id + "_role_ouvidor"} className="gap-1.5 text-xs">
+                            {actionLoading === user.id + "_role_ouvidor" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isUserOuvidor ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                            {isUserOuvidor ? "Remover ouvidor" : "Tornar ouvidor"}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -289,6 +294,7 @@ export default function GerenciarUsuarios() {
                   <TableBody>
                     {users.map((user) => {
                       const isUserAdmin = user.roles.includes("admin");
+                      const isUserOuvidor = user.roles.includes("ouvidor");
                       return (
                         <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
                           <TableCell>{renderUserAvatar(user)}</TableCell>
@@ -302,7 +308,7 @@ export default function GerenciarUsuarios() {
                           </TableCell>
                           <TableCell>
                             <Badge variant={isUserAdmin ? "default" : "secondary"}>
-                              {isUserAdmin ? "Admin" : "Usuário"}
+                              {isUserAdmin ? "Admin" : isUserOuvidor ? "Ouvidor" : "Usuário"}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
@@ -312,8 +318,11 @@ export default function GerenciarUsuarios() {
                                   {actionLoading === user.id + "_approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                                 </Button>
                               )}
-                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id)} disabled={actionLoading === user.id + "_role"} title={isUserAdmin ? "Remover admin" : "Tornar admin"}>
-                                {actionLoading === user.id + "_role" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "admin")} disabled={actionLoading === user.id + "_role_admin"} title={isUserAdmin ? "Remover admin" : "Tornar admin"}>
+                                {actionLoading === user.id + "_role_admin" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "ouvidor")} disabled={actionLoading === user.id + "_role_ouvidor"} title={isUserOuvidor ? "Remover ouvidor" : "Tornar ouvidor"}>
+                                {actionLoading === user.id + "_role_ouvidor" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserOuvidor ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>

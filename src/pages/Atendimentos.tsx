@@ -47,7 +47,8 @@ export default function Atendimentos() {
   const [atrasadosFilter, setAtrasadosFilter] = useState(false);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOuvidor } = useAuth();
+  const canChangeStatus = isAdmin || isOuvidor;
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
@@ -233,7 +234,7 @@ export default function Atendimentos() {
                               <p className="text-xs text-muted-foreground truncate">{a.assunto}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1.5 shrink-0">
-                              {isAdmin ? (
+                              {canChangeStatus ? (
                                 <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                   <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                     {statusIcons[a.status]}
@@ -342,7 +343,7 @@ export default function Atendimentos() {
                                 {new Date(a.data_abertura).toLocaleDateString("pt-BR")}
                               </TableCell>
                               <TableCell>
-                                {isAdmin ? (
+                                {canChangeStatus ? (
                                   <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                     <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                       {statusIcons[a.status]}

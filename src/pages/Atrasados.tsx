@@ -40,7 +40,8 @@ export default function Atrasados() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [page, setPage] = useState(1);
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOuvidor } = useAuth();
+  const canChangeStatus = isAdmin || isOuvidor;
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();
@@ -147,7 +148,7 @@ export default function Atrasados() {
                             <Badge variant="destructive" className="text-[10px]">
                               {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
                             </Badge>
-                            {isAdmin ? (
+                            {canChangeStatus ? (
                               <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                 <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                   {statusIcons[a.status]}
@@ -216,7 +217,7 @@ export default function Atrasados() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {isAdmin ? (
+                              {canChangeStatus ? (
                                 <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                   <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                     {statusIcons[a.status]}

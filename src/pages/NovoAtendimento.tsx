@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -56,8 +57,10 @@ export default function NovoAtendimento() {
   const [categoria, setCategoria] = useState<CategoriaType | "">("");
   const [tipoProblema, setTipoProblema] = useState<TipoProblemaType | "">("");
   const [prazo, setPrazo] = useState<Date>();
+  const [dataAbertura, setDataAbertura] = useState<Date>();
   const [uploading, setUploading] = useState(false);
   const criarAtendimento = useCriarAtendimento();
+  const { isAdmin } = useAuth();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -102,7 +105,7 @@ export default function NovoAtendimento() {
         arquivoUrls = await uploadArquivos(arquivos);
       }
 
-      await criarAtendimento.mutateAsync({
+      const insertData: any = {
         protocolo,
         solicitante: formData.get("solicitante") as string,
         email: formData.get("email") as string || null,
@@ -118,8 +121,14 @@ export default function NovoAtendimento() {
         cep: formData.get("cep") as string || null,
         matricula_imovel: formData.get("matricula_imovel") as string || null,
         logradouro: formData.get("logradouro") as string || null,
-        bairro: formData.get("bairro") as string || null
-      } as any);
+        bairro: formData.get("bairro") as string || null,
+      };
+
+      if (isAdmin && dataAbertura) {
+        insertData.data_abertura = dataAbertura.toISOString();
+      }
+
+      await criarAtendimento.mutateAsync(insertData);
 
       toast({
         title: "Atendimento criado!",
@@ -258,6 +267,38 @@ export default function NovoAtendimento() {
               </div>
 
 
+              {/* Data de abertura - Admin only */}
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Label>Data de Abertura (opcional)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dataAbertura && "text-muted-foreground"
+                        )}>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dataAbertura ? format(dataAbertura, "PPP", { locale: ptBR }) : "Usar data atual (padrão)"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dataAbertura}
+                        onSelect={setDataAbertura}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")} />
+                    </PopoverContent>
+                  </Popover>
+                  {dataAbertura && (
+                    <button type="button" onClick={() => setDataAbertura(undefined)} className="text-xs text-muted-foreground hover:text-foreground underline">
+                      Limpar (usar data atual)
+                    </button>
+                  )}
+                </div>
+              )}
 
 
               <div className="space-y-2">

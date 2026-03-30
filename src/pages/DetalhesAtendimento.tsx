@@ -41,7 +41,9 @@ export default function DetalhesAtendimento() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOuvidor } = useAuth();
+  const canEditFields = isAdmin || isOuvidor;
+  const canChangeStatus = isAdmin || isOuvidor;
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
   const [editandoId, setEditandoId] = useState<string | null>(null);
@@ -298,7 +300,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
         ) : (
           <div className="flex items-center gap-1">
             <p className="text-sm font-medium">{value || "—"}</p>
-            {isAdmin && (
+            {canEditFields && (
               <button onClick={() => { setEditandoCampo(campo); setEditandoValor(value || ""); }} className="rounded p-0.5 text-muted-foreground hover:text-foreground">
                 <Pencil className="h-3 w-3" />
               </button>
@@ -317,7 +319,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
     { icon: <Globe className="h-4 w-4" />, label: "Canal", value: canalLabels[atendimento.canal] },
     { icon: <Tag className="h-4 w-4" />, label: "Categoria", value: categoriaLabels[atendimento.categoria] },
     { icon: <Tag className="h-4 w-4" />, label: "Tipo de Problema", value: tipoProblemaLabels[atendimento.tipo_problema] },
-    { icon: <Calendar className="h-4 w-4" />, label: "Data de Abertura", value: new Date(atendimento.data_abertura).toLocaleString("pt-BR") },
+    { icon: <Calendar className="h-4 w-4" />, label: "Data de Abertura", value: new Date(atendimento.data_abertura).toLocaleString("pt-BR"), field: "data_abertura" },
     { icon: <Clock className="h-4 w-4" />, label: "Última Atualização", value: new Date(atendimento.data_atualizacao).toLocaleString("pt-BR") },
   ];
 
@@ -381,9 +383,31 @@ Agradecemos o seu contato e permanecemos à disposição.`;
               {infoItems.map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{item.label}</p>
-                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    {item.field === "data_abertura" && isAdmin ? (
+                      editandoCampo === "data_abertura" ? (
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Input
+                            type="datetime-local"
+                            value={editandoValor}
+                            onChange={(e) => setEditandoValor(e.target.value)}
+                            className="h-7 text-sm"
+                          />
+                          <button onClick={() => handleSalvarCampo("data_abertura")} className="rounded p-1 text-primary hover:bg-primary/10"><Check className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => setEditandoCampo(null)} className="rounded p-1 text-muted-foreground hover:bg-muted"><X className="h-3.5 w-3.5" /></button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <p className="text-sm font-medium">{item.value}</p>
+                          <button onClick={() => { setEditandoCampo("data_abertura"); setEditandoValor(new Date(atendimento.data_abertura).toISOString().slice(0, 16)); }} className="rounded p-0.5 text-muted-foreground hover:text-foreground">
+                            <Pencil className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )
+                    ) : (
+                      <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -398,7 +422,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
               {editableField("cep", "CEP", att.cep)}
 
               {/* Status management - admin only */}
-              {isAdmin && (
+              {canChangeStatus && (
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /></div>
                   <div className="min-w-0 flex-1">

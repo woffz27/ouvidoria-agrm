@@ -15,6 +15,7 @@ type AuthContextType = {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isOuvidor: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, metadata: { nome_completo: string; cargo: string }) => Promise<{ error: Error | null }>;
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOuvidor, setIsOuvidor] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
@@ -45,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("user_roles" as any).select("role").eq("user_id", userId);
     const roles = data as any[] | null;
     setIsAdmin(roles?.some((r) => r.role === "admin") ?? false);
+    setIsOuvidor(roles?.some((r) => r.role === "ouvidor") ?? false);
   };
 
   useEffect(() => {
@@ -59,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setProfile(null);
         setIsAdmin(false);
+        setIsOuvidor(false);
       }
       setLoading(false);
     });
@@ -102,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, isAdmin, loading, signIn, signUp, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, session, profile, isAdmin, isOuvidor, loading, signIn, signUp, signOut, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
