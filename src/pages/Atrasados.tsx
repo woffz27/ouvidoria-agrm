@@ -40,7 +40,8 @@ export default function Atrasados() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [page, setPage] = useState(1);
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOuvidor } = useAuth();
+  const canChangeStatus = isAdmin || isOuvidor;
 
   const { data: atendimentos = [], isLoading } = useAtendimentos();
   const alterarStatus = useAlterarStatus();

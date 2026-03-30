@@ -41,7 +41,9 @@ export default function DetalhesAtendimento() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isOuvidor } = useAuth();
+  const canEditFields = isAdmin || isOuvidor;
+  const canChangeStatus = isAdmin || isOuvidor;
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioArquivos, setComentarioArquivos] = useState<File[]>([]);
   const [editandoId, setEditandoId] = useState<string | null>(null);
