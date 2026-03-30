@@ -74,12 +74,12 @@ export default function GerenciarUsuarios() {
     }
   };
 
-  const toggleRole = async (userId: string) => {
+  const toggleRole = async (userId: string, role: "admin" | "ouvidor" = "admin") => {
     try {
-      setActionLoading(userId + "_role");
+      setActionLoading(userId + "_role_" + role);
       const { data, error } = await supabase.functions.invoke("manage-users", {
         method: "POST",
-        body: { action: "toggle_role", user_id: userId },
+        body: { action: "toggle_role", user_id: userId, role },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
