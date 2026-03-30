@@ -1,29 +1,29 @@
 
 
-## Plano: Adicionar emojis ao "Enviar Protocolo via WhatsApp"
+## Plano: Corrigir emojis no "Enviar Protocolo via WhatsApp"
 
-### O que será feito
+### Problema
 
-Aplicar a mesma técnica de `String.fromCodePoint` usada na mensagem de fiscalização à mensagem de protocolo enviada ao contribuinte (`handleWhatsAppProtocolo`).
+A função `handleWhatsAppProtocolo` usa um helper `E()` com `.normalize("NFC")` que ainda resulta em emojis corrompidos (`�`). Enquanto isso, a função `handleEnvioFiscalizacao` funciona corretamente usando constantes individuais com `String.fromCodePoint` **sem** `.normalize("NFC")`.
 
-### Alteração em `src/pages/DetalhesAtendimento.tsx`
+### Solução
 
-**Função `handleWhatsAppProtocolo` (linhas 188-216)** — reescrever a montagem da mensagem usando emojis via `String.fromCodePoint`:
+Reescrever `handleWhatsAppProtocolo` (linhas 188-217) usando o mesmo padrão que funciona em `handleEnvioFiscalizacao`: constantes individuais sem `.normalize("NFC")`.
 
-| Emoji | Código | Uso |
-|-------|--------|-----|
-| 📋 | `0x1F4CB` | Cabeçalho "Protocolo Registrado" |
-| 👋 | `0x1F44B` | Saudação |
-| 🔢 | `0x1F522` | Protocolo nº |
-| 📅 | `0x1F4C5` | Data de abertura |
-| 📂 | `0x1F4C2` | Categoria |
-| ⚠️ | `0x26A0 + 0xFE0F` | Tipo |
-| 📡 | `0x1F4E1` | Canal |
-| 📍 | `0x1F4CD` | Local |
-| ⏳ | `0x231B` | Prazo |
-| ✅ | `0x2705` | Guarde o protocolo |
+```typescript
+const CLIP = String.fromCodePoint(0x1F4CB);
+const WAVE = String.fromCodePoint(0x1F44B);
+const NUM = String.fromCodePoint(0x1F522);
+const CAL = String.fromCodePoint(0x1F4C5);
+const FOLDER = String.fromCodePoint(0x1F4C2);
+const WARN = String.fromCodePoint(0x26A0, 0xFE0F);
+const SAT = String.fromCodePoint(0x1F4E1);
+const LOC = String.fromCodePoint(0x1F4CD);
+const HOUR = String.fromCodePoint(0x231B);
+const CHECK = String.fromCodePoint(0x2705);
+```
 
-A mensagem mantém o mesmo conteúdo textual, apenas adicionando emojis no início de cada linha, usando `String.fromCodePoint` + `.normalize("NFC")` para garantir compatibilidade.
+Depois montar a mensagem com essas constantes diretamente no template literal, igual ao padrão da fiscalização.
 
-**1 arquivo**, ~30 linhas alteradas (mesma função).
+**1 arquivo**, ~30 linhas alteradas.
 
