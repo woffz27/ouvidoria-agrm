@@ -294,6 +294,7 @@ export default function GerenciarUsuarios() {
                   <TableBody>
                     {users.map((user) => {
                       const isUserAdmin = user.roles.includes("admin");
+                      const isUserOuvidor = user.roles.includes("ouvidor");
                       return (
                         <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
                           <TableCell>{renderUserAvatar(user)}</TableCell>
