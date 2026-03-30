@@ -1,28 +1,25 @@
 
+Objetivo: corrigir definitivamente a quebra dos emojis no botão **“Envio para a Fiscalização”** mantendo o envio por link direto do WhatsApp.
 
-## Plano: Corrigir emojis na mensagem da fiscalização
+1) Ajustar a geração dos emojis para máxima compatibilidade  
+- Arquivo: `src/pages/DetalhesAtendimento.tsx`  
+- Na `handleEnvioFiscalizacao`, substituir os escapes `\u{...}` por constantes geradas em runtime com `String.fromCodePoint(...)` (ex.: `PIN`, `DOC`, `CAL`, `USER`, etc.).  
+- Isso evita qualquer problema de parser/transpilação/encoding de arquivo para caracteres fora do BMP.
 
-### Problema
+2) Reforçar codificação UTF-8 antes do link  
+- Montar a mensagem final com `linhas.join("\n").normalize("NFC")`.  
+- Continuar usando `encodeURIComponent` no texto da mensagem.  
+- Manter a regra atual: incluir apenas campos preenchidos.
 
-Os emojis literais (📌, 📄, 📅, etc.) no código-fonte estão sendo corrompidos, aparecendo como `�` na mensagem do WhatsApp. Isso ocorre por problemas de encoding do arquivo.
+3) Melhorar compatibilidade do link de abertura do WhatsApp  
+- Trocar o endpoint principal para `https://api.whatsapp.com/send?phone=5584996559562&text=...` (mais tolerante em alguns ambientes).  
+- Manter fallback para `https://wa.me/5584996559562?text=...` caso necessário.
 
-### Solução
+4) Preservar o layout da mensagem já aprovado  
+- Cabeçalho “ENVIO PARA FISCALIZAÇÃO”, separadores e blocos condicionais permanecem.  
+- Não alterar conteúdo funcional (somente robustez de encoding dos ícones).
 
-Substituir os emojis literais por suas sequências Unicode escape (`\u{1F4CC}`, `\u{1F4C4}`, etc.) na função `handleEnvioFiscalizacao` em `src/pages/DetalhesAtendimento.tsx` (linhas 225-237).
-
-### Mapeamento dos emojis
-
-| Literal | Escape | Uso |
-|---------|--------|-----|
-| 📌 | `\u{1F4CC}` | Título |
-| 📄 | `\u{1F4C4}` | Protocolo |
-| 📅 | `\u{1F4C5}` | Data |
-| 👤 | `\u{1F464}` | Solicitante |
-| 📞 | `\u{1F4DE}` | Telefone |
-| 📍 | `\u{1F4CD}` | Endereço |
-| ⚠️ | `\u26A0\uFE0F` | Tipo ocorrência |
-| 📝 | `\u{1F4DD}` | Descrição |
-| 📎 | `\u{1F4CE}` | Assunto |
-
-Total: **1 arquivo**, ~13 linhas alteradas (mesmas linhas, só substituição de caracteres).
-
+Detalhes técnicos (resumo)
+- Arquivo alterado: `src/pages/DetalhesAtendimento.tsx`  
+- Escopo: somente `handleEnvioFiscalizacao` (e utilitários locais pequenos dentro dela)  
+- Impacto: baixo risco, sem mudanças em banco/autenticação/rotas.
