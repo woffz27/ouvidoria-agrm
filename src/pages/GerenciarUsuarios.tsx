@@ -308,7 +308,7 @@ export default function GerenciarUsuarios() {
                           </TableCell>
                           <TableCell>
                             <Badge variant={isUserAdmin ? "default" : "secondary"}>
-                              {isUserAdmin ? "Admin" : "Usuário"}
+                              {isUserAdmin ? "Admin" : isUserOuvidor ? "Ouvidor" : "Usuário"}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
