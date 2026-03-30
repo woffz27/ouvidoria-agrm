@@ -222,19 +222,19 @@ Agradecemos o seu contato e permanecemos à disposição.`;
     const endereco = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" – ");
 
     const linhas: string[] = [];
-    linhas.push("📌 *ENVIO PARA FISCALIZAÇÃO*\n");
-    linhas.push(`📄 Protocolo AGRM: ${atendimento.protocolo}`);
-    if (atendimento.ordem_servico_caern) linhas.push(`📄 Protocolo CAERN: ${atendimento.ordem_servico_caern}`);
-    linhas.push(`📅 Data do Atendimento: ${dataAbertura}`);
-    linhas.push(`👤 Solicitante: ${atendimento.solicitante}`);
-    if (atendimento.telefone) linhas.push(`📞 Telefone: ${atendimento.telefone}`);
-    if (endereco) linhas.push(`📍 Endereço da Ocorrência:\n${endereco}`);
-    linhas.push(`⚠️ Tipo de Ocorrência: ${tipo}`);
+    linhas.push("\u{1F4CC} *ENVIO PARA FISCALIZA\u00C7\u00C3O*\n");
+    linhas.push(`\u{1F4C4} Protocolo AGRM: ${atendimento.protocolo}`);
+    if (atendimento.ordem_servico_caern) linhas.push(`\u{1F4C4} Protocolo CAERN: ${atendimento.ordem_servico_caern}`);
+    linhas.push(`\u{1F4C5} Data do Atendimento: ${dataAbertura}`);
+    linhas.push(`\u{1F464} Solicitante: ${atendimento.solicitante}`);
+    if (atendimento.telefone) linhas.push(`\u{1F4DE} Telefone: ${atendimento.telefone}`);
+    if (endereco) linhas.push(`\u{1F4CD} Endere\u00E7o da Ocorr\u00EAncia:\n${endereco}`);
+    linhas.push(`\u26A0\uFE0F Tipo de Ocorr\u00EAncia: ${tipo}`);
     if (atendimento.descricao) {
       const descLimpa = atendimento.descricao.replace(/<[^>]*>/g, "").trim();
-      if (descLimpa) linhas.push(`📝 Descrição:\n${descLimpa}`);
+      if (descLimpa) linhas.push(`\u{1F4DD} Descri\u00E7\u00E3o:\n${descLimpa}`);
     }
-    if (atendimento.assunto) linhas.push(`📎 Assunto: ${atendimento.assunto}`);
+    if (atendimento.assunto) linhas.push(`\u{1F4CE} Assunto: ${atendimento.assunto}`);
     linhas.push("\n---\nFavor verificar a situação acima.");
 
     const mensagem = linhas.join("\n");
