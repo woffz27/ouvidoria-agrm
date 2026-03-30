@@ -214,6 +214,7 @@ export default function GerenciarUsuarios() {
                 ) : (
                   users.map((user) => {
                     const isUserAdmin = user.roles.includes("admin");
+                    const isUserOuvidor = user.roles.includes("ouvidor");
                     return (
                       <div key={user.id} className={`p-4 space-y-3 ${!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
                         <div className="flex items-start justify-between gap-3">
