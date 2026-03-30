@@ -234,7 +234,7 @@ export default function Atendimentos() {
                               <p className="text-xs text-muted-foreground truncate">{a.assunto}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1.5 shrink-0">
-                              {isAdmin ? (
+                              {canChangeStatus ? (
                                 <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                   <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                     {statusIcons[a.status]}
