@@ -15,6 +15,7 @@ type AuthContextType = {
   session: Session | null;
   profile: Profile | null;
   isAdmin: boolean;
+  isOuvidor: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, metadata: { nome_completo: string; cargo: string }) => Promise<{ error: Error | null }>;
