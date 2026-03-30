@@ -82,6 +82,7 @@ Deno.serve(async (req) => {
           cargo: profile?.cargo || "",
           roles: roleMap.get(u.id) || [],
           aprovado: profile?.aprovado ?? false,
+          avatar_url: profile?.avatar_url || null,
           created_at: u.created_at,
         };
       });
@@ -152,6 +153,17 @@ Deno.serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
+      }
+
+      if (action === "update_avatar") {
+        const { avatar_url } = body;
+        await adminClient
+          .from("profiles")
+          .update({ avatar_url: avatar_url || null })
+          .eq("id", user_id);
+        return new Response(JSON.stringify({ message: "Avatar updated" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       if (action === "delete_user") {

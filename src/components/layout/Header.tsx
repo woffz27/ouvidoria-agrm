@@ -4,6 +4,7 @@ import { Bell, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
@@ -50,9 +51,12 @@ export function Header() {
         <div className="h-5 w-px bg-border" />
 
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full gradient-primary text-xs font-bold text-primary-foreground">
-            {initials}
-          </div>
+          <Avatar className="h-8 w-8">
+            {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile?.nome_completo || "Avatar"} />}
+            <AvatarFallback className="gradient-primary text-xs font-bold text-primary-foreground">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
           <Badge variant="outline" className="hidden text-[10px] font-mono sm:inline-flex">
             v1.0
           </Badge>

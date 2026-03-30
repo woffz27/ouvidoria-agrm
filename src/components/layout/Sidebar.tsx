@@ -8,6 +8,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -99,9 +100,12 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent text-xs font-bold text-sidebar-accent-foreground">
-            {profile?.nome_completo?.charAt(0)?.toUpperCase() || "U"}
-          </div>
+          <Avatar className="h-8 w-8">
+            {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile?.nome_completo || "Avatar"} />}
+            <AvatarFallback className="bg-sidebar-accent text-xs font-bold text-sidebar-accent-foreground">
+              {profile?.nome_completo?.charAt(0)?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
           {!collapsed && (
             <div className="animate-fade-in flex-1 min-w-0">
               <p className="text-xs font-medium text-sidebar-accent-foreground truncate">
