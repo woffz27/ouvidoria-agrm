@@ -8,6 +8,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
