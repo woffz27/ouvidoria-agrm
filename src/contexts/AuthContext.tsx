@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isOuvidor, setIsOuvidor] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase.from("profiles" as any).select("*").eq("id", userId).single();
