@@ -48,6 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("user_roles" as any).select("role").eq("user_id", userId);
     const roles = data as any[] | null;
     setIsAdmin(roles?.some((r) => r.role === "admin") ?? false);
+    setIsOuvidor(roles?.some((r) => r.role === "ouvidor") ?? false);
+  };
   };
 
   useEffect(() => {
