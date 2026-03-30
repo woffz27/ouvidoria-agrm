@@ -148,7 +148,7 @@ export default function Atrasados() {
                             <Badge variant="destructive" className="text-[10px]">
                               {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
                             </Badge>
-                            {isAdmin ? (
+                            {canChangeStatus ? (
                               <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                 <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
                                   {statusIcons[a.status]}
