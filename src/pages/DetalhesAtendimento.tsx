@@ -186,6 +186,11 @@ export default function DetalhesAtendimento() {
   };
 
   const handleWhatsAppProtocolo = () => {
+    if (!atendimento.telefone) {
+      toast({ title: "Sem telefone cadastrado", variant: "destructive" });
+      return;
+    }
+
     const CLIP = String.fromCodePoint(0x1F4CB);
     const WAVE = String.fromCodePoint(0x1F44B);
     const NUM = String.fromCodePoint(0x1F522);
@@ -206,24 +211,26 @@ export default function DetalhesAtendimento() {
     const canal = canalLabels[atendimento.canal] || atendimento.canal;
     const local = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" - ");
 
-    const mensagem = `${CLIP} *Ouvidoria AGRM - Protocolo Registrado*
+    const linhas: string[] = [];
+    linhas.push(`${CLIP} *Ouvidoria AGRM - Protocolo Registrado*\n`);
+    linhas.push(`${WAVE} Ol\u00E1, ${atendimento.solicitante}!`);
+    linhas.push(`Informamos que sua manifesta\u00E7\u00E3o foi recebida com sucesso.\n`);
+    linhas.push(`${NUM} *Protocolo n\u00BA:* ${atendimento.protocolo}`);
+    linhas.push(`${CAL} *Data de abertura:* ${dataAbertura}`);
+    linhas.push(`${FOLDER} *Categoria:* ${categoria}`);
+    linhas.push(`${WARN} *Tipo:* ${tipo}`);
+    linhas.push(`${SAT} *Canal:* ${canal}`);
+    if (local) linhas.push(`${LOC} *Local:* ${local}`);
+    linhas.push(`\nSua solicita\u00E7\u00E3o est\u00E1 em an\u00E1lise e ser\u00E1 encaminhada ao setor respons\u00E1vel.\n`);
+    linhas.push(`${HOUR} *Prazo para resposta:* at\u00E9 ${prazo} dias \u00FAteis.\n`);
+    linhas.push(`${CHECK} Guarde o n\u00FAmero do protocolo para acompanhamento.`);
+    linhas.push(`Agradecemos o seu contato e permanecemos \u00E0 disposi\u00E7\u00E3o.`);
 
-${WAVE} Olá, ${atendimento.solicitante}!
-Informamos que sua manifestação foi recebida com sucesso.
-
-${NUM} *Protocolo nº:* ${atendimento.protocolo}
-${CAL} *Data de abertura:* ${dataAbertura}
-${FOLDER} *Categoria:* ${categoria}
-${WARN} *Tipo:* ${tipo}
-${SAT} *Canal:* ${canal}${local ? `\n${LOC} *Local:* ${local}` : ""}
-
-Sua solicitação está em análise e será encaminhada ao setor responsável.
-
-${HOUR} *Prazo para resposta:* até ${prazo} dias úteis.
-
-${CHECK} Guarde o número do protocolo para acompanhamento.
-Agradecemos o seu contato e permanecemos à disposição.`;
-    handleWhatsApp(mensagem);
+    const mensagem = linhas.join("\n").normalize("NFC");
+    const tel = atendimento.telefone.replace(/\D/g, "");
+    const telFormatted = tel.startsWith("55") ? tel : `55${tel}`;
+    const url = `https://api.whatsapp.com/send?phone=${telFormatted}&text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
   };
 
   // Envio para a fiscalização — número fixo (84) 99655-9562
