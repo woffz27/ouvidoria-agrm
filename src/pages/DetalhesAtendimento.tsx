@@ -300,7 +300,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
         ) : (
           <div className="flex items-center gap-1">
             <p className="text-sm font-medium">{value || "—"}</p>
-            {isAdmin && (
+            {canEditFields && (
               <button onClick={() => { setEditandoCampo(campo); setEditandoValor(value || ""); }} className="rounded p-0.5 text-muted-foreground hover:text-foreground">
                 <Pencil className="h-3 w-3" />
               </button>
