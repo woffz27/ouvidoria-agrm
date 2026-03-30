@@ -186,6 +186,7 @@ export default function DetalhesAtendimento() {
   };
 
   const handleWhatsAppProtocolo = () => {
+    const E = (...codes: number[]) => String.fromCodePoint(...codes).normalize("NFC");
     const prazo = calcularPrazoDias();
     const dataAbertura = new Date(atendimento.data_abertura).toLocaleString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
@@ -195,22 +196,22 @@ export default function DetalhesAtendimento() {
     const canal = canalLabels[atendimento.canal] || atendimento.canal;
     const local = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" - ");
 
-    const mensagem = `*Ouvidoria AGRM - Protocolo Registrado*
+    const mensagem = `${E(0x1F4CB)} *Ouvidoria AGRM - Protocolo Registrado*
 
-Olá, ${atendimento.solicitante}!
+${E(0x1F44B)} Olá, ${atendimento.solicitante}!
 Informamos que sua manifestação foi recebida com sucesso.
 
-*Protocolo nº:* ${atendimento.protocolo}
-*Data de abertura:* ${dataAbertura}
-*Categoria:* ${categoria}
-*Tipo:* ${tipo}
-*Canal:* ${canal}${local ? `\n*Local:* ${local}` : ""}
+${E(0x1F522)} *Protocolo nº:* ${atendimento.protocolo}
+${E(0x1F4C5)} *Data de abertura:* ${dataAbertura}
+${E(0x1F4C2)} *Categoria:* ${categoria}
+${E(0x26A0, 0xFE0F)} *Tipo:* ${tipo}
+${E(0x1F4E1)} *Canal:* ${canal}${local ? `\n${E(0x1F4CD)} *Local:* ${local}` : ""}
 
 Sua solicitação está em análise e será encaminhada ao setor responsável.
 
-*Prazo para resposta:* até ${prazo} dias úteis.
+${E(0x231B)} *Prazo para resposta:* até ${prazo} dias úteis.
 
-Guarde o número do protocolo para acompanhamento.
+${E(0x2705)} Guarde o número do protocolo para acompanhamento.
 Agradecemos o seu contato e permanecemos à disposição.`;
     handleWhatsApp(mensagem);
   };
