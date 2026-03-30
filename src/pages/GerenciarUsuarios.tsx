@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Shield, ShieldOff, Trash2, Loader2, Users, CheckCircle2 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Shield, ShieldOff, Trash2, Loader2, Users, CheckCircle2, Camera } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -22,6 +23,7 @@ type UserItem = {
   roles: string[];
   aprovado: boolean;
   created_at: string;
+  avatar_url?: string;
 };
 
 export default function GerenciarUsuarios() {
@@ -30,13 +32,14 @@ export default function GerenciarUsuarios() {
   const [users, setUsers] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingUserId, setUploadingUserId] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase.functions.invoke("manage-users", { method: "GET" });
       if (error) throw error;
-      // Sort: pending first
       const sorted = (data || []).sort((a: UserItem, b: UserItem) => {
         if (a.aprovado === b.aprovado) return 0;
         return a.aprovado ? 1 : -1;
@@ -107,6 +110,52 @@ export default function GerenciarUsuarios() {
     }
   };
 
+  const handleAvatarClick = (userId: string) => {
+    setUploadingUserId(userId);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !uploadingUserId) return;
+
+    const userId = uploadingUserId;
+    try {
+      setActionLoading(userId + "_avatar");
+
+      const ext = file.name.split(".").pop() || "jpg";
+      const filePath = `${userId}.${ext}`;
+
+      // Remove old avatar if exists
+      await supabase.storage.from("avatars").remove([filePath]);
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      const { data, error } = await supabase.functions.invoke("manage-users", {
+        method: "POST",
+        body: { action: "update_avatar", user_id: userId, avatar_url: avatarUrl },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast({ title: "Foto atualizada com sucesso!" });
+      await fetchUsers();
+    } catch (err: any) {
+      toast({ title: "Erro ao atualizar foto", description: err.message, variant: "destructive" });
+    } finally {
+      setActionLoading(null);
+      setUploadingUserId(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   if (!isAdmin) {
     return (
       <AppLayout>
@@ -117,6 +166,24 @@ export default function GerenciarUsuarios() {
     );
   }
 
+  const renderUserAvatar = (user: UserItem) => (
+    <div className="relative group cursor-pointer" onClick={() => handleAvatarClick(user.id)}>
+      <Avatar className="h-9 w-9">
+        {user.avatar_url && <AvatarImage src={user.avatar_url} alt={user.nome_completo} />}
+        <AvatarFallback className="text-xs font-bold">
+          {user.nome_completo?.charAt(0)?.toUpperCase() || "U"}
+        </AvatarFallback>
+      </Avatar>
+      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+        {actionLoading === user.id + "_avatar" ? (
+          <Loader2 className="h-3.5 w-3.5 text-white animate-spin" />
+        ) : (
+          <Camera className="h-3.5 w-3.5 text-white" />
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -124,6 +191,14 @@ export default function GerenciarUsuarios() {
           <Users className="h-6 w-6 text-primary" />
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Gerenciar Usuários</h1>
         </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
 
         <div className="rounded-lg border bg-card">
           {loading ? (
@@ -142,10 +217,13 @@ export default function GerenciarUsuarios() {
                     return (
                       <div key={user.id} className={`p-4 space-y-3 ${!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
                         <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold truncate">{user.nome_completo || "—"}</p>
-                            <p className="text-xs text-muted-foreground break-all">{user.email}</p>
-                            {user.cargo && <p className="text-xs text-muted-foreground mt-0.5">{user.cargo}</p>}
+                          <div className="flex items-center gap-3 min-w-0">
+                            {renderUserAvatar(user)}
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold truncate">{user.nome_completo || "—"}</p>
+                              <p className="text-xs text-muted-foreground break-all">{user.email}</p>
+                              {user.cargo && <p className="text-xs text-muted-foreground mt-0.5">{user.cargo}</p>}
+                            </div>
                           </div>
                           <div className="flex flex-col items-end gap-1.5 shrink-0">
                             <Badge variant={user.aprovado ? "default" : "outline"} className={`text-[10px] ${!user.aprovado ? "border-amber-500 text-amber-600" : ""}`}>
@@ -199,6 +277,7 @@ export default function GerenciarUsuarios() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-14">Foto</TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Cargo</TableHead>
@@ -212,6 +291,7 @@ export default function GerenciarUsuarios() {
                       const isUserAdmin = user.roles.includes("admin");
                       return (
                         <TableRow key={user.id} className={!user.aprovado ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
+                          <TableCell>{renderUserAvatar(user)}</TableCell>
                           <TableCell className="font-medium">{user.nome_completo || "—"}</TableCell>
                           <TableCell className="text-muted-foreground">{user.email}</TableCell>
                           <TableCell>{user.cargo || "—"}</TableCell>
@@ -263,7 +343,7 @@ export default function GerenciarUsuarios() {
                     })}
                     {users.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                           Nenhum usuário encontrado.
                         </TableCell>
                       </TableRow>
