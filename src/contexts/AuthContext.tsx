@@ -35,7 +35,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase.from("profiles" as any).select("*").eq("id", userId).single();
     if (data) {
       const d = data as any;
-      setProfile({ id: d.id, nome_completo: d.nome_completo, cargo: d.cargo, avatar_url: d.avatar_url, aprovado: d.aprovado ?? false });
+      const avatarUrl = d.avatar_url || null;
+      if (avatarUrl) { const img = new Image(); img.src = avatarUrl; }
+      setProfile({ id: d.id, nome_completo: d.nome_completo, cargo: d.cargo, avatar_url: avatarUrl, aprovado: d.aprovado ?? false });
     }
   };
 
