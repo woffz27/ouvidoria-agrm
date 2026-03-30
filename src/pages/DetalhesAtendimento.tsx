@@ -539,6 +539,14 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                         >
                           <MessageSquare className="h-3.5 w-3.5" /> Enviar Protocolo via WhatsApp
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 w-full sm:w-auto border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                          onClick={handleEnvioFiscalizacao}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Envio para a Fiscalização
+                        </Button>
                       </>
                     )}
                     <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
