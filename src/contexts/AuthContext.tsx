@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAdmin(roles?.some((r) => r.role === "admin") ?? false);
     setIsOuvidor(roles?.some((r) => r.role === "ouvidor") ?? false);
   };
-  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
