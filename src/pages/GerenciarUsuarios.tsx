@@ -136,7 +136,7 @@ export default function GerenciarUsuarios() {
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const avatarUrl = urlData.publicUrl;
 
       const { data, error } = await supabase.functions.invoke("manage-users", {
         method: "POST",
