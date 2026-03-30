@@ -400,7 +400,7 @@ Agradecemos o seu contato e permanecemos à disposição.`;
               {editableField("cep", "CEP", att.cep)}
 
               {/* Status management - admin only */}
-              {isAdmin && (
+              {canChangeStatus && (
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /></div>
                   <div className="min-w-0 flex-1">
