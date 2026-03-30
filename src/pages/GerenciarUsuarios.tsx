@@ -318,8 +318,11 @@ export default function GerenciarUsuarios() {
                                   {actionLoading === user.id + "_approve" ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                                 </Button>
                               )}
-                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id)} disabled={actionLoading === user.id + "_role"} title={isUserAdmin ? "Remover admin" : "Tornar admin"}>
-                                {actionLoading === user.id + "_role" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "admin")} disabled={actionLoading === user.id + "_role_admin"} title={isUserAdmin ? "Remover admin" : "Tornar admin"}>
+                                {actionLoading === user.id + "_role_admin" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserAdmin ? <ShieldOff className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => toggleRole(user.id, "ouvidor")} disabled={actionLoading === user.id + "_role_ouvidor"} title={isUserOuvidor ? "Remover ouvidor" : "Tornar ouvidor"}>
+                                {actionLoading === user.id + "_role_ouvidor" ? <Loader2 className="h-4 w-4 animate-spin" /> : isUserOuvidor ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>

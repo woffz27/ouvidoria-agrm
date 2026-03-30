@@ -117,7 +117,9 @@ Deno.serve(async (req) => {
       }
 
       if (action === "toggle_role") {
-        if (targetUser?.user?.email === PROTECTED_EMAIL) {
+        const targetRole = body.role || "admin";
+
+        if (targetUser?.user?.email === PROTECTED_EMAIL && targetRole === "admin") {
           const { data: existingRole } = await adminClient
             .from("user_roles")
             .select("id")
@@ -137,19 +139,19 @@ Deno.serve(async (req) => {
           .from("user_roles")
           .select("id")
           .eq("user_id", user_id)
-          .eq("role", "admin")
+          .eq("role", targetRole)
           .maybeSingle();
 
         if (existing) {
           await adminClient.from("user_roles").delete().eq("id", existing.id);
-          return new Response(JSON.stringify({ message: "Admin role removed" }), {
+          return new Response(JSON.stringify({ message: `${targetRole} role removed` }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         } else {
           await adminClient
             .from("user_roles")
-            .insert({ user_id, role: "admin" });
-          return new Response(JSON.stringify({ message: "Admin role added" }), {
+            .insert({ user_id, role: targetRole });
+          return new Response(JSON.stringify({ message: `${targetRole} role added` }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
