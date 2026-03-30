@@ -82,6 +82,7 @@ Deno.serve(async (req) => {
           cargo: profile?.cargo || "",
           roles: roleMap.get(u.id) || [],
           aprovado: profile?.aprovado ?? false,
+          avatar_url: profile?.avatar_url || null,
           created_at: u.created_at,
         };
       });
