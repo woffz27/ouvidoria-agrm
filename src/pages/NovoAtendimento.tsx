@@ -105,7 +105,7 @@ export default function NovoAtendimento() {
         arquivoUrls = await uploadArquivos(arquivos);
       }
 
-      await criarAtendimento.mutateAsync({
+      const insertData: any = {
         protocolo,
         solicitante: formData.get("solicitante") as string,
         email: formData.get("email") as string || null,
@@ -121,8 +121,14 @@ export default function NovoAtendimento() {
         cep: formData.get("cep") as string || null,
         matricula_imovel: formData.get("matricula_imovel") as string || null,
         logradouro: formData.get("logradouro") as string || null,
-        bairro: formData.get("bairro") as string || null
-      } as any);
+        bairro: formData.get("bairro") as string || null,
+      };
+
+      if (isAdmin && dataAbertura) {
+        insertData.data_abertura = dataAbertura.toISOString();
+      }
+
+      await criarAtendimento.mutateAsync(insertData);
 
       toast({
         title: "Atendimento criado!",
