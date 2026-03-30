@@ -154,6 +154,17 @@ Deno.serve(async (req) => {
         }
       }
 
+      if (action === "update_avatar") {
+        const { avatar_url } = body;
+        await adminClient
+          .from("profiles")
+          .update({ avatar_url: avatar_url || null })
+          .eq("id", user_id);
+        return new Response(JSON.stringify({ message: "Avatar updated" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       if (action === "delete_user") {
         if (targetUser?.user?.email === PROTECTED_EMAIL) {
           return new Response(
