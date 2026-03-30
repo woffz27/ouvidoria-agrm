@@ -213,6 +213,35 @@ Agradecemos o seu contato e permanecemos à disposição.`;
     handleWhatsApp(mensagem);
   };
 
+  // Envio para a fiscalização — número fixo (84) 99655-9562
+  const handleEnvioFiscalizacao = () => {
+    const dataAbertura = new Date(atendimento.data_abertura).toLocaleString("pt-BR", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+    });
+    const tipo = tipoProblemaLabels[atendimento.tipo_problema] || atendimento.tipo_problema;
+    const endereco = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" – ");
+
+    const linhas: string[] = [];
+    linhas.push("📌 *ENVIO PARA FISCALIZAÇÃO*\n");
+    linhas.push(`📄 Protocolo AGRM: ${atendimento.protocolo}`);
+    if (atendimento.ordem_servico_caern) linhas.push(`📄 Protocolo CAERN: ${atendimento.ordem_servico_caern}`);
+    linhas.push(`📅 Data do Atendimento: ${dataAbertura}`);
+    linhas.push(`👤 Solicitante: ${atendimento.solicitante}`);
+    if (atendimento.telefone) linhas.push(`📞 Telefone: ${atendimento.telefone}`);
+    if (endereco) linhas.push(`📍 Endereço da Ocorrência:\n${endereco}`);
+    linhas.push(`⚠️ Tipo de Ocorrência: ${tipo}`);
+    if (atendimento.descricao) {
+      const descLimpa = atendimento.descricao.replace(/<[^>]*>/g, "").trim();
+      if (descLimpa) linhas.push(`📝 Descrição:\n${descLimpa}`);
+    }
+    if (atendimento.assunto) linhas.push(`📎 Assunto: ${atendimento.assunto}`);
+    linhas.push("\n---\nFavor verificar a situação acima.");
+
+    const mensagem = linhas.join("\n");
+    const url = `https://wa.me/5584996559562?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
+  };
+
   const handleEnviarEmail = async () => {
     if (!emailDestinatario || !novoComentario.trim()) {
       toast({ title: "Preencha o destinatário e o comentário", variant: "destructive" });
@@ -538,6 +567,14 @@ Agradecemos o seu contato e permanecemos à disposição.`;
                           onClick={handleWhatsAppProtocolo}
                         >
                           <MessageSquare className="h-3.5 w-3.5" /> Enviar Protocolo via WhatsApp
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 w-full sm:w-auto border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                          onClick={handleEnvioFiscalizacao}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" /> Envio para a Fiscalização
                         </Button>
                       </>
                     )}
