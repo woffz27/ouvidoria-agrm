@@ -186,7 +186,17 @@ export default function DetalhesAtendimento() {
   };
 
   const handleWhatsAppProtocolo = () => {
-    const E = (...codes: number[]) => String.fromCodePoint(...codes).normalize("NFC");
+    const CLIP = String.fromCodePoint(0x1F4CB);
+    const WAVE = String.fromCodePoint(0x1F44B);
+    const NUM = String.fromCodePoint(0x1F522);
+    const CAL = String.fromCodePoint(0x1F4C5);
+    const FOLDER = String.fromCodePoint(0x1F4C2);
+    const WARN = String.fromCodePoint(0x26A0, 0xFE0F);
+    const SAT = String.fromCodePoint(0x1F4E1);
+    const LOC = String.fromCodePoint(0x1F4CD);
+    const HOUR = String.fromCodePoint(0x231B);
+    const CHECK = String.fromCodePoint(0x2705);
+
     const prazo = calcularPrazoDias();
     const dataAbertura = new Date(atendimento.data_abertura).toLocaleString("pt-BR", {
       day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
@@ -196,22 +206,22 @@ export default function DetalhesAtendimento() {
     const canal = canalLabels[atendimento.canal] || atendimento.canal;
     const local = [atendimento.logradouro, atendimento.bairro].filter(Boolean).join(" - ");
 
-    const mensagem = `${E(0x1F4CB)} *Ouvidoria AGRM - Protocolo Registrado*
+    const mensagem = `${CLIP} *Ouvidoria AGRM - Protocolo Registrado*
 
-${E(0x1F44B)} Olá, ${atendimento.solicitante}!
+${WAVE} Olá, ${atendimento.solicitante}!
 Informamos que sua manifestação foi recebida com sucesso.
 
-${E(0x1F522)} *Protocolo nº:* ${atendimento.protocolo}
-${E(0x1F4C5)} *Data de abertura:* ${dataAbertura}
-${E(0x1F4C2)} *Categoria:* ${categoria}
-${E(0x26A0, 0xFE0F)} *Tipo:* ${tipo}
-${E(0x1F4E1)} *Canal:* ${canal}${local ? `\n${E(0x1F4CD)} *Local:* ${local}` : ""}
+${NUM} *Protocolo nº:* ${atendimento.protocolo}
+${CAL} *Data de abertura:* ${dataAbertura}
+${FOLDER} *Categoria:* ${categoria}
+${WARN} *Tipo:* ${tipo}
+${SAT} *Canal:* ${canal}${local ? `\n${LOC} *Local:* ${local}` : ""}
 
 Sua solicitação está em análise e será encaminhada ao setor responsável.
 
-${E(0x231B)} *Prazo para resposta:* até ${prazo} dias úteis.
+${HOUR} *Prazo para resposta:* até ${prazo} dias úteis.
 
-${E(0x2705)} Guarde o número do protocolo para acompanhamento.
+${CHECK} Guarde o número do protocolo para acompanhamento.
 Agradecemos o seu contato e permanecemos à disposição.`;
     handleWhatsApp(mensagem);
   };
