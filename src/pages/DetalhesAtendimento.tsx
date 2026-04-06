@@ -431,6 +431,7 @@ export default function DetalhesAtendimento() {
               ))}
 
               {/* Editable fields - Solicitante */}
+              {editableField("telefone", "Telefone", att.telefone)}
               {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
               {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
 
