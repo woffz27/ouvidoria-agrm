@@ -333,7 +333,7 @@ export default function DetalhesAtendimento() {
     { icon: <Hash className="h-4 w-4" />, label: "Protocolo", value: atendimento.protocolo, mono: true },
     { icon: <User className="h-4 w-4" />, label: "Solicitante", value: atendimento.solicitante },
     { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email || "—" },
-    { icon: <Phone className="h-4 w-4" />, label: "Telefone", value: atendimento.telefone || "—" },
+    
     { icon: <Globe className="h-4 w-4" />, label: "Canal", value: canalLabels[atendimento.canal] },
     { icon: <Tag className="h-4 w-4" />, label: "Categoria", value: categoriaLabels[atendimento.categoria] },
     { icon: <Tag className="h-4 w-4" />, label: "Tipo de Problema", value: tipoProblemaLabels[atendimento.tipo_problema] },
@@ -431,6 +431,7 @@ export default function DetalhesAtendimento() {
               ))}
 
               {/* Editable fields - Solicitante */}
+              {editableField("telefone", "Telefone", att.telefone)}
               {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
               {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
 
