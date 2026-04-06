@@ -399,7 +399,20 @@ export default function DetalhesAtendimento() {
               <CardTitle className="text-sm font-semibold">Informações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {infoItems.map((item) => (
+              {infoItemsTop.map((item) => (
+                <div key={item.label} className="flex items-start gap-3">
+                  <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{item.label}</p>
+                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Telefone - editável por Ouvidor/Admin */}
+              {editableField("telefone", "Telefone", att.telefone)}
+
+              {infoItemsBottom.map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
                   <div className="min-w-0 flex-1">
@@ -430,9 +443,6 @@ export default function DetalhesAtendimento() {
                   </div>
                 </div>
               ))}
-
-              {/* Editable fields - Solicitante */}
-              {editableField("telefone", "Telefone", att.telefone)}
               {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
               {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
 
