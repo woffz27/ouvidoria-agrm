@@ -329,11 +329,12 @@ export default function DetalhesAtendimento() {
     </div>
   );
 
-  const infoItems = [
+  const infoItemsTop = [
     { icon: <Hash className="h-4 w-4" />, label: "Protocolo", value: atendimento.protocolo, mono: true },
     { icon: <User className="h-4 w-4" />, label: "Solicitante", value: atendimento.solicitante },
     { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email || "—" },
-    
+  ];
+  const infoItemsBottom = [
     { icon: <Globe className="h-4 w-4" />, label: "Canal", value: canalLabels[atendimento.canal] },
     { icon: <Tag className="h-4 w-4" />, label: "Categoria", value: categoriaLabels[atendimento.categoria] },
     { icon: <Tag className="h-4 w-4" />, label: "Tipo de Problema", value: tipoProblemaLabels[atendimento.tipo_problema] },
@@ -398,7 +399,20 @@ export default function DetalhesAtendimento() {
               <CardTitle className="text-sm font-semibold">Informações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {infoItems.map((item) => (
+              {infoItemsTop.map((item) => (
+                <div key={item.label} className="flex items-start gap-3">
+                  <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{item.label}</p>
+                    <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Telefone - editável por Ouvidor/Admin */}
+              {editableField("telefone", "Telefone", att.telefone)}
+
+              {infoItemsBottom.map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   <div className="mt-0.5 text-muted-foreground">{item.icon}</div>
                   <div className="min-w-0 flex-1">
@@ -424,14 +438,11 @@ export default function DetalhesAtendimento() {
                         </div>
                       )
                     ) : (
-                      <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    <p className="text-sm font-medium">{item.value}</p>
                     )}
                   </div>
                 </div>
               ))}
-
-              {/* Editable fields - Solicitante */}
-              {editableField("telefone", "Telefone", att.telefone)}
               {editableField("ordem_servico_caern", "Ordem de Serviço (CAERN)", att.ordem_servico_caern)}
               {editableField("matricula_imovel", "Matrícula (Imóvel CAERN)", att.matricula_imovel)}
 
