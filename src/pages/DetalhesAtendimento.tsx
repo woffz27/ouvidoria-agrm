@@ -438,7 +438,7 @@ export default function DetalhesAtendimento() {
                         </div>
                       )
                     ) : (
-                      <p className={`text-sm font-medium ${item.mono ? "font-mono text-primary" : ""}`}>{item.value}</p>
+                    <p className="text-sm font-medium">{item.value}</p>
                     )}
                   </div>
                 </div>
