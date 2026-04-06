@@ -329,11 +329,12 @@ export default function DetalhesAtendimento() {
     </div>
   );
 
-  const infoItems = [
+  const infoItemsTop = [
     { icon: <Hash className="h-4 w-4" />, label: "Protocolo", value: atendimento.protocolo, mono: true },
     { icon: <User className="h-4 w-4" />, label: "Solicitante", value: atendimento.solicitante },
     { icon: <Mail className="h-4 w-4" />, label: "E-mail", value: atendimento.email || "—" },
-    
+  ];
+  const infoItemsBottom = [
     { icon: <Globe className="h-4 w-4" />, label: "Canal", value: canalLabels[atendimento.canal] },
     { icon: <Tag className="h-4 w-4" />, label: "Categoria", value: categoriaLabels[atendimento.categoria] },
     { icon: <Tag className="h-4 w-4" />, label: "Tipo de Problema", value: tipoProblemaLabels[atendimento.tipo_problema] },
