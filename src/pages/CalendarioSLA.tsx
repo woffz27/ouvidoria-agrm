@@ -73,7 +73,7 @@ export default function CalendarioSLA() {
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Calendário SLA</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Calendário de Prazos</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">Visualize os prazos dos protocolos por mês</p>
         </div>
 
