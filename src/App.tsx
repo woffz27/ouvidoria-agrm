@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import GerenciarUsuarios from "./pages/GerenciarUsuarios";
 import Atrasados from "./pages/Atrasados";
+import CalendarioSLA from "./pages/CalendarioSLA";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/atendimento/:id" element={<ProtectedRoute><DetalhesAtendimento /></ProtectedRoute>} />
             <Route path="/buscar" element={<ProtectedRoute><BuscarProtocolo /></ProtectedRoute>} />
             <Route path="/atrasados" element={<ProtectedRoute><Atrasados /></ProtectedRoute>} />
+            <Route path="/calendario" element={<ProtectedRoute><CalendarioSLA /></ProtectedRoute>} />
             <Route path="/usuarios" element={<ProtectedRoute><GerenciarUsuarios /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

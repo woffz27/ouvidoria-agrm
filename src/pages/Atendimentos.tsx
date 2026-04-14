@@ -22,6 +22,8 @@ import { Link } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { SlaBadge } from "@/components/sla/SlaBadge";
+import { getSlaSort } from "@/lib/sla-utils";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -45,6 +47,7 @@ export default function Atendimentos() {
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
   const [atrasadosFilter, setAtrasadosFilter] = useState(false);
+  const [ordenarSla, setOrdenarSla] = useState(false);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
   const { isAdmin, isOuvidor } = useAuth();
@@ -64,7 +67,7 @@ export default function Atendimentos() {
   };
 
   const filtered = useMemo(() => {
-    return atendimentos.filter((a) => {
+    let result = atendimentos.filter((a) => {
       const matchBusca =
         !busca ||
         a.protocolo.toLowerCase().includes(busca.toLowerCase()) ||
@@ -76,7 +79,11 @@ export default function Atendimentos() {
       const matchAtrasados = !atrasadosFilter || (a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado");
       return matchBusca && matchStatus && matchCategoria && matchTipo && matchAtrasados;
     });
-  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atrasadosFilter, atendimentos]);
+    if (ordenarSla) {
+      result = [...result].sort(getSlaSort);
+    }
+    return result;
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atrasadosFilter, ordenarSla, atendimentos]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -203,6 +210,14 @@ export default function Atendimentos() {
             >
               <CalendarClock className="h-3.5 w-3.5" /> Atrasados
             </Button>
+            <Button
+              variant={ordenarSla ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5 h-9"
+              onClick={() => { setOrdenarSla(!ordenarSla); handleFilterChange(); }}
+            >
+              Ordenar SLA
+            </Button>
           </CardContent>
         </Card>
 
@@ -253,6 +268,7 @@ export default function Atendimentos() {
                                 </Badge>
                               )}
                             </div>
+                            <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                           </div>
                           <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                             <span>{canalLabels[a.canal]}</span>
@@ -299,13 +315,14 @@ export default function Atendimentos() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Data</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
                         {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {paginated.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-12 text-muted-foreground">
+                          <TableCell colSpan={isAdmin ? 10 : 9} className="text-center py-12 text-muted-foreground">
                             Nenhum atendimento encontrado.
                           </TableCell>
                         </TableRow>
@@ -361,6 +378,9 @@ export default function Atendimentos() {
                                     {statusLabels[a.status]}
                                   </Badge>
                                 )}
+                              </TableCell>
+                              <TableCell>
+                                <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                               </TableCell>
                               {isAdmin && (
                                 <TableCell>
