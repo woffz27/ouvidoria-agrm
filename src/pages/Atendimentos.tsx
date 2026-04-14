@@ -322,7 +322,7 @@ export default function Atendimentos() {
                     <TableBody>
                       {paginated.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={isAdmin ? 9 : 8} className="text-center py-12 text-muted-foreground">
+                          <TableCell colSpan={isAdmin ? 10 : 9} className="text-center py-12 text-muted-foreground">
                             Nenhum atendimento encontrado.
                           </TableCell>
                         </TableRow>
@@ -378,6 +378,9 @@ export default function Atendimentos() {
                                     {statusLabels[a.status]}
                                   </Badge>
                                 )}
+                              </TableCell>
+                              <TableCell>
+                                <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                               </TableCell>
                               {isAdmin && (
                                 <TableCell>
