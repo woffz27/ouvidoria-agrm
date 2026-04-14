@@ -358,6 +358,7 @@ export default function DetalhesAtendimento() {
                 {statusIcons[atendimento.status]}
                 {statusLabels[atendimento.status]}
               </Badge>
+              <SlaBadge prazo={atendimento.prazo_resolucao} status={atendimento.status} />
               {isAtrasado && (
                 <Badge variant="destructive" className="gap-1 shrink-0">
                   <CalendarClock className="h-3.5 w-3.5" /> Atrasado

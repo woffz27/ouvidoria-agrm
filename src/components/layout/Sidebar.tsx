@@ -6,6 +6,7 @@ import {
   LogOut,
   Users,
   CalendarClock,
+  CalendarDays,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -31,6 +32,7 @@ const menuItems = [
   { title: "Atendimentos", url: "/atendimentos", icon: FileText },
   { title: "Novo Atendimento", url: "/novo-atendimento", icon: PlusCircle },
   { title: "Atrasados", url: "/atrasados", icon: CalendarClock },
+  { title: "Calendário SLA", url: "/calendario", icon: CalendarDays },
   { title: "Buscar Protocolo", url: "/buscar", icon: Search },
 ];
 
