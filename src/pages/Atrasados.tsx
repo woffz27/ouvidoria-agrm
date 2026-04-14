@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { SlaBadge } from "@/components/sla/SlaBadge";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -148,6 +149,7 @@ export default function Atrasados() {
                             <Badge variant="destructive" className="text-[10px]">
                               {getDiasAtraso(a.prazo_resolucao!)} dia{getDiasAtraso(a.prazo_resolucao!) !== 1 ? "s" : ""}
                             </Badge>
+                            <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                             {canChangeStatus ? (
                               <Select value={a.status} onValueChange={(v) => handleInlineStatusChange(a.id, v)}>
                                 <SelectTrigger className={`h-7 w-auto gap-1 text-[10px] rounded-full px-2.5 py-0.5 font-semibold border-0 focus:ring-0 ${statusColors[a.status]}`}>
@@ -184,15 +186,16 @@ export default function Atrasados() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
-                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazo</TableHead>
+                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazo</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Atraso</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {paginated.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                          <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                             Nenhum atendimento atrasado encontrado.
                           </TableCell>
                         </TableRow>
