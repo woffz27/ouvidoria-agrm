@@ -188,7 +188,7 @@ export default function Atrasados() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
                          <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazo</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Atraso</TableHead>
-                        <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazos</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
                       </TableRow>
                     </TableHeader>

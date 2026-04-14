@@ -224,7 +224,7 @@ export default function Dashboard() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazos</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -273,7 +273,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <AlertCircle className="h-4 w-4 text-destructive" /> Alertas de SLA
+                  <AlertCircle className="h-4 w-4 text-destructive" /> Alertas de Prazos
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
