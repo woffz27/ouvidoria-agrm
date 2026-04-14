@@ -31,6 +31,8 @@ import {
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
 import { useAtendimentos, useEstatisticas } from "@/hooks/use-atendimentos";
+import { SlaBadge } from "@/components/sla/SlaBadge";
+import { getSlaStatus, getSlaLabel, getSlaColor, getSlaSort } from "@/lib/sla-utils";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -205,6 +207,7 @@ export default function Dashboard() {
                       {statusIcons[a.status]}
                       {statusLabels[a.status]}
                     </Badge>
+                    <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                   </div>
                   <p className="text-[10px] text-muted-foreground">{canalLabels[a.canal]}</p>
                 </div>
@@ -216,11 +219,12 @@ export default function Dashboard() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
+                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Protocolo</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Solicitante</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -243,6 +247,9 @@ export default function Dashboard() {
                           {statusIcons[a.status]}
                           {statusLabels[a.status]}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                       </TableCell>
                     </TableRow>
                   ))}
