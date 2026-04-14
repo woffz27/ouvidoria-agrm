@@ -216,7 +216,7 @@ export function useEditarAtendimento() {
     mutationFn: async ({ id, dados }: { id: string; dados: Record<string, any> }) => {
       const { error } = await supabase
         .from("atendimentos")
-        .update(dados)
+        .update(dados as any)
         .eq("id", id);
       if (error) throw error;
     },
