@@ -273,7 +273,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <AlertCircle className="h-4 w-4 text-destructive" /> Alertas de SLA
+                  <AlertCircle className="h-4 w-4 text-destructive" /> Alertas de Prazos
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
