@@ -32,7 +32,7 @@ const menuItems = [
   { title: "Atendimentos", url: "/atendimentos", icon: FileText },
   { title: "Novo Atendimento", url: "/novo-atendimento", icon: PlusCircle },
   { title: "Atrasados", url: "/atrasados", icon: CalendarClock },
-  { title: "Calendário SLA", url: "/calendario", icon: CalendarDays },
+  { title: "Calendário de Prazos", url: "/calendario", icon: CalendarDays },
   { title: "Buscar Protocolo", url: "/buscar", icon: Search },
 ];
 
