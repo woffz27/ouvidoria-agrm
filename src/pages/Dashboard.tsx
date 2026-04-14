@@ -258,6 +258,49 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Alertas de SLA */}
+        {(() => {
+          const alertas = atendimentos
+            .filter((a) => {
+              const sla = getSlaStatus(a.prazo_resolucao, a.status);
+              return sla === "atencao" || sla === "vencido";
+            })
+            .sort(getSlaSort)
+            .slice(0, 5);
+          if (alertas.length === 0) return null;
+          return (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <AlertCircle className="h-4 w-4 text-destructive" /> Alertas de SLA
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {alertas.map((a) => {
+                  const sla = getSlaStatus(a.prazo_resolucao, a.status);
+                  const colors = getSlaColor(sla);
+                  return (
+                    <Link key={a.id} to={`/atendimento/${a.id}`} className="block">
+                      <div className={`rounded-lg border p-3 ${colors.bg} ${colors.border} hover:opacity-80 transition-opacity`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="font-mono text-xs font-semibold text-primary">{a.protocolo}</span>
+                            <span className="text-xs text-muted-foreground truncate">{a.assunto}</span>
+                          </div>
+                          <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
+                        </div>
+                        <p className={`text-xs mt-1 ${colors.text}`}>
+                          {`Protocolo ${a.protocolo} está ${getSlaLabel(sla)?.toLowerCase()}. Recomenda-se contato com o contribuinte.`}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          );
+        })()}
       </div>
     </AppLayout>
   );

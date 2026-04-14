@@ -22,6 +22,8 @@ import { Link } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { SlaBadge } from "@/components/sla/SlaBadge";
+import { getSlaSort } from "@/lib/sla-utils";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -45,6 +47,7 @@ export default function Atendimentos() {
   const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
   const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
   const [atrasadosFilter, setAtrasadosFilter] = useState(false);
+  const [ordenarSla, setOrdenarSla] = useState(false);
   const [page, setPage] = useState(1);
   const { toast } = useToast();
   const { isAdmin, isOuvidor } = useAuth();
@@ -64,7 +67,7 @@ export default function Atendimentos() {
   };
 
   const filtered = useMemo(() => {
-    return atendimentos.filter((a) => {
+    let result = atendimentos.filter((a) => {
       const matchBusca =
         !busca ||
         a.protocolo.toLowerCase().includes(busca.toLowerCase()) ||
@@ -76,7 +79,11 @@ export default function Atendimentos() {
       const matchAtrasados = !atrasadosFilter || (a.prazo_resolucao && new Date(a.prazo_resolucao) < new Date() && a.status !== "finalizado");
       return matchBusca && matchStatus && matchCategoria && matchTipo && matchAtrasados;
     });
-  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atrasadosFilter, atendimentos]);
+    if (ordenarSla) {
+      result = [...result].sort(getSlaSort);
+    }
+    return result;
+  }, [busca, statusFilter, categoriaFilter, tipoProblemaFilter, atrasadosFilter, ordenarSla, atendimentos]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
