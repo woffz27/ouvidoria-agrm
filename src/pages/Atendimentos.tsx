@@ -210,6 +210,14 @@ export default function Atendimentos() {
             >
               <CalendarClock className="h-3.5 w-3.5" /> Atrasados
             </Button>
+            <Button
+              variant={ordenarSla ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5 h-9"
+              onClick={() => { setOrdenarSla(!ordenarSla); handleFilterChange(); }}
+            >
+              Ordenar SLA
+            </Button>
           </CardContent>
         </Card>
 
