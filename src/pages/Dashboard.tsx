@@ -224,7 +224,7 @@ export default function Dashboard() {
                     <TableHead className="text-xs font-semibold uppercase tracking-wider hidden lg:table-cell">Assunto</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                     <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazos</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -315,7 +315,7 @@ export default function Atendimentos() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Data</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
-                        <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazos</TableHead>
                         {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                       </TableRow>
                     </TableHeader>
