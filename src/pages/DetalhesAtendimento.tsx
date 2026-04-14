@@ -21,6 +21,8 @@ import { useAtendimento, useAdicionarComentario, useEditarComentario, useExcluir
 import { AnexosList } from "@/components/atendimento/AnexosList";
 import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { SlaBadge } from "@/components/sla/SlaBadge";
+import { SlaCountdown } from "@/components/sla/SlaCountdown";
 import { supabase } from "@/integrations/supabase/client";
 
 const statusColors: Record<string, string> = {
@@ -481,6 +483,7 @@ export default function DetalhesAtendimento() {
                     <p className={`text-sm font-medium ${isAtrasado ? "text-destructive font-semibold" : ""}`}>
                       {new Date(atendimento.prazo_resolucao).toLocaleDateString("pt-BR")}
                     </p>
+                    <SlaCountdown prazo={atendimento.prazo_resolucao} status={atendimento.status} />
                   </div>
                 </div>
               )}
