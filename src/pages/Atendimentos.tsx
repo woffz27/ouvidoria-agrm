@@ -268,6 +268,7 @@ export default function Atendimentos() {
                                 </Badge>
                               )}
                             </div>
+                            <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
                           </div>
                           <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                             <span>{canalLabels[a.canal]}</span>
@@ -314,6 +315,7 @@ export default function Atendimentos() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Canal</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Data</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider">SLA</TableHead>
                         {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                       </TableRow>
                     </TableHeader>
