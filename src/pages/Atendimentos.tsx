@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Search, Filter, AlertCircle, Clock, MessageCircle,
   CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
@@ -18,7 +18,7 @@ import {
   statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels,
   type StatusType, type CategoriaType, type TipoProblemaType,
 } from "@/lib/mock-data";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,13 +43,27 @@ const statusIcons: Record<string, React.ReactNode> = {
 const ITEMS_PER_PAGE = 5;
 
 export default function Atendimentos() {
-  const [busca, setBusca] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("todos");
-  const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
-  const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
-  const [atrasadosFilter, setAtrasadosFilter] = useState(false);
-  const [ordenarSla, setOrdenarSla] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const busca = searchParams.get("busca") || "";
+  const statusFilter = searchParams.get("status") || "todos";
+  const categoriaFilter = searchParams.get("categoria") || "todos";
+  const tipoProblemaFilter = searchParams.get("tipo") || "todos";
+  const atrasadosFilter = searchParams.get("atrasados") === "1";
+  const ordenarSla = searchParams.get("ordenar") === "1";
   const [page, setPage] = useState(1);
+
+  const updateParam = useCallback((key: string, value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (!value || value === "todos" || value === "0") {
+        next.delete(key);
+      } else {
+        next.set(key, value);
+      }
+      return next;
+    }, { replace: true });
+    setPage(1);
+  }, [setSearchParams]);
   const { toast } = useToast();
   const { isAdmin, isOuvidor } = useAuth();
   const canChangeStatus = isAdmin || isOuvidor;
@@ -88,7 +102,6 @@ export default function Atendimentos() {
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
   const handleFilterChange = () => setPage(1);
 
   const handleExportPDF = () => {
@@ -144,15 +157,25 @@ export default function Atendimentos() {
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+           <div>
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Atendimentos</h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {filtered.length} atendimento{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
-            <Download className="h-4 w-4" /> Exportar PDF
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
+              <Download className="h-4 w-4" /> Exportar PDF
+            </Button>
+            <Button
+              variant={ordenarSla ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5"
+              onClick={() => updateParam("ordenar", ordenarSla ? "0" : "1")}
+            >
+              Ordenar prazos
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -163,11 +186,11 @@ export default function Atendimentos() {
               <Input
                 placeholder="Buscar por protocolo, solicitante ou assunto..."
                 value={busca}
-                onChange={(e) => { setBusca(e.target.value); handleFilterChange(); }}
+                onChange={(e) => updateParam("busca", e.target.value)}
                 className="pl-9 h-9 bg-muted/50 border-transparent"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); handleFilterChange(); }}>
+            <Select value={statusFilter} onValueChange={(v) => updateParam("status", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
@@ -179,7 +202,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); handleFilterChange(); }}>
+            <Select value={categoriaFilter} onValueChange={(v) => updateParam("categoria", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Categoria" />
@@ -191,7 +214,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={tipoProblemaFilter} onValueChange={(v) => { setTipoProblemaFilter(v); handleFilterChange(); }}>
+            <Select value={tipoProblemaFilter} onValueChange={(v) => updateParam("tipo", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Tipo de Problema" />
@@ -207,17 +230,9 @@ export default function Atendimentos() {
               variant={atrasadosFilter ? "destructive" : "outline"}
               size="sm"
               className="gap-1.5 h-9"
-              onClick={() => { setAtrasadosFilter(!atrasadosFilter); handleFilterChange(); }}
+              onClick={() => updateParam("atrasados", atrasadosFilter ? "0" : "1")}
             >
               <CalendarClock className="h-3.5 w-3.5" /> Atrasados
-            </Button>
-            <Button
-              variant={ordenarSla ? "default" : "outline"}
-              size="sm"
-              className="gap-1.5 h-9"
-              onClick={() => { setOrdenarSla(!ordenarSla); handleFilterChange(); }}
-            >
-              Ordenar prazos
             </Button>
           </CardContent>
         </Card>
