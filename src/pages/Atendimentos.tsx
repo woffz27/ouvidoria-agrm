@@ -216,7 +216,7 @@ export default function Atendimentos() {
               className="gap-1.5 h-9"
               onClick={() => { setOrdenarSla(!ordenarSla); handleFilterChange(); }}
             >
-              Ordenar SLA
+              Ordenar prazos
             </Button>
           </CardContent>
         </Card>
