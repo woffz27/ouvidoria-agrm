@@ -157,15 +157,25 @@ export default function Atendimentos() {
     <AppLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+           <div>
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">Atendimentos</h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               {filtered.length} atendimento{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
-            <Download className="h-4 w-4" /> Exportar PDF
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
+              <Download className="h-4 w-4" /> Exportar PDF
+            </Button>
+            <Button
+              variant={ordenarSla ? "default" : "outline"}
+              size="sm"
+              className="gap-1.5"
+              onClick={() => updateParam("ordenar", ordenarSla ? "0" : "1")}
+            >
+              Ordenar prazos
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -176,11 +186,11 @@ export default function Atendimentos() {
               <Input
                 placeholder="Buscar por protocolo, solicitante ou assunto..."
                 value={busca}
-                onChange={(e) => { setBusca(e.target.value); handleFilterChange(); }}
+                onChange={(e) => updateParam("busca", e.target.value)}
                 className="pl-9 h-9 bg-muted/50 border-transparent"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); handleFilterChange(); }}>
+            <Select value={statusFilter} onValueChange={(v) => updateParam("status", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Status" />
@@ -192,7 +202,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={categoriaFilter} onValueChange={(v) => { setCategoriaFilter(v); handleFilterChange(); }}>
+            <Select value={categoriaFilter} onValueChange={(v) => updateParam("categoria", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[140px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Categoria" />
@@ -204,7 +214,7 @@ export default function Atendimentos() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={tipoProblemaFilter} onValueChange={(v) => { setTipoProblemaFilter(v); handleFilterChange(); }}>
+            <Select value={tipoProblemaFilter} onValueChange={(v) => updateParam("tipo", v)}>
               <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px] h-9 bg-muted/50 border-transparent">
                 <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <SelectValue placeholder="Tipo de Problema" />
@@ -220,17 +230,9 @@ export default function Atendimentos() {
               variant={atrasadosFilter ? "destructive" : "outline"}
               size="sm"
               className="gap-1.5 h-9"
-              onClick={() => { setAtrasadosFilter(!atrasadosFilter); handleFilterChange(); }}
+              onClick={() => updateParam("atrasados", atrasadosFilter ? "0" : "1")}
             >
               <CalendarClock className="h-3.5 w-3.5" /> Atrasados
-            </Button>
-            <Button
-              variant={ordenarSla ? "default" : "outline"}
-              size="sm"
-              className="gap-1.5 h-9"
-              onClick={() => { setOrdenarSla(!ordenarSla); handleFilterChange(); }}
-            >
-              Ordenar prazos
             </Button>
           </CardContent>
         </Card>
