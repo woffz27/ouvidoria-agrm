@@ -71,10 +71,26 @@ export function useCriarNotificacao() {
         .select()
         .single();
       if (error) throw error;
+
+      // Register in the ticket history
+      const dataFormatada = new Date(notificacao.data_alerta).toLocaleString("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+      });
+      const conteudo = notificacao.justificativa
+        ? `Lembrete agendado para ${dataFormatada}: ${notificacao.justificativa}`
+        : `Lembrete agendado para ${dataFormatada}`;
+      await supabase.from("atualizacoes").insert({
+        atendimento_id: notificacao.atendimento_id,
+        usuario: "Sistema",
+        conteudo,
+        tipo: "comentario",
+      });
+
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.atendimento_id] });
     },
   });
 }
@@ -83,11 +99,12 @@ export function useMarcarLida() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      // Mark as read then delete from notifications
+      const { error: delError } = await supabase
         .from("notificacoes")
-        .update({ lida: true })
+        .delete()
         .eq("id", id);
-      if (error) throw error;
+      if (delError) throw delError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
