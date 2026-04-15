@@ -1,8 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { NotificacoesDropdown } from "@/components/notificacoes/NotificacoesDropdown";
 
 export function Header() {
   const { profile, signOut } = useAuth();
@@ -16,12 +17,7 @@ export function Header() {
       <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
 
       <div className="ml-auto flex items-center gap-3">
-        <button className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
-            3
-          </span>
-        </button>
+        <NotificacoesDropdown />
 
         <div className="h-5 w-px bg-border" />
 
