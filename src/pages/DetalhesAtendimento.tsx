@@ -349,11 +349,9 @@ export default function DetalhesAtendimento() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <Link to="/atendimentos">
-            <Button variant="ghost" size="sm" className="gap-1.5">
+          <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4" /> Voltar
-            </Button>
-          </Link>
+          </Button>
           <div className="flex-1">
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-base sm:text-lg md:text-xl font-bold tracking-tight break-words min-w-0">{atendimento.assunto}</h1>
