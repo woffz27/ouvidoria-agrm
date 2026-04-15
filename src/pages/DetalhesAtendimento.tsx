@@ -24,6 +24,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { SlaBadge } from "@/components/sla/SlaBadge";
 import { SlaCountdown } from "@/components/sla/SlaCountdown";
 import { supabase } from "@/integrations/supabase/client";
+import { CriarLembreteModal } from "@/components/notificacoes/CriarLembreteModal";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -367,8 +368,9 @@ export default function DetalhesAtendimento() {
                 </Badge>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 flex items-center gap-2">
               Protocolo <span className="font-mono font-semibold text-primary">{atendimento.protocolo}</span>
+              <CriarLembreteModal atendimentoId={atendimento.id} protocolo={atendimento.protocolo} />
             </p>
           </div>
           {isAdmin && (
