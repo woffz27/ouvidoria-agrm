@@ -19,8 +19,9 @@ export function useNotificacoes() {
 
   useEffect(() => {
     if (!user) return;
+    const channelName = `notificacoes-${user.id}`;
     const channel = supabase
-      .channel("notificacoes-realtime")
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "notificacoes", filter: `user_id=eq.${user.id}` },
@@ -33,7 +34,7 @@ export function useNotificacoes() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient, user]);
+  }, [queryClient, user?.id]);
 
   return useQuery({
     queryKey: ["notificacoes"],
