@@ -121,6 +121,36 @@ export type Database = {
           },
         ]
       }
+      notificacoes: {
+        Row: {
+          atendimento_id: string
+          created_at: string
+          data_alerta: string
+          id: string
+          justificativa: string | null
+          lida: boolean
+          user_id: string
+        }
+        Insert: {
+          atendimento_id: string
+          created_at?: string
+          data_alerta: string
+          id?: string
+          justificativa?: string | null
+          lida?: boolean
+          user_id: string
+        }
+        Update: {
+          atendimento_id?: string
+          created_at?: string
+          data_alerta?: string
+          id?: string
+          justificativa?: string | null
+          lida?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aprovado: boolean
