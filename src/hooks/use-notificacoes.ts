@@ -99,15 +99,15 @@ export function useMarcarLida() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      // Mark as read then delete from notifications
-      const { error: delError } = await supabase
+      const { error } = await supabase
         .from("notificacoes")
         .delete()
         .eq("id", id);
-      if (delError) throw delError;
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
+      queryClient.invalidateQueries({ queryKey: ["atendimento"] });
     },
   });
 }
@@ -124,6 +124,7 @@ export function useExcluirNotificacao() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
+      queryClient.invalidateQueries({ queryKey: ["atendimento"] });
     },
   });
 }

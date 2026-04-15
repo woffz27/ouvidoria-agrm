@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Search, Filter, AlertCircle, Clock, MessageCircle,
   CheckCircle2, ChevronLeft, ChevronRight, Download, Loader2, CalendarClock, Trash2,
@@ -18,7 +18,7 @@ import {
   statusLabels, categoriaLabels, canalLabels, tipoProblemaLabels,
   type StatusType, type CategoriaType, type TipoProblemaType,
 } from "@/lib/mock-data";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAtendimentos, useAlterarStatus, useExcluirAtendimento } from "@/hooks/use-atendimentos";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,13 +43,27 @@ const statusIcons: Record<string, React.ReactNode> = {
 const ITEMS_PER_PAGE = 5;
 
 export default function Atendimentos() {
-  const [busca, setBusca] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("todos");
-  const [categoriaFilter, setCategoriaFilter] = useState<string>("todos");
-  const [tipoProblemaFilter, setTipoProblemaFilter] = useState<string>("todos");
-  const [atrasadosFilter, setAtrasadosFilter] = useState(false);
-  const [ordenarSla, setOrdenarSla] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const busca = searchParams.get("busca") || "";
+  const statusFilter = searchParams.get("status") || "todos";
+  const categoriaFilter = searchParams.get("categoria") || "todos";
+  const tipoProblemaFilter = searchParams.get("tipo") || "todos";
+  const atrasadosFilter = searchParams.get("atrasados") === "1";
+  const ordenarSla = searchParams.get("ordenar") === "1";
   const [page, setPage] = useState(1);
+
+  const updateParam = useCallback((key: string, value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (!value || value === "todos" || value === "0") {
+        next.delete(key);
+      } else {
+        next.set(key, value);
+      }
+      return next;
+    }, { replace: true });
+    setPage(1);
+  }, [setSearchParams]);
   const { toast } = useToast();
   const { isAdmin, isOuvidor } = useAuth();
   const canChangeStatus = isAdmin || isOuvidor;
