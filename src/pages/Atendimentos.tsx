@@ -102,7 +102,6 @@ export default function Atendimentos() {
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
   const handleFilterChange = () => setPage(1);
 
   const handleExportPDF = () => {
