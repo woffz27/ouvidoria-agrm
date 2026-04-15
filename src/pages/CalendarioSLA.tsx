@@ -44,7 +44,7 @@ export default function CalendarioSLA() {
   const byDay = useMemo(() => {
     const map: Record<number, typeof atendimentos> = {};
     atendimentos.forEach((a) => {
-      if (!a.prazo_resolucao) return;
+      if (!a.prazo_resolucao || a.status === "finalizado") return;
       const d = new Date(a.prazo_resolucao);
       if (d.getFullYear() === year && d.getMonth() === month) {
         const day = d.getDate();

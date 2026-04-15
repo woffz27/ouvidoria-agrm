@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { SlaBadge } from "@/components/sla/SlaBadge";
 import { getSlaSort } from "@/lib/sla-utils";
+import { CriarLembreteModal } from "@/components/notificacoes/CriarLembreteModal";
 
 const statusColors: Record<string, string> = {
   aberto: "bg-accent text-accent-foreground",
@@ -316,13 +317,14 @@ export default function Atendimentos() {
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Data</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Status</TableHead>
                         <TableHead className="text-xs font-semibold uppercase tracking-wider">Prazos</TableHead>
+                        <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>
                         {isAdmin && <TableHead className="text-xs font-semibold uppercase tracking-wider w-10"></TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {paginated.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={isAdmin ? 10 : 9} className="text-center py-12 text-muted-foreground">
+                          <TableCell colSpan={isAdmin ? 11 : 10} className="text-center py-12 text-muted-foreground">
                             Nenhum atendimento encontrado.
                           </TableCell>
                         </TableRow>
@@ -381,6 +383,9 @@ export default function Atendimentos() {
                               </TableCell>
                               <TableCell>
                                 <SlaBadge prazo={a.prazo_resolucao} status={a.status} />
+                              </TableCell>
+                              <TableCell>
+                                <CriarLembreteModal atendimentoId={a.id} protocolo={a.protocolo} />
                               </TableCell>
                               {isAdmin && (
                                 <TableCell>
