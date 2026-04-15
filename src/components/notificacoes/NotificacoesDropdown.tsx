@@ -4,17 +4,16 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useNotificacoes, useNotificacoesNaoLidas, useMarcarLida, useExcluirNotificacao } from "@/hooks/use-notificacoes";
+import { useNotificacoes, getNotificacoesNaoLidas, useMarcarLida, useExcluirNotificacao } from "@/hooks/use-notificacoes";
 
 export function NotificacoesDropdown() {
   const { data: todas = [] } = useNotificacoes();
-  const naoLidas = useNotificacoesNaoLidas();
+  const naoLidas = getNotificacoesNaoLidas(todas);
   const marcarLida = useMarcarLida();
   const excluirNotificacao = useExcluirNotificacao();
 
   const count = naoLidas.length;
 
-  // Show recent 20
   const recentes = todas.slice(0, 20);
 
   return (

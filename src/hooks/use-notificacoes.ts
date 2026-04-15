@@ -50,8 +50,7 @@ export function useNotificacoes() {
   });
 }
 
-export function useNotificacoesNaoLidas() {
-  const { data: todas = [] } = useNotificacoes();
+export function getNotificacoesNaoLidas(todas: Notificacao[]) {
   const now = new Date();
   return todas.filter((n) => !n.lida && new Date(n.data_alerta) <= now);
 }
