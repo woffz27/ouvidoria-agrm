@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Bell, CalendarIcon, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, CalendarIcon, Clock, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -11,21 +11,51 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useCriarNotificacao } from "@/hooks/use-notificacoes";
+import { useCriarNotificacao, useEditarNotificacao, type Notificacao } from "@/hooks/use-notificacoes";
 
 interface CriarLembreteModalProps {
   atendimentoId: string;
   protocolo?: string;
   trigger?: React.ReactNode;
+  notificacao?: Notificacao;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function CriarLembreteModal({ atendimentoId, protocolo, trigger }: CriarLembreteModalProps) {
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date>();
+export function CriarLembreteModal({
+  atendimentoId,
+  protocolo,
+  trigger,
+  notificacao,
+  open: controlledOpen,
+  onOpenChange,
+}: CriarLembreteModalProps) {
+  const isEditMode = !!notificacao;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
+
+  const [date, setDate] = useState<Date | undefined>();
   const [hora, setHora] = useState("09:00");
   const [justificativa, setJustificativa] = useState("");
   const { toast } = useToast();
   const criarNotificacao = useCriarNotificacao();
+  const editarNotificacao = useEditarNotificacao();
+
+  useEffect(() => {
+    if (open && notificacao) {
+      const d = new Date(notificacao.data_alerta);
+      setDate(d);
+      setHora(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`);
+      setJustificativa(notificacao.justificativa ?? "");
+    } else if (open && !notificacao) {
+      setDate(undefined);
+      setHora("09:00");
+      setJustificativa("");
+    }
+  }, [open, notificacao]);
+
+  const isPending = criarNotificacao.isPending || editarNotificacao.isPending;
 
   const handleSubmit = async () => {
     if (!date) {
@@ -42,38 +72,50 @@ export function CriarLembreteModal({ atendimentoId, protocolo, trigger }: CriarL
     }
 
     try {
-      await criarNotificacao.mutateAsync({
-        atendimento_id: atendimentoId,
-        data_alerta: dataAlerta.toISOString(),
-        justificativa: justificativa.trim() || undefined,
-      });
-      toast({ title: "Lembrete criado!" });
+      if (isEditMode && notificacao) {
+        await editarNotificacao.mutateAsync({
+          id: notificacao.id,
+          atendimento_id: notificacao.atendimento_id,
+          data_alerta: dataAlerta.toISOString(),
+          justificativa: justificativa.trim() || undefined,
+        });
+        toast({ title: "Lembrete atualizado!", description: "As alterações foram salvas." });
+      } else {
+        await criarNotificacao.mutateAsync({
+          atendimento_id: atendimentoId,
+          data_alerta: dataAlerta.toISOString(),
+          justificativa: justificativa.trim() || undefined,
+        });
+        toast({ title: "Lembrete criado!" });
+      }
       setOpen(false);
-      setDate(undefined);
-      setHora("09:00");
-      setJustificativa("");
     } catch {
-      toast({ title: "Erro ao criar lembrete", variant: "destructive" });
+      toast({
+        title: isEditMode ? "Erro ao editar lembrete" : "Erro ao criar lembrete",
+        variant: "destructive",
+      });
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
+      {trigger !== undefined ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : !isEditMode ? (
+        <DialogTrigger asChild>
           <button
             className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             title="Criar lembrete"
           >
             <Bell className="h-3.5 w-3.5" />
           </button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px]">
+        </DialogTrigger>
+      ) : null}
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[440px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            Criar Lembrete
+            {isEditMode ? <Pencil className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {isEditMode ? "Editar Lembrete" : "Criar Lembrete"}
             {protocolo && <span className="text-xs font-mono text-muted-foreground">({protocolo})</span>}
           </DialogTitle>
         </DialogHeader>
@@ -116,12 +158,14 @@ export function CriarLembreteModal({ atendimentoId, protocolo, trigger }: CriarL
               placeholder="Ex: Cobrar retorno do setor técnico"
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
-              rows={3}
+              className="min-h-[96px] max-h-[240px] resize-y overflow-y-auto whitespace-pre-wrap break-words"
             />
           </div>
 
-          <Button onClick={handleSubmit} className="w-full" disabled={criarNotificacao.isPending}>
-            {criarNotificacao.isPending ? "Criando..." : "Criar Lembrete"}
+          <Button onClick={handleSubmit} className="w-full" disabled={isPending}>
+            {isPending
+              ? (isEditMode ? "Salvando..." : "Criando...")
+              : (isEditMode ? "Salvar Alterações" : "Criar Lembrete")}
           </Button>
         </div>
       </DialogContent>

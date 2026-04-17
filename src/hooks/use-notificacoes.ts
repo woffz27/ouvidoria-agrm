@@ -11,6 +11,7 @@ export interface Notificacao {
   justificativa: string | null;
   lida: boolean;
   created_at: string;
+  protocolo?: string;
 }
 
 export function useNotificacoes() {
@@ -24,7 +25,7 @@ export function useNotificacoes() {
       .channel(channelName)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "notificacoes", filter: `user_id=eq.${user.id}` },
+        { event: "*", schema: "public", table: "notificacoes" },
         () => {
           queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
         }
@@ -44,7 +45,18 @@ export function useNotificacoes() {
         .select("*")
         .order("data_alerta", { ascending: false });
       if (error) throw error;
-      return data as Notificacao[];
+
+      const notificacoes = (data ?? []) as Notificacao[];
+      const ids = Array.from(new Set(notificacoes.map((n) => n.atendimento_id)));
+      if (ids.length === 0) return notificacoes;
+
+      const { data: atendimentos } = await supabase
+        .from("atendimentos")
+        .select("id, protocolo")
+        .in("id", ids);
+
+      const map = new Map((atendimentos ?? []).map((a: any) => [a.id, a.protocolo]));
+      return notificacoes.map((n) => ({ ...n, protocolo: map.get(n.atendimento_id) }));
     },
     enabled: !!user,
   });
@@ -72,7 +84,6 @@ export function useCriarNotificacao() {
         .single();
       if (error) throw error;
 
-      // Register in the ticket history
       const dataFormatada = new Date(notificacao.data_alerta).toLocaleString("pt-BR", {
         day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
       });
@@ -87,6 +98,45 @@ export function useCriarNotificacao() {
       });
 
       return data;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
+      queryClient.invalidateQueries({ queryKey: ["atendimento", vars.atendimento_id] });
+    },
+  });
+}
+
+export function useEditarNotificacao() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (params: {
+      id: string;
+      atendimento_id: string;
+      data_alerta: string;
+      justificativa?: string;
+    }) => {
+      const { error } = await supabase
+        .from("notificacoes")
+        .update({
+          data_alerta: params.data_alerta,
+          justificativa: params.justificativa ?? null,
+          lida: false,
+        })
+        .eq("id", params.id);
+      if (error) throw error;
+
+      const dataFormatada = new Date(params.data_alerta).toLocaleString("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+      });
+      const conteudo = params.justificativa
+        ? `Lembrete editado: nova data ${dataFormatada} — ${params.justificativa}`
+        : `Lembrete editado: nova data ${dataFormatada}`;
+      await supabase.from("atualizacoes").insert({
+        atendimento_id: params.atendimento_id,
+        usuario: "Sistema",
+        conteudo,
+        tipo: "comentario",
+      });
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ["notificacoes"] });
