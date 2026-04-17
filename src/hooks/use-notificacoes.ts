@@ -12,6 +12,10 @@ export interface Notificacao {
   lida: boolean;
   created_at: string;
   protocolo?: string;
+  solicitante?: string;
+  status?: string;
+  assunto?: string;
+  prazo_resolucao?: string | null;
 }
 
 export function useNotificacoes() {
@@ -52,11 +56,21 @@ export function useNotificacoes() {
 
       const { data: atendimentos } = await supabase
         .from("atendimentos")
-        .select("id, protocolo")
+        .select("id, protocolo, solicitante, status, assunto, prazo_resolucao")
         .in("id", ids);
 
-      const map = new Map((atendimentos ?? []).map((a: any) => [a.id, a.protocolo]));
-      return notificacoes.map((n) => ({ ...n, protocolo: map.get(n.atendimento_id) }));
+      const map = new Map((atendimentos ?? []).map((a: any) => [a.id, a]));
+      return notificacoes.map((n) => {
+        const a = map.get(n.atendimento_id) as any;
+        return {
+          ...n,
+          protocolo: a?.protocolo,
+          solicitante: a?.solicitante,
+          status: a?.status,
+          assunto: a?.assunto,
+          prazo_resolucao: a?.prazo_resolucao,
+        };
+      });
     },
     enabled: !!user,
   });
