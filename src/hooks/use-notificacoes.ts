@@ -24,7 +24,7 @@ export function useNotificacoes() {
 
   useEffect(() => {
     if (!user) return;
-    const channelName = `notificacoes-${user.id}`;
+    const channelName = `notificacoes-${user.id}-${Math.random().toString(36).slice(2)}`;
     const channel = supabase
       .channel(channelName)
       .on(
