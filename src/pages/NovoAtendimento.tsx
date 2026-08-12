@@ -7,6 +7,7 @@ import {
   Globe,
   MessageSquare,
   Phone,
+  Users,
   Upload,
   X,
   FileText,
@@ -30,7 +31,7 @@ import {
   SelectValue } from
 "@/components/ui/select";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { categoriaLabels, tipoProblemaLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
+import { categoriaLabels, tipoProblemaLabels, canalLabels, type CategoriaType, type CanalType, type TipoProblemaType } from "@/lib/mock-data";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useCriarAtendimento, uploadArquivos } from "@/hooks/use-atendimentos";
@@ -39,7 +40,8 @@ import { cn } from "@/lib/utils";
 const canalIcons: Record<CanalType, React.ReactNode> = {
   site: <Globe className="h-4 w-4" />,
   whatsapp: <MessageSquare className="h-4 w-4" />,
-  telefone: <Phone className="h-4 w-4" />
+  telefone: <Phone className="h-4 w-4" />,
+  presencial: <Users className="h-4 w-4" />
 };
 
 function gerarProtocolo(): string {
@@ -187,11 +189,11 @@ export default function NovoAtendimento() {
                       <SelectValue placeholder="Selecione o canal" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(["site", "whatsapp", "telefone"] as CanalType[]).map((c) =>
+                      {(Object.keys(canalLabels) as CanalType[]).map((c) =>
                       <SelectItem key={c} value={c}>
                           <span className="flex items-center gap-2">
                             {canalIcons[c]}
-                            {c === "site" ? "Site" : c === "whatsapp" ? "WhatsApp" : "Telefone"}
+                            {canalLabels[c]}
                           </span>
                         </SelectItem>
                       )}

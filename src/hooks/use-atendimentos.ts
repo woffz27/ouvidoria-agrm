@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { canalLabels } from "@/lib/mock-data";
 
 export type Atendimento = Tables<"atendimentos">;
 export type Atualizacao = Tables<"atualizacoes">;
@@ -88,7 +89,7 @@ export function useCriarAtendimento() {
         .single();
       if (error) throw error;
 
-      const canalLabel = atendimento.canal === "site" ? "Site" : atendimento.canal === "whatsapp" ? "WhatsApp" : "Telefone";
+      const canalLabel = canalLabels[atendimento.canal] || "Presencial";
       await supabase.from("atualizacoes").insert({
         atendimento_id: data.id,
         usuario: "Sistema",
@@ -270,6 +271,7 @@ export function useEstatisticas() {
         site: data.filter((a) => a.canal === "site").length,
         whatsapp: data.filter((a) => a.canal === "whatsapp").length,
         telefone: data.filter((a) => a.canal === "telefone").length,
+        presencial: data.filter((a) => a.canal === "presencial").length,
       };
 
       const porTipoProblema = {

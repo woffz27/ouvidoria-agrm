@@ -28,6 +28,7 @@ import {
   categoriaLabels,
   canalLabels,
   tipoProblemaLabels,
+  type CanalType,
 } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
 import { useAtendimentos, useEstatisticas } from "@/hooks/use-atendimentos";
@@ -144,7 +145,7 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {(["site", "whatsapp", "telefone"] as const).map((canal) => (
+              {(Object.keys(canalLabels) as CanalType[]).map((canal) => (
                 <div key={canal} className="flex items-center justify-between">
                   <span className="text-sm">{canalLabels[canal]}</span>
                   <div className="flex items-center gap-2">
