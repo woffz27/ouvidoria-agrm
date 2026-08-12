@@ -1,6 +1,6 @@
 export type StatusType = "aberto" | "em_andamento" | "respondido" | "finalizado";
 export type CategoriaType = "reclamacao" | "sugestao" | "elogio" | "solicitacao";
-export type CanalType = "site" | "whatsapp" | "telefone";
+export type CanalType = "site" | "whatsapp" | "telefone" | "presencial";
 export type TipoProblemaType = "extravasamento_esgoto" | "vazamento_agua" | "pavimentacao" | "outros";
 
 export interface Atualizacao {
@@ -48,6 +48,7 @@ export const canalLabels: Record<CanalType, string> = {
   site: "Site",
   whatsapp: "WhatsApp",
   telefone: "Telefone",
+  presencial: "Presencial",
 };
 
 export const tipoProblemaLabels: Record<TipoProblemaType, string> = {
@@ -352,6 +353,7 @@ export function getEstatisticas() {
     site: mockAtendimentos.filter((a) => a.canal === "site").length,
     whatsapp: mockAtendimentos.filter((a) => a.canal === "whatsapp").length,
     telefone: mockAtendimentos.filter((a) => a.canal === "telefone").length,
+    presencial: mockAtendimentos.filter((a) => a.canal === "presencial").length,
   };
 
   const porTipoProblema = {
