@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { canalLabels } from "@/lib/mock-data";
 
 export type Atendimento = Tables<"atendimentos">;
 export type Atualizacao = Tables<"atualizacoes">;
