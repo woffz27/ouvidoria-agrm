@@ -1,0 +1,1 @@
+ALTER TYPE public.canal_type ADD VALUE 'presencial';

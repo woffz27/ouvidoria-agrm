@@ -215,7 +215,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user" | "ouvidor"
       atualizacao_tipo: "comentario" | "status_change"
-      canal_type: "site" | "whatsapp" | "telefone"
+      canal_type: "site" | "whatsapp" | "telefone" | "presencial"
       categoria_type: "reclamacao" | "sugestao" | "elogio" | "solicitacao"
       status_type: "aberto" | "em_andamento" | "respondido" | "finalizado"
       tipo_problema_type:
@@ -352,7 +352,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user", "ouvidor"],
       atualizacao_tipo: ["comentario", "status_change"],
-      canal_type: ["site", "whatsapp", "telefone"],
+      canal_type: ["site", "whatsapp", "telefone", "presencial"],
       categoria_type: ["reclamacao", "sugestao", "elogio", "solicitacao"],
       status_type: ["aberto", "em_andamento", "respondido", "finalizado"],
       tipo_problema_type: [
